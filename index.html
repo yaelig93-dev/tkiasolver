@@ -28,23 +28,23 @@ body{overflow-x:hidden}
 button,input,select{font:inherit}
 button{cursor:pointer;-webkit-tap-highlight-color:transparent}
 #app{min-height:100dvh}
-.top{position:sticky;top:0;z-index:30;background:var(--cream);border-bottom:4px solid var(--ink);box-shadow:0 4px 0 rgba(25,26,21,.14);padding-top:env(safe-area-inset-top)}
-.bar{max-width:1180px;margin:auto;padding:15px 16px 11px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.top{position:sticky;top:0;z-index:30;background:var(--cream);border-bottom:4px solid var(--ink);box-shadow:0 4px 0 rgba(25,26,21,.14)}
+.bar{max-width:1180px;margin:auto;padding:9px 16px 7px;display:flex;align-items:center;justify-content:space-between;gap:14px}
 .brand{display:flex;align-items:center;gap:10px;min-width:0}
 .mark{width:43px;height:43px;display:grid;place-items:center;background:var(--pink);color:var(--cream);font-weight:1000;font-size:17px;transform:rotate(-2deg);box-shadow:4px 4px 0 var(--blue);border:2px solid var(--ink);flex:0 0 auto}
-.brand b{font-size:25px;line-height:1;display:block;letter-spacing:-.03em}
-.brand small{font-size:16px;font-weight:850;color:var(--pink-dark);display:block;margin-top:3px}
+.brand b{font-size:19px;line-height:1;display:block;letter-spacing:-.03em}
+.brand small{font-size:12px;font-weight:850;color:var(--pink-dark);display:block;margin-top:3px}
 .solver-chip{background:var(--blue);color:#fff;padding:7px 11px;border:2px solid var(--ink);font-weight:950;white-space:nowrap;transform:rotate(.8deg)}
-nav{max-width:1180px;margin:auto;padding:0 12px 12px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+nav{max-width:1180px;margin:auto;padding:0 12px 8px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
 nav::-webkit-scrollbar{display:none}
-nav button{border:3px solid var(--ink);background:transparent;color:var(--ink);border-radius:5px;padding:11px 15px;white-space:nowrap;font-weight:1000;font-size:18px;min-height:52px}
-nav button.on{background:var(--pink);color:#fff;border-color:var(--ink);box-shadow:3px 3px 0 rgba(25,26,21,.14)}
+nav button{border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:4px;padding:7px 11px;white-space:nowrap;font-weight:950;font-size:16px}
+nav button.on{background:var(--pink);color:#fff;border-color:var(--ink)}
 main{max-width:1180px;margin:auto;padding:18px 16px 34px}
 h1,h2,h3{font-weight:1000;letter-spacing:-.045em}
 h1{font-size:48px;line-height:.92;margin:0 0 10px}
 h2{font-size:31px;margin:8px 0 12px}
 h3{font-size:21px;margin:10px 0 7px}
-.sub{color:#3f3a35;font-size:17px;line-height:1.4;margin:0 0 18px}
+.sub{color:var(--muted);font-size:17px;line-height:1.4;margin:0 0 18px}
 .card{background:var(--paper);border:3px solid var(--ink);padding:18px;box-shadow:var(--shadow)}
 .btn{border:2px solid var(--ink);background:var(--white);color:var(--ink);border-radius:4px;padding:10px 13px;font-weight:950;box-shadow:3px 3px 0 rgba(25,26,21,.16);min-height:46px}
 .btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(25,26,21,.16)}
@@ -109,7 +109,7 @@ h3{font-size:21px;margin:10px 0 7px}
 .chapter-list{display:grid;gap:7px;margin-top:10px}
 .finding-row{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#fffdf7;border:2px solid var(--line);padding:9px 10px}
 .clue-toolbar{display:flex;align-items:end;justify-content:space-between;gap:14px;margin-bottom:10px}
-.clue-toolbar h1{font-size:50px;margin:0
+.clue-toolbar h1{font-size:42px;margin:0}
 .clue-toolbar .sub{margin:4px 0 0}
 .toolbar-group{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
 .toolbar-group .btn{font-size:15px}
@@ -230,7 +230,7 @@ h3{font-size:21px;margin:10px 0 7px}
 .tool-pill.marker-pill .swatch{border-radius:2px}
 @media(max-width:1000px){.page-cards{grid-template-columns:repeat(5,minmax(0,1fr))}}
 @media(max-width:700px){.page-cards{grid-template-columns:repeat(3,minmax(0,1fr))}.final-master-ribbon{display:block}.final-master-ribbon .final-page{margin-top:8px}}
-</style></head>
+</style><style id="layout-tightening">.master-board{grid-template-rows:auto auto auto auto;gap:10px}.clue-dots{align-content:start}</style></head>
 <body>
 <div id="app"></div>
 <div id="overlay" class="overlay"><div id="modal" class="modal"></div></div>
