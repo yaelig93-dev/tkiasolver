@@ -447,14 +447,16 @@ function showAZGroup(kind,g){
 function chooseAZ(kind,p){
   const before=snapshot(db.clues[6]||{});
   db.clues[6]=Object.assign({},db.clues[6]||{}, {[kind]:p});
-  let after=snapshot(db.clues[6]);
+  const after=snapshot(db.clues[6]);
   recordHistory(6,(kind==="anna"?"Anna":"Zack")+" page selected","clues",before,after);
+  const fb=snapshot(db.findings);
+  db.findings=db.findings.filter(x=>!(x.clue===6&&x.type==="elim"));
   if(db.clues[6].anna&&db.clues[6].zack){
-    const lo=Math.min(db.clues[6].anna,db.clues[6].zack),hi=Math.max(db.clues[6].anna,db.clues[6].zack),fb=snapshot(db.findings);
-    pages().filter(p=>p<=lo||p>=hi).forEach(p=>{if(!db.findings.some(x=>x.clue===6&&x.page===p&&x.type==="elim"))db.findings.push({clue:6,page:p,type:"elim"})});
-    const fa=snapshot(db.findings);
-    if(JSON.stringify(fb)!==JSON.stringify(fa))recordHistory(6,"Pages outside Anna/Zack range eliminated","findings",fb,fa);
+    const lo=Math.min(db.clues[6].anna,db.clues[6].zack),hi=Math.max(db.clues[6].anna,db.clues[6].zack);
+    pages().filter(p=>p<=lo||p>=hi).forEach(p=>db.findings.push({clue:6,page:p,type:"elim"}));
   }
+  const fa=snapshot(db.findings);
+  if(JSON.stringify(fb)!==JSON.stringify(fa))recordHistory(6,"Clue 6 page range recalculated","findings",fb,fa);
   save();openClue(6);
 }
 function hasChapterFinding(n,ch){return db.findings.some(x=>x.clue===n&&x.type==="chapter"&&x.chapter===ch)}
@@ -475,8 +477,22 @@ function clueInputs(n){
 function openInputs(n){
   const f=db.findings.filter(x=>x.clue===n),h=clueInputs(n);
   const rows=f.map(x=>'<div class="saved-row"><span>'+esc(inputLabel(x))+'</span><button class="btn small" onclick="removeFindingFromPopup('+n+',\''+encodeURIComponent(JSON.stringify(x))+'\')">Undo</button></div>').join("");
-  const history=h.map(x=>'<div class="saved-row"><span>'+esc(x.label)+'</span><button class="btn small" onclick="undoHistory(\''+x.id+'\');openInputs('+n+')">Undo</button></div>').join("");
+  const history=h.map(x=>'<div class="saved-row"><span>'+esc(x.label)+'</span><button class="btn small" onclick="undoHistoryFromPopup(\''+x.id+'\','+n+')">Undo</button></div>').join("");
   openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">CLUE '+n+'</span><h2 class="modal-title">Saved Inputs</h2>'+(rows?'<h3>Current findings</h3>'+rows:'<div class="empty">No current page or chapter inputs.</div>')+(history?'<h3>Recent recorded actions</h3>'+history:"")+'<div class="line"></div><div class="actions"><button class="btn" onclick="closeModal()">Close</button><button class="btn accent" onclick="closeModal();goArchiveForClue('+n+')">Open Full Archive</button></div>');
+}
+function undoHistoryFromPopup(id,n){
+  const h=db.history.find(x=>x.id===id);if(!h||h.undone)return;
+  if(h.key==="findings"||h.key==="eliminatedNames"||h.key==="potentialKillers"){
+    const key=h.key,cur=db[key]||[],before=h.before||[],after=h.after||[];
+    const added=after.filter(x=>!before.some(y=>JSON.stringify(y)===JSON.stringify(x)));
+    const removed=before.filter(x=>!after.some(y=>JSON.stringify(y)===JSON.stringify(x)));
+    added.forEach(x=>{const i=cur.findIndex(y=>JSON.stringify(y)===JSON.stringify(x));if(i>=0)cur.splice(i,1)});
+    removed.forEach(x=>{if(!cur.some(y=>JSON.stringify(y)===JSON.stringify(x)))cur.push(snapshot(x))});
+    db[key]=cur;
+  }else if(h.key==="clues"){
+    const key=h.clue;if(h.before&&h.before[key])db.clues[key]=snapshot(h.before[key]);else delete db.clues[key];
+  }else if(h.key==="final"){db.final=snapshot(h.before)}
+  h.undone=true;save();openInputs(n);
 }
 function removeFindingFromPopup(n,encoded){
   const target=JSON.parse(decodeURIComponent(encoded)),before=snapshot(db.findings),idx=db.findings.findIndex(x=>JSON.stringify(x)===JSON.stringify(target));
