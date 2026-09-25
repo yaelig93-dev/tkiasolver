@@ -342,7 +342,7 @@ const CLUE_META={
 11:{stage:3,cat:"Page-level checks",tool:"POINT 88 · 36 · Green + Page marker · Green",color:"#39b875"},
 13:{stage:3,cat:"Page-level checks",tool:"POINT 88 · 46 · Black",color:"#252a30"},
 9:{stage:3,cat:"Page-level checks",tool:"POINT 88 · 43 · Light green",color:"#5fcf8b"},
-10:{stage:3,cat:"Page-level checks",tool:"NO MARKING · Check only",color:"#d8d2c7"},
+10:{stage:4,cat:"Final checks",tool:"NO MARKING · Check only",color:"#d8d2c7"},
 18:{stage:4,cat:"Final Stage",tool:"NO MARKING · Solve at the end",color:"#d8d2c7"}
 };
 const REFS={
@@ -419,8 +419,8 @@ function master(){
   const stages=[
     {n:1,title:"WIDE ELIMINATION",clues:[1,2,3,5,7,8]},
     {n:2,title:"CHAPTERS & RANGES",clues:[6,15,17,12,16,14]},
-    {n:3,title:"PAGE-LEVEL CHECKS",clues:[4,11,13,9,10]},
-    {n:4,title:"FINAL DECISION",clues:[18]}
+    {n:3,title:"PAGE-LEVEL CHECKS",clues:[4,11,13,9]},
+    {n:4,title:"FINAL DECISION",clues:[10,18]}
   ];
   const stageCards=stages.map(s=>{
     const sd=s.clues.filter(n=>db.clues[n]&&db.clues[n].done).length;
