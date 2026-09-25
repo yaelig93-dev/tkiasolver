@@ -90,7 +90,7 @@ let mode=c[2],tag=mode==="complete"?"VERIFY":mode==="eliminate"?"FILTER":mode===
 let action=mode==="eliminate"?"Filter pages":mode==="source"?"Find reference pages":mode==="chapter"?"Check chapter":mode==="annaZack"?"Find Anna + Zack":mode==="final"?"Submit final deduction":"Verify the name";
 return `<article class="clue"><span class="num">${c[0]}</span><span class="badge">${tag}</span>
 <div class="clue-title">${esc(c[1])}</div><div class="hintline">${action} · the button opens the complete clue sheet.</div>
-<div class="actions"><button type="button" class="btn primary" data-open-clue="${c[0]}">Open clue</button>${mode==="complete"?`<button type="button" class="btn" data-complete-clue="${c[0]}">${db.clues[c[0]]?.done?"✓ Done":"Mark complete"}</button>`:""}</div></article>`}).join("")}</div>`;
+<div class="actions"><button type="button" class="btn primary" onclick="openClue(${c[0]})">Open clue</button>${mode==="complete"?`<button type="button" class="btn" onclick="complete(${c[0]})">${db.clues[c[0]]?.done?"✓ Done":"Mark complete"}</button>`:""}</div></article>`}).join("")}</div>`;
 }
 function complete(n){db.clues[n]={done:true};save();render("clues")}
 const REFS={
@@ -169,7 +169,7 @@ function eliminateName(n,p){let name=decodeURIComponent(n);if(!db.eliminatedName
 function completePage(p){db.findings.push({clue:0,page:p,type:"elim"});save();closeModal();render("master")}
 function refs(){return `<h1>References</h1><p class="sub">Exact reference lists used by the clue workflow.</p><div class="grid"><div class="card half"><h3>Kardashians</h3><p>Kris · Kourtney · Kim · Khloé · Rob · Kendall · Kylie</p></div><div class="card half"><h3>Beatles</h3><p>John · Paul · George · Ringo</p></div><div class="card"><h3>Vowels</h3><p>A · E · I · O · U. Y is not a vowel. Duplicate vowels count.</p></div><div class="card"><h3>Edition-specific Clue 15</h3><p>The killer appears in a chapter with a city in its title.</p></div></div>`}
 function solve(){let n=$("killer").value.trim();if(!n)return;db.final={name:n};save();closeModal();$("app").innerHTML=`<main class="final"><div><div class="seal">CASE<br>CLOSED</div><h1>YOU SOLVED IT</h1><div class="name">${esc(n)}</div><p class="sub">The case is officially closed.</p><button class="btn" onclick="db.final=null;save();render('master')">Back to case</button></div></main>`}
-function open(html){$("modal").innerHTML=html;$("overlay").classList.add("open")}
+function open(html){$("modal").innerHTML=html;$("overlay").classList.add("open")}\nfunction openModal(html){open(html)}
 function closeModal(){$("overlay").classList.remove("open")}
 const start=location.hash.slice(1)||(!db.setup.first?"setup":"master");render(start);
 </script>
