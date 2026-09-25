@@ -169,7 +169,8 @@ function eliminateName(n,p){let name=decodeURIComponent(n);if(!db.eliminatedName
 function completePage(p){db.findings.push({clue:0,page:p,type:"elim"});save();closeModal();render("master")}
 function refs(){return `<h1>References</h1><p class="sub">Exact reference lists used by the clue workflow.</p><div class="grid"><div class="card half"><h3>Kardashians</h3><p>Kris · Kourtney · Kim · Khloé · Rob · Kendall · Kylie</p></div><div class="card half"><h3>Beatles</h3><p>John · Paul · George · Ringo</p></div><div class="card"><h3>Vowels</h3><p>A · E · I · O · U. Y is not a vowel. Duplicate vowels count.</p></div><div class="card"><h3>Edition-specific Clue 15</h3><p>The killer appears in a chapter with a city in its title.</p></div></div>`}
 function solve(){let n=$("killer").value.trim();if(!n)return;db.final={name:n};save();closeModal();$("app").innerHTML=`<main class="final"><div><div class="seal">CASE<br>CLOSED</div><h1>YOU SOLVED IT</h1><div class="name">${esc(n)}</div><p class="sub">The case is officially closed.</p><button class="btn" onclick="db.final=null;save();render('master')">Back to case</button></div></main>`}
-function open(html){$("modal").innerHTML=html;$("overlay").classList.add("open")}\nfunction openModal(html){open(html)}
+function open(html){$("modal").innerHTML=html;$("overlay").classList.add("open")}
+function openModal(html){open(html)}
 function closeModal(){$("overlay").classList.remove("open")}
 const start=location.hash.slice(1)||(!db.setup.first?"setup":"master");render(start);
 </script>
