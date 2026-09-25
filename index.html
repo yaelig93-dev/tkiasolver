@@ -571,11 +571,21 @@ function restoreEliminatedName(i){
 function completePage(p){
   const before=snapshot(db.findings);if(!db.findings.some(x=>x.clue===0&&x.page===p))db.findings.push({clue:0,page:p,type:"elim"});const after=snapshot(db.findings);recordHistory(0,"Page eliminated","findings",before,after);save();
 }
+function historyTypeMatch(h,type){
+  if(type==="all")return true;
+  if(type==="eliminatedNames")return h.key==="eliminatedNames";
+  if(type==="potentialKillers")return h.key==="potentialKillers";
+  if(type==="clues")return h.key==="clues";
+  if(type==="final")return h.key==="final";
+  if(type==="page")return h.key==="findings"&&[...(h.before||[]),...(h.after||[])].some(x=>x.page!=null);
+  if(type==="chapter")return h.key==="findings"&&[...(h.before||[]),...(h.after||[])].some(x=>x.chapter!=null);
+  return false;
+}
 function archive(){
   const list=db.history||[],type=window.archiveType||"all",clue=window.archiveClue||"";
-  const filtered=list.filter(h=>(type==="all"||h.key===type)&&(clue===""||String(h.clue)===String(clue)));
+  const filtered=list.filter(h=>historyTypeMatch(h,type)&&(clue===""||String(h.clue)===String(clue)));
   const clueOptions=clues.map(x=>'<option value="'+x[0]+'" '+(String(clue)===String(x[0])?"selected":"")+'>Clue '+x[0]+'</option>').join("");
-  return '<div><div class="archive-header"><div><h1>INPUT ARCHIVE</h1><p class="sub">Filter by input type or clue number. Edit a clue or undo a recorded action.</p></div><b>'+filtered.length+' shown</b></div><div class="archive-filters"><select onchange="window.archiveType=this.value;render(\'archive\')"><option value="all">All input types</option><option value="findings" '+(type==="findings"?"selected":"")+'>Page / chapter findings</option><option value="eliminatedNames" '+(type==="eliminatedNames"?"selected":"")+'>Name eliminations</option><option value="potentialKillers" '+(type==="potentialKillers"?"selected":"")+'>Potential Killers</option><option value="clues" '+(type==="clues"?"selected":"")+'>Clue completion</option><option value="final" '+(type==="final"?"selected":"")+'>Final decision</option></select><select onchange="window.archiveClue=this.value;render(\'archive\')"><option value="">All clues</option>'+clueOptions+'</select><button class="btn" onclick="window.archiveType=\'all\';window.archiveClue=\'\';render(\'archive\')">Clear Filters</button></div><div>'+(filtered.length?filtered.map(h=>historyCard(h)).join(""):'<div class="card"><h2>No matching inputs</h2><p class="sub">Try a different filter.</p></div>')+'</div></div>';
+  return '<div><div class="archive-header"><div><h1>INPUT ARCHIVE</h1><p class="sub">Filter by input type or clue number. Edit a clue or undo a recorded action.</p></div><b>'+filtered.length+' shown</b></div><div class="archive-filters"><select onchange="window.archiveType=this.value;render(\'archive\')"><option value="all">All input types</option><option value="page" '+(type==="page"?"selected":"")+'>Page eliminations</option><option value="chapter" '+(type==="chapter"?"selected":"")+'>Chapter exclusions</option><option value="eliminatedNames" '+(type==="eliminatedNames"?"selected":"")+'>Name eliminations</option><option value="potentialKillers" '+(type==="potentialKillers"?"selected":"")+'>Potential Killers</option><option value="clues" '+(type==="clues"?"selected":"")+'>Clue completion</option><option value="final" '+(type==="final"?"selected":"")+'>Final decision</option></select><select onchange="window.archiveClue=this.value;render(\'archive\')"><option value="">All clues</option>'+clueOptions+'</select><button class="btn" onclick="window.archiveType=\'all\';window.archiveClue=\'\';render(\'archive\')">Clear Filters</button></div><div>'+(filtered.length?filtered.map(h=>historyCard(h)).join(""):'<div class="card"><h2>No matching inputs</h2><p class="sub">Try a different filter.</p></div>')+'</div></div>';
 }
 function historyCard(h){
   return '<div class="history-card '+(h.undone?"undone":"")+'"><div><div class="history-meta">Clue '+h.clue+' · '+new Date(h.createdAt).toLocaleString()+'</div><div class="history-label">'+esc(h.label)+'</div><div class="history-data">'+(h.undone?"UNDONE":historySummary(h))+'</div></div><div class="history-actions"><button class="btn" onclick="openClue('+h.clue+')">Edit</button>'+(h.undone?"":'<button class="btn accent" onclick="undoHistory(\''+h.id+'\')">Undo</button>')+'</div></div>';
