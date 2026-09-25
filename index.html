@@ -6,30 +6,199 @@
 <meta name="theme-color" content="#243047">
 <link rel="manifest" href="manifest.webmanifest">
 <title>The Killer Isn't Alice — Case Board</title>
-<style>:root{--pink:#e51b78;--cream:#f6e7c8;--paper:#fff7e7;--ink:#171717;--blue:#6570c7;--yellow:#f4dc00;--muted:#6f665b;--line:#d8c7a7;--white:#fffdf8;--shadow:0 10px 0 rgba(23,23,23,.08),0 18px 35px rgba(23,23,23,.12)}
-*{box-sizing:border-box}html{background:var(--cream)}body{margin:0;background:var(--cream);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:17px}button,input{font:inherit}button{cursor:pointer;-webkit-tap-highlight-color:transparent}#app{min-height:100vh}
-.top{position:sticky;top:0;z-index:20;background:var(--pink);color:#fff;box-shadow:0 4px 0 rgba(23,23,23,.12)}.bar{max-width:1120px;margin:auto;padding:12px 16px;display:flex;align-items:center}.brand{display:flex;align-items:center;gap:11px}.mark{width:43px;height:43px;background:var(--ink);color:#fff;display:grid;place-items:center;font-weight:1000;font-size:16px;transform:rotate(-2deg);box-shadow:4px 4px 0 var(--yellow)}.brand b{font-weight:1000;font-size:20px;letter-spacing:-.03em}.brand small{display:block;opacity:.9;font-size:13px;margin-top:2px}.brand small{display:block;opacity:.8;font-size:11px}
-nav{max-width:1120px;margin:auto;padding:0 12px 10px;display:flex;gap:7px;overflow-x:auto;scrollbar-width:none}nav::-webkit-scrollbar{display:none}nav button{border:2px solid transparent;background:transparent;color:#fff;border-radius:8px;padding:8px 11px;white-space:nowrap;font-weight:850}nav button.on{background:#fff;color:var(--pink);border-color:#fff}
-main{max-width:1120px;margin:auto;padding:26px 16px 80px}h1,h2,h3{font-weight:950;letter-spacing:-.04em}h1{font-size:56px;line-height:.92;margin:0 0 12px}h2{font-size:36px;margin:10px 0}.sub{color:var(--muted);line-height:1.45;margin:0 0 24px;font-size:18px}.clue .actions{margin-top:17px}.clue .actions .btn{border:3px solid var(--ink);background:var(--white);color:var(--ink);border-radius:8px;padding:13px 17px;font-weight:1000;font-size:16px;box-shadow:3px 4px 0 rgba(23,23,23,.14);min-height:50px}.clue-title{margin:15px 0 10px;font-size:23px;line-height:1.08;font-weight:1000}.hintline{font-size:16px;color:var(--muted);line-height:1.35;font-weight:750}.clue{min-height:220px;padding:18px}.num{width:48px;height:48px;font-size:21px}.badge{font-size:11px;padding:6px 9px}
-.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:15px}.card{grid-column:span 12;background:var(--white);border:3px solid var(--ink);border-radius:6px;padding:22px;box-shadow:7px 8px 0 rgba(23,23,23,.1)}.half{grid-column:span 6}.third{grid-column:span 4}
-.btn{border:2px solid var(--ink);background:var(--white);color:var(--ink);border-radius:6px;padding:10px 13px;font-weight:900;box-shadow:2px 3px 0 rgba(23,23,23,.14)}.btn:active{transform:translate(1px,2px);box-shadow:0 1px 0 rgba(23,23,23,.14)}.primary{background:var(--pink);border-color:var(--pink);color:#fff}.accent{background:var(--blue);border-color:var(--blue);color:#fff}.danger{background:#fff0f3;border-color:#9d203e;color:#9d203e}.row{display:flex;justify-content:space-between;align-items:center;gap:10px}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:13px}
-.stat{background:#fff;border:2px solid var(--ink);padding:18px;border-radius:5px}.stat strong{display:block;font-size:42px;line-height:1}.stat span{color:var(--muted);font-size:15px;font-weight:800}.progress{height:10px;background:#ead9ba;overflow:hidden;border:1px solid var(--ink)}.progress i{display:block;height:100%;background:var(--pink)}
-.pages{display:flex;gap:6px;flex-wrap:wrap;max-height:260px;overflow:auto}.page{border:1px solid var(--ink);background:#fff;border-radius:4px;padding:7px 9px;font-size:12px}.page.elim{background:#ffd9e7}
-.clues{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.clue{position:relative;background:var(--paper);border:3px solid var(--ink);border-radius:5px;padding:21px;box-shadow:7px 8px 0 rgba(23,23,23,.12);min-height:245px}.clue:nth-child(3n){transform:rotate(.35deg)}.clue:nth-child(3n+1){transform:rotate(-.25deg)}.clue:after{content:"";position:absolute;right:13px;top:-8px;width:70px;height:17px;background:rgba(244,220,0,.75);transform:rotate(2deg)}.num{width:43px;height:43px;background:var(--ink);color:#fff;display:inline-grid;place-items:center;font-size:19px;font-weight:1000;margin-right:9px;vertical-align:middle}.badge{display:inline-block;font-size:10px;padding:5px 8px;background:var(--blue);color:#fff;border-radius:999px;font-weight:950;vertical-align:middle;letter-spacing:.05em}.clue-title{margin:12px 0 8px;font-size:17px;line-height:1.2;font-weight:950}.hintline{font-size:12px;color:var(--muted);line-height:1.45}
-.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}.tool{border:3px solid var(--ink);background:#fff;padding:15px 13px;border-radius:5px;min-height:105px}.tool b{font-size:16px;display:block;margin-bottom:7px}.tool span{font-size:14px;line-height:1.35;color:var(--muted);font-weight:700}.tool b{font-size:13px;display:block;margin-bottom:6px}.tool span{font-size:12px;line-height:1.45;color:var(--muted)}
-.refbox{background:#fff3a8;border:2px solid var(--ink);padding:12px 13px;margin:12px 0;position:relative}.refbox:before{content:"REFERENCE";position:absolute;right:8px;top:-9px;background:var(--pink);color:#fff;padding:3px 7px;font-size:9px;font-weight:950;transform:rotate(2deg)}.refnames{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.namechip{background:#fff;border:2px solid var(--ink);padding:6px 9px;font-size:12px;border-radius:3px;font-weight:800}
-.field{margin:12px 0}.field label{font-size:12px;font-weight:900;display:block}.field input{width:100%;margin-top:6px;border:2px solid var(--ink);background:#fff;padding:11px;border-radius:3px;outline:none}.field input:focus{border-color:var(--pink);box-shadow:0 0 0 3px rgba(229,27,120,.14)}.finding{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--line);background:#fff;padding:9px;margin-top:7px;font-size:13px}.empty{text-align:center;color:var(--muted);padding:25px}
-.overlay{position:fixed;inset:0;background:rgba(23,23,23,.64);touch-action:manipulation;display:none;z-index:100;padding:12px;align-items:center;justify-content:center}.overlay.open{display:flex}.modal{position:relative;width:min(760px,100%);max-height:92vh;overflow:auto;background:var(--paper);border:3px solid var(--ink);border-radius:3px;padding:21px 20px 24px;box-shadow:12px 13px 0 rgba(0,0,0,.25);-webkit-overflow-scrolling:touch}.close{position:absolute;right:10px;top:10px;width:46px;height:42px;border:2px solid var(--ink);background:var(--yellow);font-size:25px;font-weight:1000;line-height:1;border-radius:3px;z-index:4}.line{height:2px;background:var(--ink);margin:17px 0}.setupHero{text-align:center;padding:32px 8px 18px}.setupHero .mark{margin:0 auto 17px}.setupHero h1{font-size:50px}.sticky{background:var(--yellow);border:2px solid var(--ink);padding:13px;transform:rotate(-.7deg);box-shadow:5px 6px 0 rgba(23,23,23,.12)}
-@media(max-width:760px){.half,.third{grid-column:span 12}.clues{grid-template-columns:1fr}.tool-grid{grid-template-columns:1fr}main{padding:22px 12px 60px}h1{font-size:38px}.setupHero h1{font-size:40px}.modal{max-height:94vh;padding:19px 16px 22px}.clue{min-height:0}.clue .actions{display:grid;grid-template-columns:1fr 1fr}.clue .actions .btn{width:100%;font-size:14px}.clue-title{font-size:20px}.hintline{font-size:13px}.sub{font-size:15px}}
-</style><style id="ipad-redesign">
-:root{--navy:#162438;--paper:#fffaf0;--ink:#17202b;--gold:#d8ad61;--line:#cdbd9e;--muted:#5e5a53;--teal:#00a6a6;--shadow:0 7px 0 rgba(23,32,43,.10),0 14px 25px rgba(23,32,43,.13)}
-html,body{background:var(--navy)!important;color:var(--ink);min-height:100%;overflow-x:hidden}body{font-size:20px;line-height:1.28}#app{min-height:100vh;background:var(--navy)}
-.top{background:var(--navy)!important;box-shadow:0 4px 0 rgba(0,0,0,.22)}.bar{max-width:1400px;padding:10px 22px}.brand b{font-size:24px}.brand small{font-size:15px}.mark{width:48px;height:48px;font-size:18px}
-nav{max-width:1400px;padding:0 18px 10px;gap:8px}nav button{font-size:18px;padding:10px 15px;border-radius:10px}main{max-width:1400px!important;margin:auto!important;padding:16px 22px 20px!important}
-.master-onepage{height:calc(100vh - 128px);min-height:620px;display:grid;grid-template-rows:auto 1fr auto;gap:14px;overflow:hidden}.master-hero{background:linear-gradient(135deg,#28435f,#162438);color:#fff;border:3px solid var(--gold);padding:18px 24px;border-radius:18px;display:flex;align-items:center;justify-content:space-between;gap:20px;box-shadow:var(--shadow)}.master-hero .eyebrow{font-size:16px;font-weight:900;letter-spacing:.12em}.master-hero h1{font-size:clamp(36px,4vw,60px);line-height:.9;margin:6px 0;color:#fff}.master-hero p{font-size:20px;margin:10px 0 0;color:#f8f1e3}.hero-count{min-width:190px;text-align:center;border-left:1px solid rgba(255,255,255,.3);padding-left:20px}.hero-count strong{display:block;font-size:58px;line-height:1}.hero-count span{font-size:17px;font-weight:900}
-.master-grid{display:grid;grid-template-columns:1fr 1.7fr 1fr;gap:14px;min-height:0}.master-panel{background:var(--paper);border:2px solid var(--line);border-radius:16px;padding:17px;min-height:0;overflow:hidden;box-shadow:var(--shadow)}.master-panel h2{font-size:24px;margin:0 0 12px}.master-panel h3{font-size:18px;margin:0 0 6px}.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.big-stat{background:#fff;border:2px solid var(--line);border-radius:12px;padding:12px}.big-stat strong{font-size:38px;display:block;line-height:1}.big-stat span{font-size:17px;font-weight:850}.stage-list{display:grid;gap:8px}.stage-card{border:2px solid var(--line);border-radius:12px;padding:10px 11px;background:#fff;display:grid;grid-template-columns:50px 1fr auto;align-items:center;gap:10px}.stage-card .stage-no{font-size:24px;font-weight:1000;text-align:center}.stage-card b{font-size:18px}.stage-card .clue-mini{font-size:16px;color:var(--muted);font-weight:750;margin-top:2px}.stage-card .stage-progress{font-size:19px;font-weight:1000}.master-actions{display:grid;gap:9px}.master-actions .btn{width:100%;font-size:20px}.chapter-mini{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-height:260px;overflow:auto}.chapter-mini .chapter{background:#fff;border:2px solid var(--line);border-radius:11px;padding:9px;font-size:17px}.chapter b{display:block;font-size:18px}.master-footer{display:flex;gap:10px;align-items:center;justify-content:space-between;background:#fff4dd;border:2px solid var(--gold);border-radius:14px;padding:10px 14px;font-size:17px}.master-footer b{font-size:19px}
-.clues-screen{max-width:1400px}.clue-toolbar{display:flex;align-items:end;justify-content:space-between;gap:14px;margin-bottom:12px}.clue-toolbar h1{font-size:40px;margin:0}.clue-toolbar .sub{font-size:18px;margin:0}.category-tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:9px}.category-tabs .btn{font-size:18px;white-space:nowrap}.category-tabs .btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}.clue-progressbar{height:13px;background:#e6dcc7;border:2px solid var(--line);border-radius:99px;overflow:hidden;margin:0 0 12px}.clue-progressbar i{display:block;height:100%;background:#e51b78}.clue-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.clue-card{background:var(--paper);border:2px solid var(--line);border-radius:15px;padding:13px;display:grid;grid-template-columns:52px 1fr auto;gap:11px;align-items:center;min-height:122px;box-shadow:0 4px 0 rgba(23,32,43,.07)}.clue-card.done{border-color:#6fae8d;background:#eef8f0}.clue-num{width:48px;height:48px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:23px;font-weight:1000;border:3px solid var(--gold)}.clue-card.done .clue-num{background:#2d8a5b;border-color:#bde1c9}.clue-title-big{font-size:22px;font-weight:950;line-height:1.12}.clue-cat{font-size:15px;font-weight:900;color:#6c5a42;margin-top:4px;text-transform:uppercase;letter-spacing:.05em}.clue-status{font-size:16px;font-weight:950;color:#2d8a5b;margin-top:5px}.clue-card .actions{justify-content:flex-end;flex-wrap:wrap}.clue-card .btn{font-size:17px;padding:9px 12px}.clue-modal h2{font-size:34px;line-height:1.05;margin:8px 0 12px}.modal-subtitle{font-size:20px;font-weight:900;background:#fff3d9;border:2px solid var(--gold);border-radius:13px;padding:12px;margin:12px 0}.negative-prompt{font-size:22px;font-weight:950;line-height:1.25;background:#e9f5f4;border:3px solid var(--teal);padding:14px;border-radius:14px}.tool-strip{display:flex;flex-wrap:wrap;gap:9px;margin:12px 0}.tool-pill{background:#fff;border:2px solid var(--line);border-radius:11px;padding:10px 13px;font-size:18px;font-weight:900}.tool-pill .swatch{display:inline-block;width:18px;height:18px;border-radius:50%;vertical-align:-3px;margin-right:7px;border:2px solid rgba(0,0,0,.2)}.page-choice-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}.page-choice{min-height:58px;font-size:22px!important;font-weight:1000;border:2px solid var(--line)!important;background:#fff!important;color:var(--ink)!important;border-radius:12px!important}.page-choice.selected{background:#dff3f1!important;border-color:var(--teal)!important;box-shadow:inset 0 0 0 3px var(--teal)}.range-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.range-grid .btn{font-size:20px}.saved-inputs{margin-top:14px;background:#f7f0e3;border:2px solid var(--line);border-radius:13px;padding:12px}.saved-inputs h3{font-size:20px;margin:0 0 8px}.saved-row{display:flex;justify-content:space-between;gap:10px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-top:7px;font-size:18px}.saved-row .btn{padding:7px 10px;font-size:16px}.archive-screen{max-width:1100px}.archive-header{display:flex;align-items:end;justify-content:space-between;gap:15px;margin-bottom:14px}.archive-header h1{font-size:40px;margin:0}.archive-list{display:grid;gap:9px}.history-card{background:var(--paper);border:2px solid var(--line);border-radius:13px;padding:12px 14px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}.history-card.undone{opacity:.58}.history-meta{font-size:15px;color:var(--muted);font-weight:800}.history-label{font-size:20px;font-weight:950}.history-data{font-size:17px;margin-top:3px}.history-actions{display:flex;gap:7px}.history-actions .btn{font-size:16px;padding:8px 10px}
-@media(max-width:1000px){.master-onepage{height:auto;min-height:0;overflow:visible}.master-grid{grid-template-columns:1fr 1fr}.master-grid .master-panel:nth-child(2){grid-column:span 2}.clue-grid{grid-template-columns:1fr}.page-choice-grid{grid-template-columns:repeat(4,1fr)}}@media(max-width:700px){main{padding:12px!important}.master-grid{grid-template-columns:1fr}.master-grid .master-panel:nth-child(2){grid-column:auto}.master-hero{display:block}.hero-count{border-left:0;border-top:1px solid rgba(255,255,255,.3);padding:10px 0 0;margin-top:10px}.page-choice-grid{grid-template-columns:repeat(3,1fr)}.range-grid{grid-template-columns:repeat(2,1fr)}}
+<style>
+:root{
+  --pink:#c0488f;
+  --pink-dark:#a93678;
+  --cream:#eadbbc;
+  --paper:#f7e0be;
+  --blue:#7987b6;
+  --yellow:#f2df00;
+  --ink:#191a15;
+  --muted:#5c554b;
+  --line:#c9b58e;
+  --green:#4e956a;
+  --green-soft:#e8f2e9;
+  --white:#fffaf0;
+  --shadow:7px 8px 0 rgba(25,26,21,.16),0 14px 24px rgba(25,26,21,.12)
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--pink);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;font-size:18px}
+body{overflow-x:hidden}
+button,input,select{font:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+#app{min-height:100dvh}
+.top{position:sticky;top:0;z-index:30;background:var(--cream);border-bottom:4px solid var(--ink);box-shadow:0 4px 0 rgba(25,26,21,.14)}
+.bar{max-width:1180px;margin:auto;padding:9px 16px 7px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.mark{width:43px;height:43px;display:grid;place-items:center;background:var(--ink);color:var(--pink);font-weight:1000;font-size:17px;transform:rotate(-2deg);box-shadow:4px 4px 0 var(--yellow);flex:0 0 auto}
+.brand b{font-size:19px;line-height:1;display:block;letter-spacing:-.03em}
+.brand small{font-size:12px;font-weight:850;color:var(--muted);display:block;margin-top:3px}
+.solver-chip{background:var(--blue);color:#fff;padding:7px 11px;border:2px solid var(--ink);font-weight:950;white-space:nowrap;transform:rotate(.8deg)}
+nav{max-width:1180px;margin:auto;padding:0 12px 8px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav button{border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:4px;padding:7px 11px;white-space:nowrap;font-weight:950;font-size:16px}
+nav button.on{background:var(--pink);color:#fff;border-color:var(--ink)}
+main{max-width:1180px;margin:auto;padding:18px 16px 34px}
+h1,h2,h3{font-weight:1000;letter-spacing:-.045em}
+h1{font-size:48px;line-height:.92;margin:0 0 10px}
+h2{font-size:31px;margin:8px 0 12px}
+h3{font-size:21px;margin:10px 0 7px}
+.sub{color:var(--muted);font-size:17px;line-height:1.4;margin:0 0 18px}
+.card{background:var(--paper);border:3px solid var(--ink);padding:18px;box-shadow:var(--shadow)}
+.btn{border:2px solid var(--ink);background:var(--white);color:var(--ink);border-radius:4px;padding:10px 13px;font-weight:950;box-shadow:3px 3px 0 rgba(25,26,21,.16);min-height:46px}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(25,26,21,.16)}
+.btn.primary{background:var(--pink);color:#fff}
+.btn.accent{background:var(--blue);color:#fff}
+.btn.danger{background:#f5d4df;color:#7d234b}
+.btn.green{background:var(--green);color:#fff}
+.btn.small{min-height:38px;padding:7px 10px;font-size:14px}
+.actions{display:flex;flex-wrap:wrap;gap:9px}
+.field{margin:13px 0}
+.field label{display:block;font-weight:950;font-size:15px}
+.field input,.field select{width:100%;margin-top:6px;border:2px solid var(--ink);background:#fffdf7;border-radius:3px;padding:11px 12px;outline:none}
+.field input:focus,.field select:focus{border-color:var(--pink);box-shadow:0 0 0 3px rgba(192,72,143,.18)}
+.empty{text-align:center;color:var(--muted);padding:22px}
+.line{height:3px;background:var(--ink);margin:18px 0}
+.tape{position:relative}
+.tape:before{content:"";position:absolute;left:22%;top:-9px;width:110px;height:20px;background:rgba(242,223,0,.82);transform:rotate(-2deg);z-index:2}
+.overlay{position:fixed;inset:0;z-index:100;background:rgba(25,26,21,.66);display:none;align-items:center;justify-content:center;padding:12px}
+.overlay.open{display:flex}
+.modal{position:relative;width:min(820px,100%);max-height:94dvh;overflow:auto;background:var(--paper);border:3px solid var(--ink);padding:22px 20px 25px;box-shadow:12px 13px 0 rgba(0,0,0,.25);-webkit-overflow-scrolling:touch}
+.close{position:absolute;right:9px;top:9px;width:44px;height:40px;border:2px solid var(--ink);background:var(--yellow);color:var(--ink);font-size:25px;font-weight:1000;line-height:1;border-radius:3px;z-index:4}
+.badge{display:inline-block;background:var(--blue);color:#fff;border:2px solid var(--ink);padding:5px 9px;font-size:13px;font-weight:1000;letter-spacing:.06em}
+.modal-title{font-size:34px;line-height:1.03;margin:10px 42px 12px 0}
+.prompt{font-size:19px;font-weight:900;line-height:1.32;background:#f8e8ca;border:2px solid var(--line);padding:12px 13px;margin:12px 0}
+.negative-prompt{font-size:20px;font-weight:950;line-height:1.3;background:#f5d7e4;border:3px solid var(--pink);padding:13px;border-radius:3px;margin:12px 0}
+.reference-box{background:#fff0a8;border:2px solid var(--ink);padding:12px;margin:12px 0;position:relative}
+.reference-box:after{content:"REFERENCE";position:absolute;right:8px;top:-10px;background:var(--pink);color:#fff;padding:3px 7px;font-size:10px;font-weight:1000;transform:rotate(2deg)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{background:#fffdf7;border:2px solid var(--ink);padding:5px 8px;font-size:14px;font-weight:900}
+.tool-strip{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}
+.tool-pill{background:#fffdf7;border:2px solid var(--ink);padding:8px 10px;font-size:15px;font-weight:950}
+.swatch{display:inline-block;width:17px;height:17px;border:2px solid var(--ink);vertical-align:-3px;margin-right:6px}
+.master{min-height:calc(100dvh - 110px);display:grid;grid-template-rows:auto 1fr;gap:12px}
+.master-head{background:var(--cream);border:3px solid var(--ink);box-shadow:var(--shadow);padding:17px 20px;display:flex;align-items:center;justify-content:space-between;gap:18px;position:relative;overflow:hidden}
+.master-head:after{content:"";position:absolute;right:-30px;bottom:-65px;width:180px;height:180px;border-radius:50%;background:var(--blue);opacity:.95}
+.master-kicker{font-size:13px;font-weight:1000;letter-spacing:.13em;color:var(--pink-dark)}
+.master-head h1{font-size:clamp(38px,5vw,60px);margin:4px 0 0;position:relative;z-index:1}
+.master-head p{margin:7px 0 0;font-size:18px;font-weight:800;position:relative;z-index:1}
+.master-name{background:var(--yellow);border:2px solid var(--ink);padding:8px 12px;font-size:16px;font-weight:1000;transform:rotate(2deg);position:relative;z-index:2;white-space:nowrap}
+.master-board{background:var(--paper);border:3px solid var(--ink);box-shadow:var(--shadow);padding:16px 18px;display:grid;grid-template-rows:auto auto 1fr auto;gap:12px;min-height:0}
+.master-status{display:grid;grid-template-columns:1.3fr .7fr .7fr;gap:10px;align-items:stretch}
+.master-main-stat{background:var(--cream);border:2px solid var(--ink);padding:12px 14px}
+.master-main-stat strong{font-size:48px;line-height:1;display:block}
+.master-main-stat span{font-size:15px;font-weight:950}
+.master-stat{background:#fffdf7;border:2px solid var(--line);padding:11px 12px}
+.master-stat strong{font-size:34px;line-height:1;display:block}
+.master-stat span{font-size:14px;font-weight:900;color:var(--muted)}
+.master-progress{height:18px;border:2px solid var(--ink);background:#e3d4b5;display:flex;overflow:hidden}
+.master-progress i{height:100%;background:var(--pink);display:block}
+.master-progress-label{display:flex;justify-content:space-between;align-items:center;font-size:16px;font-weight:1000;margin-top:5px}
+.clue-dots{display:grid;grid-template-columns:repeat(9,1fr);gap:8px;align-content:center}
+.clue-dot{height:45px;background:#fffdf7;border:2px solid var(--ink);display:grid;place-items:center;font-weight:1000;font-size:17px}
+.clue-dot.done{background:#cde3d2;color:#245c39;border-color:var(--green)}
+.master-bottom{display:flex;justify-content:space-between;align-items:center;gap:10px;border-top:3px solid var(--ink);padding-top:11px}
+.master-bottom .note{font-size:15px;font-weight:850;color:var(--muted)}
+.master-bottom .actions{justify-content:flex-end}
+.setup-wrap{max-width:800px;margin:auto}
+.setup-paper{background:var(--cream);border:3px solid var(--ink);box-shadow:var(--shadow);padding:25px}
+.setup-title{text-align:center}
+.setup-title .mark{margin:0 auto 16px}
+.setup-title h1{font-size:54px}
+.chapter-list{display:grid;gap:7px;margin-top:10px}
+.finding-row{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#fffdf7;border:2px solid var(--line);padding:9px 10px}
+.clue-toolbar{display:flex;align-items:end;justify-content:space-between;gap:14px;margin-bottom:10px}
+.clue-toolbar h1{font-size:42px;margin:0}
+.clue-toolbar .sub{margin:4px 0 0}
+.toolbar-group{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.toolbar-group .btn{font-size:15px}
+.toolbar-group .active{background:var(--blue);color:#fff}
+.category-tabs{display:flex;gap:7px;overflow-x:auto;padding-bottom:9px;scrollbar-width:none}
+.category-tabs::-webkit-scrollbar{display:none}
+.category-tabs .btn{white-space:nowrap;font-size:15px}
+.category-tabs .active{background:var(--pink);color:#fff}
+.progress-line{height:12px;background:#dfcfad;border:2px solid var(--ink);margin-bottom:11px}
+.progress-line i{display:block;height:100%;background:var(--pink)}
+.clue-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.clue-card{background:var(--cream);border:3px solid var(--ink);padding:12px 13px;display:grid;grid-template-columns:50px 1fr auto;gap:10px;align-items:center;box-shadow:4px 5px 0 rgba(25,26,21,.13)}
+.clue-card.done{background:var(--green-soft);border-color:var(--green);box-shadow:4px 5px 0 rgba(78,149,106,.16)}
+.clue-card.done .clue-title-big{color:#58705f}
+.clue-num{width:46px;height:46px;background:var(--ink);color:#fff;border:2px solid var(--ink);display:grid;place-items:center;font-size:21px;font-weight:1000}
+.clue-card.done .clue-num{background:var(--green);border-color:var(--green)}
+.clue-title-big{font-size:19px;font-weight:1000;line-height:1.13}
+.clue-cat{font-size:12px;color:var(--muted);font-weight:900;text-transform:uppercase;letter-spacing:.05em;margin-top:5px}
+.clue-status{font-size:13px;color:var(--green);font-weight:1000;margin-top:4px}
+.clue-card .actions{justify-content:flex-end}
+.clue-card .btn{font-size:14px;padding:8px 9px;min-height:40px}
+.page-choice-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}
+.page-choice{min-height:52px!important;font-size:20px!important;font-weight:1000!important;background:#fffdf7!important}
+.page-choice.selected{background:#d8e8dc!important;border-color:var(--green)!important;box-shadow:inset 0 0 0 3px var(--green)}
+.range-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.range-grid .btn{font-size:16px}
+.saved-inputs{background:#f6ead4;border:2px solid var(--line);padding:11px;margin-top:11px}
+.saved-inputs h3{font-size:17px;margin:0 0 7px}
+.saved-row{display:flex;justify-content:space-between;align-items:center;gap:9px;background:#fffdf7;border:1px solid var(--line);padding:8px;margin-top:6px;font-size:15px}
+.saved-row .btn{min-height:35px;padding:6px 9px;font-size:13px}
+.suspect-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.suspect-card{background:var(--paper);border:3px solid var(--ink);padding:16px;box-shadow:var(--shadow)}
+.name-result{background:#fffdf7;border:2px solid var(--ink);padding:12px;margin-top:8px}
+.eliminated-name{display:flex;justify-content:space-between;align-items:center;gap:10px;border:2px solid var(--pink);background:#f8e5ed;padding:10px;margin-top:7px}
+.potential-name{display:flex;justify-content:space-between;align-items:center;gap:10px;border:2px solid var(--blue);background:#eef0f8;padding:10px;margin-top:7px}
+.verify-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;background:#fffdf7;border:2px solid var(--line);padding:10px;margin-top:7px}
+.verify-row small{display:block;color:var(--muted);font-size:13px;margin-top:3px}
+.verify-result{padding:13px;border:3px solid var(--green);background:var(--green-soft);margin-top:12px}
+.marker-callout{display:flex;align-items:center;gap:9px;background:#fff0a8;border:2px solid var(--ink);padding:9px;font-weight:950}
+.marker-dot{width:24px;height:24px;border:2px solid var(--ink);flex:0 0 auto}
+.archive-header{display:flex;justify-content:space-between;align-items:end;gap:12px;margin-bottom:10px}
+.archive-header h1{font-size:42px;margin:0}
+.archive-filters{display:grid;grid-template-columns:1fr 180px auto;gap:8px;background:var(--cream);border:3px solid var(--ink);padding:11px;margin-bottom:11px}
+.archive-filters select,.archive-filters input{border:2px solid var(--ink);background:#fffdf7;padding:9px;border-radius:3px;font-weight:850}
+.history-card{background:var(--paper);border:2px solid var(--ink);padding:10px 12px;display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:7px}
+.history-card.undone{opacity:.52}
+.history-meta{font-size:12px;color:var(--muted);font-weight:900}
+.history-label{font-size:17px;font-weight:1000;margin-top:2px}
+.history-data{font-size:14px;margin-top:3px}
+.history-actions{display:flex;gap:6px;align-items:center}
+.history-actions .btn{font-size:13px;min-height:36px;padding:6px 9px}
+.case-closed{background:var(--cream);border:4px solid var(--ink);box-shadow:12px 12px 0 var(--pink);padding:28px;text-align:center}
+.case-closed h2{font-size:54px;margin:5px 0 15px}
+.celebrate{font-size:64px;letter-spacing:.08em;color:var(--pink);font-weight:1000;line-height:1}
+@media(max-width:900px){
+  .master{min-height:0}
+  .master-status{grid-template-columns:1fr 1fr 1fr}
+  .clue-grid{grid-template-columns:1fr}
+  .suspect-grid{grid-template-columns:1fr}
+}
+@media(max-width:700px){
+  html,body{font-size:17px}
+  main{padding:12px 10px 28px}
+  .bar{padding:8px 10px 6px}
+  .brand b{font-size:16px}
+  .brand small{font-size:10px}
+  .solver-chip{font-size:12px;padding:6px 8px}
+  nav{padding:0 8px 7px}
+  nav button{font-size:14px;padding:7px 9px}
+  .master-head{display:block;padding:14px}
+  .master-head h1{font-size:40px}
+  .master-name{display:inline-block;margin-top:8px}
+  .master-head:after{display:none}
+  .master-status{grid-template-columns:1fr 1fr}
+  .master-main-stat{grid-column:span 2}
+  .clue-dots{grid-template-columns:repeat(6,1fr)}
+  .master-bottom{display:block}
+  .master-bottom .actions{margin-top:9px;justify-content:flex-start}
+  .clue-card{grid-template-columns:45px 1fr}
+  .clue-card .actions{grid-column:1 / -1;justify-content:stretch}
+  .clue-card .actions .btn{flex:1}
+  .archive-filters{grid-template-columns:1fr}
+  .history-card{grid-template-columns:1fr}
+  .history-actions{justify-content:flex-start}
+  .page-choice-grid{grid-template-columns:repeat(3,1fr)}
+  .range-grid{grid-template-columns:repeat(2,1fr)}
+  .modal{padding:19px 14px 22px}
+  .modal-title{font-size:29px}
+}
 </style>
 </head>
 <body>
@@ -37,9 +206,33 @@ nav{max-width:1400px;padding:0 18px 10px;gap:8px}nav button{font-size:18px;paddi
 <div id="overlay" class="overlay"><div id="modal" class="modal"></div></div>
 <script>
 const KEY="tkia_pwa_v1";
-const blank=()=>({setup:{first:null,last:null,chapters:{}},clues:{},findings:[],eliminatedNames:[],final:null,potentialKiller:null,history:[]});
-const CLUE_META={1:{stage:1,cat:"Wide elimination",tool:"Pen 68 · 31 · Ultramarine"},2:{stage:1,cat:"Wide elimination",tool:"Pen 68 · 16 · Light emerald"},3:{stage:1,cat:"Wide elimination",tool:"Pen 68 · 24 · Yellow"},5:{stage:1,cat:"Wide elimination",tool:"Pen 68 · 40 · Red"},7:{stage:1,cat:"Wide elimination",tool:"Pen 68 · 59 · Light lilac"},8:{stage:1,cat:"Wide elimination",tool:"Pen 68 · 26 · Apricot"},6:{stage:2,cat:"Chapters & page ranges",tool:"Point 88 · 41 · Blue + Page marker · Blue"},15:{stage:2,cat:"Chapters & page ranges",tool:"Tracking only · optional Pen 68 · 13 · Light green"},17:{stage:2,cat:"Chapters & page ranges",tool:"Point 88 · 55 · Violet"},12:{stage:2,cat:"Chapters & page ranges",tool:"Point 88 · 54 · Orange + Page marker · Orange"},16:{stage:2,cat:"Chapters & page ranges",tool:"Point 88 · 44 · Yellow"},14:{stage:2,cat:"Chapters & page ranges",tool:"Point 88 · 40 · Red"},4:{stage:3,cat:"Page-level checks",tool:"Point 88 · 56 · Pink + Page marker · Pink"},11:{stage:3,cat:"Page-level checks",tool:"Point 88 · 36 · Green + Page marker · Green"},13:{stage:3,cat:"Page-level checks",tool:"Point 88 · 46 · Black"},9:{stage:3,cat:"Page-level checks",tool:"Point 88 · 43 · Light green"},10:{stage:4,cat:"Final checks",tool:"No marking · Check only"},18:{stage:4,cat:"Final checks",tool:"No marking · Solve at the end"}};const ELIMINATED_NAME_COLOR="#00a6a6";
-let db=JSON.parse(localStorage.getItem(KEY)||"null")||blank();db.history=db.history||[];db.potentialKiller=db.potentialKiller||null;
+const SOLUTION_ORDER=[1,2,3,5,7,8,6,15,17,12,16,14,4,11,13,9,10,18];
+const CLUE_META={
+1:{stage:1,cat:"Wide elimination",tool:"PEN 68 · 31 · Ultramarine",color:"#2f78d6"},
+2:{stage:1,cat:"Wide elimination",tool:"PEN 68 · 16 · Light emerald",color:"#43c8a3"},
+3:{stage:1,cat:"Wide elimination",tool:"PEN 68 · 24 · Yellow",color:"#f4dc00"},
+5:{stage:1,cat:"Wide elimination",tool:"PEN 68 · 40 · Red",color:"#e33d42"},
+7:{stage:1,cat:"Wide elimination",tool:"PEN 68 · 59 · Light lilac",color:"#9a68d4"},
+8:{stage:1,cat:"Wide elimination",tool:"PEN 68 · 26 · Apricot",color:"#eea16e"},
+6:{stage:2,cat:"Chapters & page ranges",tool:"POINT 88 · 41 · Blue + Page marker · Blue",color:"#238dd3"},
+15:{stage:2,cat:"Chapters & page ranges",tool:"TRACKING ONLY · optional PEN 68 · 13 · Light green",color:"#43c8a3"},
+17:{stage:2,cat:"Chapters & page ranges",tool:"POINT 88 · 55 · Violet",color:"#8b58cf"},
+12:{stage:2,cat:"Chapters & page ranges",tool:"POINT 88 · 54 · Orange + Page marker · Orange",color:"#f06d31"},
+16:{stage:2,cat:"Chapters & page ranges",tool:"POINT 88 · 44 · Yellow",color:"#f4dc00"},
+14:{stage:2,cat:"Chapters & page ranges",tool:"POINT 88 · 40 · Red",color:"#e33d42"},
+4:{stage:3,cat:"Page-level checks",tool:"POINT 88 · 56 · Pink + Page marker · Pink",color:"#e85ca8"},
+11:{stage:3,cat:"Page-level checks",tool:"POINT 88 · 36 · Green + Page marker · Green",color:"#39b875"},
+13:{stage:3,cat:"Page-level checks",tool:"POINT 88 · 46 · Black",color:"#252a30"},
+9:{stage:3,cat:"Page-level checks",tool:"POINT 88 · 43 · Light green",color:"#5fcf8b"},
+10:{stage:4,cat:"Final checks",tool:"NO MARKING · Check only",color:"#d8d2c7"},
+18:{stage:4,cat:"Final checks",tool:"NO MARKING · Solve at the end",color:"#d8d2c7"}
+};
+const REFS={
+vowels:["A","E","I","O","U"],
+kardashians:["Kris","Kourtney","Kim","Khloé","Rob","Kendall","Kylie"],
+presidents:["George","Thomas","John","James","Andrew","Martin","William","Zachary","Millard","Franklin","Abraham","Ulysses","Rutherford","Benjamin","Grover","Theodore","Woodrow","Warren","Calvin","Herbert","Harry","Dwight","Lyndon","Richard","Gerald","Jimmy","Ronald","Bill","Barack","Donald","Joe"],
+beatles:["John","Paul","George","Ringo"]
+};
 const clues=[
 [1,"The killer’s name is longer than three letters.","complete"],
 [2,"The killer’s name does not start with an S.","complete"],
@@ -52,111 +245,354 @@ const clues=[
 [9,"There is a three-letter name no more than ten names away from the killer.","eliminate"],
 [10,"The first name in the main body of the killer’s page shares a letter with the killer.","eliminate"],
 [11,"The killer’s page contains fewer than three names starting with M.","eliminate"],
-[12,"There is a Kardashian within four pages of the killer.","source"],
+[12,"There is a Kardashian within four pages of the killer.","eliminate"],
 [13,"The killer is not on a page with an even number of names.","eliminate"],
 [14,"The page opposite the killer’s page contains a President first name.","eliminate"],
 [15,"The killer appears in a chapter with a city in its title.","chapter"],
-[16,"The killer’s page is no more than one page away from a Sasha.","source"],
+[16,"The killer’s page is no more than one page away from a Sasha.","eliminate"],
 [17,"The chapter containing the killer also contains all four Beatles.","chapter"],
-[18,"The killer isn’t Alice.","final"]
+[18,"The killer is","final"]
 ];
+const blank=()=>({setup:{first:null,last:null,solver:"",chapters:{}},clues:{},findings:[],eliminatedNames:[],potentialKillers:[],final:null,history:[]});
+let db=JSON.parse(localStorage.getItem(KEY)||"null")||blank();
+function migrate(){
+  db.setup=db.setup||{first:null,last:null,solver:"",chapters:{}};
+  db.setup.chapters=db.setup.chapters||{};
+  db.findings=db.findings||[];
+  db.eliminatedNames=db.eliminatedNames||[];
+  db.history=db.history||[];
+  db.potentialKillers=db.potentialKillers||[];
+  if(db.potentialKiller&&!db.potentialKillers.length)db.potentialKillers=[db.potentialKiller];
+  delete db.potentialKiller;
+  db.final=db.final||null;
+}
+migrate();
 const $=id=>document.getElementById(id);
 function save(){localStorage.setItem(KEY,JSON.stringify(db))}
 function esc(x){return String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
-function pages(){if(!db.setup.first||!db.setup.last)return[];let a=Math.min(db.setup.first,db.setup.last),b=Math.max(db.setup.first,db.setup.last);return Array.from({length:b-a+1},(_,i)=>a+i)}
-function status(p){let f=db.findings.filter(x=>x.page===p&&x.type==="elim");if(f.some(x=>x.clue===0))return"elim";if(f.length)return"elim";return db.setup.first?"work":"work"}
-function render(route){if(!db.setup.first||!db.setup.last){route="setup"};document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.r===route));let a=$("app");a.innerHTML=header(route)+`<main>${route==="setup"?setup():route==="master"?master():route==="clues"?clueList():route==="inspector"?inspector():route==="suspect"?suspect():route==="archive"?archive():route==="refs"?refs():master()}</main>`;wire()}
-function header(route){return '<div class="top"><div class="bar"><div class="brand"><div class="mark">A?</div><div><b>The Killer Isn’t Alice</b><small>Case Board · iPad</small></div></div></div><nav>'+[["master","Master"],["clues","Clues"],["archive","Archive"],["suspect","Suspect"],["refs","References"],["setup","Setup"]].map(x=>'<button type="button" data-r="'+x[0]+'" class="'+(route===x[0]?"on":"")+'" onclick="location.hash=\''+x[0]+'\';render(\''+x[0]+'\')">'+x[1]+'</button>').join("")+'</nav></div>'}
-function wire(){
-document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{location.hash=b.dataset.r;render(b.dataset.r)});
-document.querySelectorAll("[data-page]").forEach(b=>b.onclick=()=>inspect(+b.dataset.page));
-document.querySelectorAll("[data-open-clue]").forEach(b=>b.onclick=()=>openClue(+b.dataset.openClue));
-document.querySelectorAll("[data-complete-clue]").forEach(b=>b.onclick=()=>complete(+b.dataset.completeClue));
+function snapshot(v){return JSON.parse(JSON.stringify(v))}
+function recordHistory(clue,label,key,before,after){
+  db.history.unshift({id:Date.now()+"_"+Math.random().toString(36).slice(2),clue:clue,label:label,key:key,before:snapshot(before),after:snapshot(after),createdAt:new Date().toISOString(),undone:false});
+  db.history=db.history.slice(0,150);
 }
-document.addEventListener("click",e=>{
- const clue=e.target.closest("[data-open-clue]"); if(clue){e.preventDefault();openClue(Number(clue.dataset.openClue));return}
- const done=e.target.closest("[data-complete-clue]"); if(done){e.preventDefault();complete(Number(done.dataset.completeClue));return}
- const nav=e.target.closest("nav button[data-r]"); if(nav){e.preventDefault();location.hash=nav.dataset.r;render(nav.dataset.r);return}
- if(e.target.id==="overlay")closeModal();
-});
-document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
-function master(){var ps=pages(),elim=ps.filter(function(p){return status(p)==="elim"}).length,work=ps.length-elim,done=Object.keys(db.clues).filter(function(k){return db.clues[k].done}).length;var ids=[1,2,3,5,7,8,6,15,17,12,16,14,4,11,13,9,10,18],stages=[1,2,3,4].map(function(st){var a=ids.filter(function(n){return CLUE_META[n].stage===st}),d=a.filter(function(n){return db.clues[n]&&db.clues[n].done}).length;return {st:st,d:d,total:a.length,labels:a.map(function(n){return "#"+n}).join(" · ")}}),chapters=Object.entries(db.setup.chapters).sort(function(a,b){return +a[0]-+b[0]});return '<div class="master-onepage"><section class="master-hero"><div><div class="eyebrow">CASE BOARD · ALICE STARLING</div><h1>THE KILLER<br>ISN’T ALICE.</h1><p>'+work+' candidate pages remain · '+elim+' pages eliminated · '+done+'/18 clues completed</p></div><div class="hero-count"><strong>'+work+'</strong><span>CANDIDATE PAGES</span></div></section><div class="master-grid"><section class="master-panel"><h2>CASE AT A GLANCE</h2><div class="stat-row"><div class="big-stat"><strong>'+work+'</strong><span>Pages in play</span></div><div class="big-stat"><strong>'+elim+'</strong><span>Pages eliminated</span></div><div class="big-stat"><strong>'+done+'</strong><span>Clues done</span></div><div class="big-stat"><strong>'+db.history.filter(function(x){return !x.undone}).length+'</strong><span>Recorded inputs</span></div></div><div style="margin-top:13px"><div class="clue-progressbar"><i style="width:'+(done/18*100)+'%"></i></div><div style="font-size:18px;font-weight:900">'+done+' of 18 clues completed</div></div></section><section class="master-panel"><h2>CLUE STAGES</h2><div class="stage-list">'+stages.map(function(x){return '<div class="stage-card"><div class="stage-no">S'+x.st+'</div><div><b>'+["Wide elimination","Chapters & page ranges","Page-level checks","Final checks"][x.st-1]+'</b><div class="clue-mini">'+x.labels+'</div></div><div class="stage-progress">'+x.d+'/'+x.total+'</div></div>'}).join("")+'</div></section><section class="master-panel"><h2>QUICK ACTIONS</h2><div class="master-actions"><button class="btn primary" onclick="location.hash=\'clues\';render(\'clues\')">Open clues</button><button class="btn" onclick="location.hash=\'archive\';render(\'archive\')">Open input archive</button><button class="btn" onclick="location.hash=\'suspect\';render(\'suspect\')">Suspect verification</button><button class="btn" onclick="location.hash=\'refs\';render(\'refs\')">Reference lists</button></div><div style="margin-top:14px"><h3>CHAPTERS ENTERED</h3><div class="chapter-mini">'+(chapters.length?chapters.map(function(x){return '<div class="chapter"><b>Ch. '+x[0]+'</b>'+esc(x[1].title||"")+'</div>'}).join(""):'<div class="chapter">No chapters entered yet.</div>')+'</div></div></section></div><div class="master-footer"><div><b>Potential killer:</b> '+(db.potentialKiller?esc(db.potentialKiller.name)+" · p."+db.potentialKiller.page:"Not set yet")+' <span style="margin-left:10px">Final decision is made only in Clue 18.</span></div><button class="btn accent" onclick="location.hash=\'clues\';render(\'clues\');setTimeout(function(){openClue(18)},50)">Go to Clue 18</button></div></div>'}
-function setup(){return `<div class="setupHero"><div class="mark">A?</div><h1>Set up your case</h1><p class="sub">You only do this once. The app saves the case on this device and opens the Master next time.</p></div><div class="setupBox"><div class="card"><div class="field"><label>First page containing names</label><input id="first" type="number" value="${db.setup.first||""}"></div><div class="field"><label>Last page containing names</label><input id="last" type="number" value="${db.setup.last||""}"></div><div class="actions"><button class="btn primary" onclick="saveSetup()">Save & Open Master</button><button class="btn danger" onclick="resetCase()">Start a new case</button></div></div><div class="card" style="margin-top:12px"><h3>Chapters</h3><p class="sub">Add chapter ranges progressively when you need them. Chapter 15 uses the exact city-only wording for your edition.</p><button class="btn" onclick="addChapter()">+ Add chapter</button><div id="chapterRows">${Object.entries(db.setup.chapters).sort((a,b)=>+a[0]-+b[0]).map(([n,c])=>`<div class="finding"><span><b>Chapter ${n}</b> · ${esc(c.title||"")} · pp.${c.start}–${c.end}</span><button class="btn" onclick="delChapter(${n})">Delete</button></div>`).join("")}</div></div></div>`}
-function saveSetup(){db.setup.first=+$("first").value;db.setup.last=+$("last").value;if(!db.setup.first||!db.setup.last)return;save();location.hash="master";render("master")}
-function resetCase(){if(confirm("Start a new case and clear the current book data?")){db=blank();save();location.hash="setup";render("setup")}}
-function addChapter(){open(`<h2>Add chapter</h2><div class="field"><label>Chapter number</label><input id="cn" type="number"></div><div class="field"><label>Chapter title</label><input id="ct"></div><div class="field"><label>Start page</label><input id="cs" type="number"></div><div class="field"><label>End page</label><input id="ce" type="number"></div><div class="actions"><button class="btn primary" onclick="saveChapter()">Save</button></div>`)}
-function saveChapter(){let n=+$("cn").value,s=+$("cs").value,e=+$("ce").value;if(!n||!s||!e)return;db.setup.chapters[n]={title:$("ct").value,start:s,end:e};save();closeModal();render("setup")}
+function pages(){
+  if(!db.setup.first||!db.setup.last)return[];
+  const a=Math.min(+db.setup.first,+db.setup.last),b=Math.max(+db.setup.first,+db.setup.last);
+  return Array.from({length:b-a+1},(_,i)=>a+i);
+}
+function status(p){return db.findings.some(x=>x.page===p&&x.type==="elim")?"elim":"work"}
+function currentRoute(){return location.hash.slice(1)||(!db.setup.first||!db.setup.last?"setup":"master")}
+function go(route){location.hash=route;render(route)}
+function header(route){
+  const name=db.setup.solver?esc(db.setup.solver):"Solver";
+  const items=[["master","Master"],["clues","Clues"],["suspect","Suspect Verification"],["archive","Archive"],["setup","Setup"]];
+  return '<div class="top"><div class="bar"><div class="brand"><div class="mark">A?</div><div><b>The Killer Isn’t Alice</b><small>Case Board</small></div></div><div class="solver-chip">'+name+'</div></div><nav>'+items.map(x=>'<button type="button" class="'+(route===x[0]?"on":"")+'" onclick="go(\''+x[0]+'\')">'+x[1]+'</button>').join("")+'</nav></div>';
+}
+function render(route){
+  if(!db.setup.first||!db.setup.last)route="setup";
+  $("app").innerHTML=header(route)+"<main>"+(route==="setup"?setup():route==="master"?master():route==="clues"?clueList():route==="suspect"?suspect():route==="archive"?archive():master())+"</main>";
+  wire();
+}
+function wire(){}
+function master(){
+  const ps=pages(),elim=ps.filter(p=>status(p)==="elim").length,remain=ps.length-elim;
+  const done=SOLUTION_ORDER.filter(n=>db.clues[n]&&db.clues[n].done).length;
+  const percent=Math.round(done/18*100);
+  return '<div class="master"><section class="master-head tape"><div><div class="master-kicker">CASE BOARD · 46,600 SUSPECT MURDER MYSTERY</div><h1>THE KILLER<br>ISN’T ALICE.</h1><p>Updated Edition · '+done+' of 18 clues completed</p></div><div class="master-name">'+esc(db.setup.solver||"Solver")+'</div></section><section class="master-board"><div class="master-status"><div class="master-main-stat"><strong>'+done+' / 18</strong><span>CLUES COMPLETED</span></div><div class="master-stat"><strong>'+remain+'</strong><span>CANDIDATE PAGES</span></div><div class="master-stat"><strong>'+elim+'</strong><span>PAGES ELIMINATED</span></div></div><div><div class="master-progress"><i style="width:'+percent+'%"></i></div><div class="master-progress-label"><span>CASE PROGRESS</span><span>'+percent+'%</span></div></div><div class="clue-dots">'+SOLUTION_ORDER.map(n=>'<div class="clue-dot '+(db.clues[n]&&db.clues[n].done?"done":"")+'" title="Clue '+n+'">'+n+'</div>').join("")+'</div><div class="master-bottom"><div class="note">Work in solution order. All final decisions are recorded in Clue 18.</div><div class="actions"><button class="btn primary" onclick="go(\'clues\')">Open Clues</button><button class="btn accent" onclick="go(\'suspect\')">Suspect Verification</button></div></div></section></div>';
+}
+function setup(){
+  const chapters=Object.entries(db.setup.chapters).sort((a,b)=>+a[0]-+b[0]);
+  return '<div class="setup-wrap"><section class="setup-paper"><div class="setup-title"><div class="mark">A?</div><h1>SET UP YOUR CASE</h1><p class="sub">Enter the solver and the book range once. The case stays on this device.</p></div><div class="field"><label>Solver name</label><input id="solver" value="'+esc(db.setup.solver||"")+'" placeholder="Your name"></div><div class="field"><label>First page containing names</label><input id="first" type="number" value="'+(db.setup.first||"")+'"></div><div class="field"><label>Last page containing names</label><input id="last" type="number" value="'+(db.setup.last||"")+'"></div><div class="actions"><button class="btn primary" onclick="saveSetup()">Save & Open Master</button><button class="btn danger" onclick="resetCaseStep1()">Start a New Case</button></div><div class="line"></div><h2>CHAPTERS</h2><p class="sub">Add chapter ranges when a clue needs them.</p><button class="btn" onclick="addChapter()">+ Add Chapter</button><div class="chapter-list">'+(chapters.length?chapters.map(([n,c])=>'<div class="finding-row"><span><b>Chapter '+n+'</b> · '+esc(c.title||"")+' · pp. '+c.start+'–'+c.end+'</span><button class="btn small" onclick="delChapter('+n+')">Delete</button></div>').join(""):'<div class="empty">No chapters entered yet.</div>')+'</div></section></div>';
+}
+function saveSetup(){
+  const solver=$("solver").value.trim(),first=+$("first").value,last=+$("last").value;
+  if(!solver||!first||!last){openModal('<button class="close" onclick="closeModal()">×</button><h2 class="modal-title">Missing setup details</h2><p class="sub">Enter a solver name and both page numbers before opening the case.</p><button class="btn primary" onclick="closeModal()">OK</button>');return}
+  db.setup.solver=solver;db.setup.first=first;db.setup.last=last;save();go("master");
+}
+function resetCaseStep1(){
+  openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">NEW CASE</span><h2 class="modal-title">Start a new case?</h2><p class="sub">This will erase the current book range, clues, page findings, suspect lists and archive from this device.</p><div class="actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn danger" onclick="resetCaseStep2()">Continue</button></div>');
+}
+function resetCaseStep2(){
+  openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">FINAL CONFIRMATION</span><h2 class="modal-title">Erase this case?</h2><p class="sub">This second confirmation is required. Nothing can be recovered after you confirm.</p><div class="actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn danger" onclick="resetCaseNow()">Yes, Start New Case</button></div>');
+}
+function resetCaseNow(){db=blank();save();closeModal();go("setup")}
+function addChapter(){
+  openModal('<button class="close" onclick="closeModal()">×</button><h2 class="modal-title">Add Chapter</h2><div class="field"><label>Chapter number</label><input id="cn" type="number"></div><div class="field"><label>Chapter title</label><input id="ct"></div><div class="field"><label>Start page</label><input id="cs" type="number"></div><div class="field"><label>End page</label><input id="ce" type="number"></div><button class="btn primary" onclick="saveChapter()">Save Chapter</button>');
+}
+function saveChapter(){
+  const n=+$("cn").value,s=+$("cs").value,e=+$("ce").value;
+  if(!n||!s||!e)return;
+  db.setup.chapters[n]={title:$("ct").value.trim(),start:s,end:e};save();closeModal();render("setup");
+}
 function delChapter(n){delete db.setup.chapters[n];save();render("setup")}
-function clueList(){var done=Object.keys(db.clues).filter(function(k){return db.clues[k].done}).length,selected=window.clueCategory||0,groups=[{id:0,name:"All clues"},{id:1,name:"Stage 1 · Wide elimination"},{id:2,name:"Stage 2 · Chapters & ranges"},{id:3,name:"Stage 3 · Page-level checks"},{id:4,name:"Stage 4 · Final checks"}],visible=clues.filter(function(x){return !selected||CLUE_META[x[0]].stage===selected});return '<div class="clues-screen"><div class="clue-toolbar"><div><h1>Clues</h1><p class="sub">Readable working cards. Filter by stage.</p></div><div style="font-size:22px;font-weight:1000">'+done+'/18</div></div><div class="clue-progressbar"><i style="width:'+(done/18*100)+'%"></i></div><div class="category-tabs">'+groups.map(function(g){return '<button class="btn '+(selected===g.id?"active":"")+'" onclick="window.clueCategory='+g.id+';render(\'clues\')">'+g.name+'</button>'}).join("")+'</div><div class="clue-grid">'+visible.map(function(x){var m=CLUE_META[x[0]],d=!!(db.clues[x[0]]&&db.clues[x[0]].done);return '<article class="clue-card '+(d?"done":"")+'"><div class="clue-num">'+x[0]+'</div><div><div class="clue-title-big">'+esc(x[1])+'</div><div class="clue-cat">Stage '+m.stage+' · '+m.cat+'</div>'+(d?'<div class="clue-status">✓ COMPLETED</div>':'')+'</div><div class="actions"><button class="btn primary" onclick="openClue('+x[0]+')">Open</button><button class="btn" onclick="toggleComplete('+x[0]+')">'+(d?"Undo":"Mark complete")+'</button><button class="btn" onclick="openArchiveForClue('+x[0]+')">Inputs</button></div></article>'}).join("")+'</div></div>'}
-function complete(n){var before=snapshot(db.clues);db.clues[n]={done:true};var after=snapshot(db.clues);recordHistory(n,"Clue completed","clues",before,after);save();render("clues")}
-function refBox(title,items,note=""){return `<div class="refbox"><b>${title}</b>${note?`<div style="font-size:11px;color:var(--muted);margin-top:3px">${note}</div>`:""}<div class="refnames">${items.map(x=>`<span class="namechip">${esc(x)}</span>`).join("")}</div></div>`}
-function clueClarification(n){const c={
+function clueList(){
+  const done=SOLUTION_ORDER.filter(n=>db.clues[n]&&db.clues[n].done).length;
+  const selected=window.clueCategory||0,sortMode=window.clueSort||"solution";
+  const groups=[{id:0,name:"All Clues"},{id:1,name:"Stage 1"},{id:2,name:"Stage 2"},{id:3,name:"Stage 3"},{id:4,name:"Stage 4"}];
+  let visible=clues.filter(x=>!selected||CLUE_META[x[0]].stage===selected);
+  const order=sortMode==="solution"?SOLUTION_ORDER:clues.map(x=>x[0]);
+  visible.sort((a,b)=>order.indexOf(a[0])-order.indexOf(b[0]));
+  return '<div><div class="clue-toolbar"><div><h1>CLUES</h1><p class="sub">Follow the working order. Mark a clue complete only when you have finished it.</p></div><div class="toolbar-group">'+(selected===0?'<button class="btn '+(sortMode==="solution"?"active":"")+'" onclick="window.clueSort=\'solution\';render(\'clues\')">Solution Order</button><button class="btn '+(sortMode==="number"?"active":"")+'" onclick="window.clueSort=\'number\';render(\'clues\')">Clue Number</button>':"")+'</div></div><div class="progress-line"><i style="width:'+(done/18*100)+'%"></i></div><div class="category-tabs">'+groups.map(g=>'<button class="btn '+(selected===g.id?"active":"")+'" onclick="window.clueCategory='+g.id+';render(\'clues\')">'+g.name+'</button>').join("")+'</div><div class="clue-grid">'+visible.map(x=>clueCard(x)).join("")+'</div></div>';
+}
+function clueCard(x){
+  const n=x[0],m=CLUE_META[n],done=!!(db.clues[n]&&db.clues[n].done);
+  return '<article class="clue-card '+(done?"done":"")+'"><div class="clue-num">'+n+'</div><div><div class="clue-title-big">'+esc(x[1])+'</div><div class="clue-cat">Stage '+m.stage+' · '+m.cat+'</div>'+(done?'<div class="clue-status">✓ COMPLETED</div>':"")+'</div><div class="actions"><button class="btn primary" onclick="openClue('+n+')">Open</button><button class="btn" onclick="toggleComplete('+n+')">'+(done?"Undo Completion":"Mark Complete")+'</button><button class="btn" onclick="openInputs('+n+')">Inputs</button></div></article>';
+}
+function complete(n){
+  const before=snapshot(db.clues);
+  db.clues[n]={done:true};
+  const after=snapshot(db.clues);
+  recordHistory(n,"Clue completed","clues",before,after);save();render("clues");
+}
+function toggleComplete(n){
+  const before=snapshot(db.clues);
+  if(db.clues[n]&&db.clues[n].done)delete db.clues[n];else db.clues[n]={done:true};
+  const after=snapshot(db.clues);
+  recordHistory(n,db.clues[n]?"Clue completed":"Completion undone","clues",before,after);save();render("clues");
+}
+function refBox(title,items,note){
+  return '<div class="reference-box"><b>'+esc(title)+'</b>'+(note?'<div class="sub" style="font-size:13px;margin:4px 0 0">'+esc(note)+'</div>':"")+'<div class="chips">'+items.map(x=>'<span class="chip">'+esc(x)+'</span>').join("")+'</div></div>';
+}
+function clueClarification(n){
+  return {
 1:"Only the name length matters. Three letters or fewer can be crossed out.",
 2:"The initial letter must not be S.",
 3:"Count A, E, I, O and U only. Y does not count. Repeated vowels count separately.",
 4:"A repeated name means the exact same spelling appears at least twice on the same numbered page. Different spellings do not count.",
 5:"Any consecutive repeated letter rules the name out, including repeated vowels.",
-6:"There is one Anna and one Zack. Variants such as Zackary do not count. The killer's page is strictly between their pages.",
-7:"This rules out names that are exactly six letters long. Longer names are not affected.",
-8:"None of X, Y or Z may appear anywhere in the killer's name.",
-9:"Read names in normal left-to-right reading order. The three-letter name can be on the previous or next page if it is within ten names.",
+6:"There is one Anna and one Zack. The killer’s page is strictly between their pages.",
+7:"Names that are exactly six letters long are ruled out.",
+8:"None of X, Y or Z may appear anywhere in the killer’s name.",
+9:"Read names in normal left-to-right order. The three-letter name can be on the previous or next page if it is within ten names.",
 10:"Use the first name in the main body of the page. Ignore the book title and chapter title.",
 11:"Count every M-starting name on the page, including duplicates. The page must contain fewer than three.",
-12:"The killer's page itself counts. Check four pages on either side.",
-13:"Count every name on the numbered page, including duplicates. Do not count the book title or chapter title.",
-14:"Check the physical facing page. In the book layout, page 2 faces 3, page 4 faces 5, etc. The opposite page must contain a qualifying President first name.",
-15:"For this updated edition, the clue is specifically about a city in the chapter title. Small towns, villages and states do not qualify.",
-16:"The Sasha can be on the killer's page itself, or exactly one page before or after.",
-17:"The chapter containing the killer must contain all four Beatles. A name can satisfy more than one clue.",
-18:"This is the final tie-breaker and is relevant when only two suspects remain."
-};return c[n]||"Use the book as the source of truth. This case board records your findings and keeps the investigation organized."}
-function actionForClue(n,mode){if(mode==="eliminate")return"Inspect the relevant pages and record every page that fails this clue.";if(mode==="source")return"Find the required reference and record the page(s) where it appears.";if(mode==="chapter")return"Identify the qualifying chapter(s) and record their chapter numbers.";if(mode==="annaZack")return"Find Anna and Zack, then record both page numbers.";if(mode==="final")return"Use the remaining evidence to enter the final suspect.";return"Check the clue against the book, then mark it complete.";}
-function toolCard(label,detail,color,num){return '<div class="tool"><b><span class="swatch" style="display:inline-block;width:24px;height:24px;background:'+color+';border:2px solid var(--ink);vertical-align:middle;margin-right:7px;border-radius:4px"></span>'+label+'</b><span>'+detail+'<br><strong>#'+num+'</strong></span></div>'}
-function toolInfo(mode,n){var m={1:[["PEN 68","31 · Ultramarine","#2f78d6"]],2:[["PEN 68","16 · Light emerald","#43c8a3"]],3:[["PEN 68","24 · Yellow","#f4dc00"]],4:[["POINT 88","56 · Pink","#e85ca8"],["PAGE MARKER","Pink","#e85ca8"]],5:[["PEN 68","40 · Red","#e33d42"]],6:[["POINT 88","41 · Blue","#238dd3"],["PAGE MARKER","Blue","#238dd3"]],7:[["PEN 68","59 · Light lilac","#9a68d4"]],8:[["PEN 68","26 · Apricot","#eea16e"]],9:[["POINT 88","43 · Light green","#5fcf8b"]],10:[["NO MARKING","Check only (last)","#d8d2c7"]],11:[["POINT 88","36 · Green","#1f9d72"],["PAGE MARKER","Green","#39b875"]],12:[["POINT 88","54 · Orange","#f06d31"],["PAGE MARKER","Orange","#f06d31"]],13:[["POINT 88","46 · Black","#252a30"]],14:[["POINT 88","40 · Red","#e33d42"]],15:[["TRACKING ONLY","Optional: PEN 68 · 13 · Light green","#43c8a3"]],16:[["POINT 88","44 · Yellow","#f4dc00"]],17:[["POINT 88","55 · Violet","#8b58cf"]],18:[["NO MARKING","Solve at the end","#d8d2c7"]]}[n]||[];return '<div class="tool-strip">'+m.map(function(t){return '<div class="tool-pill"><span class="swatch" style="background:'+t[2]+'"></span>'+t[0]+' · '+t[1]+'</div>'}).join("")+'<div class="tool-pill"><span class="swatch" style="background:'+ELIMINATED_NAME_COLOR+'"></span>ELIMINATED NAME MARKER · Teal</div></div>'}
-function openClue(n){var c=clues.find(function(x){return x[0]===n}),meta=CLUE_META[n],done=!!(db.clues[n]&&db.clues[n].done),body="",refs="";
-if([4,9,11,12,13,14,16].includes(n))body=pagePicker(n,"elim");
-else if(n===6)body='<div class="negative-prompt">בחרי את עמוד Anna ואת עמוד Zack שמגדירים את הטווח. כל עמוד שמחוץ לטווח נפסל.</div><h3>ANNA</h3>'+namedPagePicker("anna")+'<h3 style="margin-top:14px">ZACK</h3>'+namedPagePicker("zack")+(db.clues[6]&&db.clues[6].anna&&db.clues[6].zack?'<div class="saved-inputs"><b>Range saved:</b> pp. '+Math.min(db.clues[6].anna,db.clues[6].zack)+'–'+Math.max(db.clues[6].anna,db.clues[6].zack)+'</div>':"");
-else if(n===15||n===17)body='<div class="negative-prompt">'+(n===15?"בחרי את הפרקים שאינם מכילים עיר בכותרת — הם נפסלים.":"בחרי את הפרקים שאינם מכילים את כל ארבעת הביטלס — הם נפסלים.")+'</div><div class="field"><label>Chapter numbers to exclude</label><input id="nums" inputmode="numeric" placeholder="3, 8"></div><button class="btn primary" onclick="addChapters('+n+')">Save excluded chapters</button>'+listFind(n);
-else if(n===18)body=db.potentialKiller?'<div class="negative-prompt">Potential Killer: <b>'+esc(db.potentialKiller.name)+'</b> · page '+db.potentialKiller.page+'. כאן בלבד מתקבלת ההחלטה הסופית.</div><button class="btn accent" onclick="solve()">Confirm final killer</button>':'<div class="negative-prompt">אין עדיין Potential Killer. קודם בצעי Suspect Verification.</div>';
-else body='<button class="btn '+(done?"":"primary")+'" onclick="toggleComplete('+n+')">'+(done?"Undo completion":"Mark clue complete")+'</button>';
-if(n===3)refs=refBox("VOWELS THAT COUNT",REFS.vowels,"Only these five letters count. Y does not.");if(n===6)refs=refBox("NAMES TO FIND",["Anna","Zack"],"Exact spellings only.");if(n===12)refs=refBox("KARDASHIANS",REFS.kardashians,"Exact spellings.");if(n===14)refs=refBox("PRESIDENT FIRST NAMES",REFS.presidents,"Exact first names.");if(n===16)refs=refBox("NAME TO FIND",["Sasha"],"Same page or one page away.");if(n===17)refs=refBox("THE FOUR BEATLES",REFS.beatles,"All four in the same chapter.");if(n===9)refs=refBox("LOOK FOR",["Any 3-letter name"],"Within ten names in reading order.");
-openModal('<div class="clue-modal"><button class="close" onclick="closeModal()">×</button><span class="badge">CLUE '+n+' · STAGE '+meta.stage+'</span><h2>'+esc(c[1])+'</h2><div class="modal-subtitle">'+meta.cat+' · '+meta.tool+'</div><div class="negative-prompt">'+esc(clueClarification(n))+'</div>'+refs+'<h3 style="font-size:22px;margin:18px 0 6px">TOOLS</h3>'+toolInfo(c[2],n)+'<div class="line"></div>'+body+'<div style="margin-top:14px;display:flex;gap:9px;flex-wrap:wrap"><button class="btn" onclick="openArchiveForClue('+n+')">View all inputs for this clue</button>'+(done?'<button class="btn" onclick="toggleComplete('+n+');closeModal()">Undo completion</button>':"")+'</div></div>')}
+12:"The killer’s page itself counts. Check four pages on either side.",
+13:"Count every name on the numbered page, including duplicates. Ignore the book title and chapter title.",
+14:"Check the physical facing page. Page 2 faces 3, page 4 faces 5, and so on.",
+15:"For this updated edition, the clue is specifically about a city in the chapter title.",
+16:"Sasha can be on the killer’s page itself, or exactly one page before or after.",
+17:"The chapter containing the killer must contain all four Beatles.",
+18:"Enter the final killer here. You may choose a saved Potential Killer or type a name."
+}[n]||"Use the book as the source of truth.";
+}
+function negativePagePrompt(n){
+  return {
+4:"Mark the pages that are invalid because they do NOT contain a repeated name.",
+9:"Mark the pages that are invalid because they do NOT have a three-letter name within ten names of the killer.",
+11:"Mark the pages that are invalid because they contain three or more names starting with M.",
+12:"Mark the pages that are invalid because there is no Kardashian on the page or within four pages.",
+13:"Mark the pages that are invalid because the page contains an even number of names.",
+14:"Mark the pages that are invalid because the facing page has no qualifying President first name.",
+16:"Mark the pages that are invalid because there is no Sasha on the page or one page away."
+}[n]||"Mark the pages that fail this clue.";
+}
+function toolInfo(n){
+  const m=CLUE_META[n];
+  if(!m||n===18)return"";
+  return '<div><h3>MARKING</h3><div class="tool-strip"><div class="tool-pill"><span class="swatch" style="background:'+m.color+'"></span>'+esc(m.tool)+'</div></div></div>';
+}
+function openClue(n){
+  const c=clues.find(x=>x[0]===n),m=CLUE_META[n],done=!!(db.clues[n]&&db.clues[n].done);
+  let body="",refs="";
+  if([4,9,11,12,13,14,16].includes(n)){
+    body='<div class="negative-prompt">'+negativePagePrompt(n)+'</div>'+pagePicker(n);
+  }else if(n===6){
+    body='<div class="prompt">Select the Anna page and the Zack page. Every page outside the range will be eliminated automatically.</div><h3>ANNA</h3>'+namedPagePicker("anna")+'<h3>ZACK</h3>'+namedPagePicker("zack")+(db.clues[6]&&db.clues[6].anna&&db.clues[6].zack?'<div class="saved-inputs"><b>Range:</b> pp. '+Math.min(db.clues[6].anna,db.clues[6].zack)+'–'+Math.max(db.clues[6].anna,db.clues[6].zack)+'</div>':"");
+  }else if(n===15||n===17){
+    const chapters=Object.entries(db.setup.chapters).sort((a,b)=>+a[0]-+b[0]);
+    body='<div class="negative-prompt">'+(n===15?"Select the chapters that FAIL because their title does not contain a city.":"Select the chapters that FAIL because they do not contain all four Beatles.")+'</div><div class="chapter-list">'+(chapters.length?chapters.map(([ch,v])=>'<button class="btn '+(hasChapterFinding(n,+ch)?"accent":"")+'" style="text-align:left" onclick="toggleChapter('+n+','+ch+')">Chapter '+ch+' · '+esc(v.title||"")+(hasChapterFinding(n,+ch)?" ✓":"")+'</button>').join(""):'<div class="empty">Add chapter ranges in Setup first.</div>')+'</div>';
+  }else if(n===18){
+    body=finalClueBody();
+  }else{
+    body='<button class="btn '+(done?"":"primary")+'" onclick="toggleComplete('+n+')">'+(done?"Undo Completion":"Mark Clue Complete")+'</button>';
+  }
+  if(n===3)refs=refBox("VOWELS THAT COUNT",REFS.vowels,"Only these five letters count. Y does not.");
+  if(n===6)refs=refBox("NAMES TO FIND",["Anna","Zack"],"Exact spellings only.");
+  if(n===9)refs=refBox("LOOK FOR",["Any 3-letter name"],"The three-letter condition is based on reading order."); 
+  if(n===12)refs=refBox("KARDASHIANS",REFS.kardashians,"Exact spellings.");
+  if(n===14)refs=refBox("PRESIDENT FIRST NAMES",REFS.presidents,"Exact first names only.");
+  if(n===16)refs=refBox("NAME TO FIND",["Sasha"],"Same page or one page away.");
+  if(n===17)refs=refBox("THE FOUR BEATLES",REFS.beatles,"All four must be in the same chapter.");
+  const inputButton='<button class="btn" onclick="openInputs('+n+')">View Inputs</button>';
+  openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">CLUE '+n+' · STAGE '+m.stage+'</span><h2 class="modal-title">'+esc(c[1])+'</h2><div class="prompt">'+esc(clueClarification(n))+'</div>'+refs+toolInfo(n)+'<div class="line"></div>'+body+'<div class="actions" style="margin-top:15px">'+inputButton+(done&&n!==18?'<button class="btn" onclick="toggleComplete('+n+');closeModal()">Undo Completion</button>':"")+'</div></div>');
+}
 function parseNums(s){return(s||"").split(",").map(x=>+x.trim()).filter(Number.isFinite)}
-function addElims(n){parseNums($("nums").value).forEach(p=>db.findings.push({clue:n,page:p,type:"elim"}));save();closeModal();render("clues")}
-function addSources(n){parseNums($("nums").value).forEach(p=>db.findings.push({clue:n,page:p,type:"source"}));save();closeModal();render("clues")}
-function addChapters(n){var before=snapshot(db.findings);parseNums($("nums").value).forEach(function(ch){if(!db.findings.some(function(x){return x.clue===n&&x.type==="chapter"&&x.chapter===ch}))db.findings.push({clue:n,chapter:ch,type:"chapter"})});var after=snapshot(db.findings);recordHistory(n,"Chapter exclusions saved","findings",before,after);save();openClue(n)}
-function saveAZ(){var before=snapshot(db.clues[6]||{});db.clues[6]={...(db.clues[6]||{}),anna:+$("anna").value,zack:+$("zack").value};var after=snapshot(db.clues[6]);recordHistory(6,"Anna / Zack pages saved","clues",before,after);save();openClue(6)}
-function listFind(n){var f=db.findings.filter(function(x){return x.clue===n});return '<div class="saved-inputs"><h3>SAVED INPUTS FOR CLUE '+n+'</h3>'+(f.length?f.map(function(x){var i=db.findings.indexOf(x);return '<div class="saved-row"><span>'+((x.type==="chapter"?"Chapter "+x.chapter:"Page "+x.page)+(x.type==="source"?" · reference":" · eliminated"))+'</span><button class="btn" onclick="deleteFinding('+n+','+i+')">Remove</button></div>'}).join(""):'<div class="sub">No inputs saved yet.</div>')+'</div>'}
-function delFinding(i,n){db.findings.splice(i,1);save();openClue(n)}
-function inspector(){return '<h1>Page Inspector</h1><p class="sub">Ask about one page at a time.</p><div class="card"><div class="field"><label>Page number</label><input id="ip" type="number" placeholder="57"></div><button class="btn primary" onclick="inspect(+document.getElementById(&quot;ip&quot;).value)">Inspect</button></div>'}
-function inspect(p){let f=db.findings.filter(x=>x.page===p&&x.type==="elim"),s=f.length?"elim":"work";open('<button class="close" onclick="closeModal()">×</button><span class="badge">PAGE INSPECTOR</span><h2>Page '+p+'</h2><div class="stat"><strong>'+ (s==="elim"?"Eliminated":"Needs Work") +'</strong></div><h3>Why</h3>'+(f.length?f.map(x=>'<div class="finding">Eliminated by Clue '+x.clue+'</div>').join(""):'<div class="empty">No elimination finding recorded.</div>')+'</div>')}
-function suspect(){return '<div class="archive-header"><div><h1>Suspect Verification</h1><p class="sub">A survivor becomes a <b>Potential Killer</b>. The final decision happens only in Clue 18.</p></div></div><div class="card" style="background:var(--paper);padding:18px"><div class="field"><label>Suspect name</label><input id="sn" style="font-size:24px" placeholder="Name"></div><div class="field"><label>Page</label><input id="sp" type="number" style="font-size:24px" placeholder="Page number"></div><button class="btn primary" style="font-size:21px" onclick="checkSuspect()">Run verification</button></div>'+(db.potentialKiller?'<div class="card" style="margin-top:14px;border:3px solid var(--teal)"><h2 style="margin-top:0">POTENTIAL KILLER</h2><div style="font-size:28px;font-weight:1000">'+esc(db.potentialKiller.name)+' · p.'+db.potentialKiller.page+'</div><p class="sub">Not final. Clue 18 decides.</p><button class="btn" onclick="clearPotentialKiller()">Clear potential killer</button><button class="btn accent" onclick="location.hash=\'clues\';render(\'clues\');setTimeout(function(){openClue(18)},50)">Go to Clue 18</button></div>':"")+'<div class="card" style="margin-top:14px"><h2>ELIMINATED NAMES</h2>'+(db.eliminatedNames.length?db.eliminatedNames.map(function(x,i){return '<div class="saved-row"><span><b>'+esc(x.name)+'</b>'+(x.page?' · p.'+x.page:"")+'</span><button class="btn" onclick="restoreEliminatedName('+i+')">Undo</button></div>'}).join(""):'<div class="sub">No names eliminated here.</div>')+'</div>'}
-function checkSuspect(){let n=$("sn").value.trim(),p=+$("sp").value;if(!n||!p)return;open('<button class="close" onclick="closeModal()">×</button><span class="badge">SUSPECT</span><h2>'+esc(n)+'</h2><p class="sub">Test each relevant clue. Tap a failure when you find one.</p>'+[4,9,10,11,13,14].map(c=>'<div class="finding"><span><b>Clue '+c+'</b><br>'+esc(clues[c-1][1])+'</span><button class="btn danger" onclick="failSuspect('+c+','+p+',\''+encodeURIComponent(n)+'\')">Fails</button></div>').join("")+'<div class="line"></div><div class="actions"><button class="btn accent" onclick="markPotentialKiller(\''+encodeURIComponent(n)+'\','+p+')">✓ All checks passed — mark as potential killer</button><button class="btn" onclick="closeModal()">Keep checking</button></div>')}
-function markPotentialKiller(n,p){var name=decodeURIComponent(n),before=snapshot(db.potentialKiller);db.eliminatedNames=db.eliminatedNames.filter(function(x){return x.name.toLowerCase()!==name.toLowerCase()});db.potentialKiller={name:name,page:p};recordHistory(0,"Potential killer recorded","potentialKiller",before,db.potentialKiller);save();closeModal();open('<button class="close" onclick="closeModal()">×</button><span class="badge">POTENTIAL KILLER</span><h2>'+esc(name)+'</h2><div class="negative-prompt">Potential only. Final decision happens in Clue 18.</div><div class="actions"><button class="btn primary" onclick="closeModal()">Keep investigating</button><button class="btn accent" onclick="location.hash=\'clues\';render(\'clues\');setTimeout(function(){openClue(18)},50)">Go to Clue 18</button></div>')}
-function failSuspect(clueNo,p,n){var before=snapshot(db.findings),name=decodeURIComponent(n);db.findings.push({clue:clueNo,page:p,type:"elim"});var after=snapshot(db.findings);recordHistory(clueNo,"Suspect failed clue "+clueNo,"findings",before,after);if(!db.eliminatedNames.some(function(x){return x.name.toLowerCase()===name.toLowerCase()})){var nb=snapshot(db.eliminatedNames);db.eliminatedNames.push({name:name,page:p});recordHistory(clueNo,"Name marked eliminated","eliminatedNames",nb,db.eliminatedNames)}save();open('<button class="close" onclick="closeModal()">×</button><h2>Suspect eliminated</h2><p>'+esc(name)+' fails Clue '+clueNo+' on p.'+p+'.</p><div class="actions"><button class="btn primary" onclick="closeModal()">Keep checking</button><button class="btn danger" onclick="completePage('+p+')">Eliminate page</button></div>')}
-function markKiller(n,p){let name=decodeURIComponent(n);db.final={name,page:p};save();closeModal();open('<button class="close" onclick="closeModal()">×</button><span class="badge">CASE CLOSED</span><h2 style="font-size:48px">YOU FOUND THE KILLER.</h2><div class="sticky"><b>'+esc(name)+'</b><div style="font-size:20px;margin-top:7px">Page '+p+'</div></div><div class="actions"><button class="btn primary" onclick="closeModal();render(&quot;master&quot;)">Back to Master</button></div>')}
-function eliminateName(n,p){let name=decodeURIComponent(n);if(!db.eliminatedNames.some(x=>x.name.toLowerCase()===name.toLowerCase()))db.eliminatedNames.push({name,page:p});save();closeModal()}
-function completePage(p){db.findings.push({clue:0,page:p,type:"elim"});save();closeModal();render("master")}
-function refs(){return '<div class="sticky" style="margin-bottom:22px"><b>REFERENCE DESK</b><div style="font-size:44px;font-weight:1000;line-height:.95;margin-top:5px">LOOK IT UP.<br>KEEP MOVING.</div></div><p class="sub">These are the exact lists used by the clues.</p><div class="grid"><div class="card half"><h3>VOWELS</h3><p style="font-size:25px;font-weight:1000;letter-spacing:.08em">A · E · I · O · U</p><p class="sub">Clue 3. Y does not count.</p></div><div class="card half"><h3>KARDASHIANS</h3><p style="font-size:19px;font-weight:900">'+REFS.kardashians.join(" · ")+'</p><p class="sub">Clue 12.</p></div><div class="card"><h3>PRESIDENT FIRST NAMES</h3><p style="font-size:18px;line-height:1.55;font-weight:850">'+REFS.presidents.join(" · ")+'</p><p class="sub">Clue 14. Exact first names only.</p></div><div class="card half"><h3>THE FOUR BEATLES</h3><p style="font-size:25px;font-weight:1000">John · Paul · George · Ringo</p><p class="sub">Clue 17.</p></div><div class="card half"><h3>OTHER NAMES</h3><p style="font-size:22px;font-weight:1000">Anna · Zack · Sasha</p><p class="sub">Clue 6 and Clue 16.</p></div></div>'}
-function solve(){if(!db.potentialKiller)return;var name=db.potentialKiller.name;db.final={name:name};save();closeModal();open('<button class="close" onclick="closeModal()">×</button><span class="badge">CASE CLOSED</span><h2 style="font-size:48px">FINAL DECISION RECORDED</h2><div class="sticky"><b>'+esc(name)+'</b></div><p class="sub">Clue 18 is the only place where the final decision is recorded.</p><div class="actions"><button class="btn primary" onclick="closeModal();render(&quot;master&quot;)">Back to Master</button></div>')}
-function open(html){$("modal").innerHTML=html;$("overlay").classList.add("open")}
-function openModal(html){open(html)}
+function pagePicker(n){
+  const ps=pages().filter(p=>status(p)!=="elim"),selected=db.findings.filter(x=>x.clue===n&&x.type==="elim").map(x=>x.page);
+  if(!ps.length)return'<div class="empty">No candidate pages remain.</div>';
+  if(ps.length<=10)return'<div class="page-choice-grid">'+ps.map(p=>'<button class="btn page-choice '+(selected.includes(p)?"selected":"")+'" onclick="toggleFinding('+n+','+p+',\'elim\')">'+p+(selected.includes(p)?" ✓":"")+'</button>').join("")+'</div>';
+  const groups=[];for(let i=0;i<ps.length;i+=10)groups.push(ps.slice(i,i+10));
+  return '<div class="range-grid">'+groups.map((g,i)=>'<button class="btn" onclick="showPageGroup('+n+','+i+')">pp. '+g[0]+'–'+g[g.length-1]+'</button>').join("")+'</div><div id="pageChoices"></div>';
+}
+function showPageGroup(n,g){
+  const ps=pages().filter(p=>status(p)!=="elim"),group=ps.slice(g*10,g*10+10),selected=db.findings.filter(x=>x.clue===n&&x.type==="elim").map(x=>x.page);
+  $("pageChoices").innerHTML='<div class="saved-inputs"><div class="page-choice-grid">'+group.map(p=>'<button class="btn page-choice '+(selected.includes(p)?"selected":"")+'" onclick="toggleFinding('+n+','+p+',\'elim\')">'+p+(selected.includes(p)?" ✓":"")+'</button>').join("")+'</div></div>';
+}
+function toggleFinding(n,p,type){
+  const before=snapshot(db.findings),idx=db.findings.findIndex(x=>x.clue===n&&x.page===p&&x.type===type);
+  if(idx>=0)db.findings.splice(idx,1);else db.findings.push({clue:n,page:p,type:type});
+  const after=snapshot(db.findings);
+  recordHistory(n,(idx>=0?"Page finding removed":"Page marked invalid"),"findings",before,after);save();openClue(n);
+}
+function namedPagePicker(kind){
+  const ps=pages(),current=db.clues[6]&&db.clues[6][kind];
+  if(ps.length<=10)return'<div class="page-choice-grid">'+ps.map(p=>'<button class="btn page-choice '+(current===p?"selected":"")+'" onclick="chooseAZ(\''+kind+'\','+p+')">'+p+(current===p?" ✓":"")+'</button>').join("")+'</div>';
+  const groups=[];for(let i=0;i<ps.length;i+=10)groups.push(ps.slice(i,i+10));
+  return'<div class="range-grid">'+groups.map((g,i)=>'<button class="btn" onclick="showAZGroup(\''+kind+'\','+i+')">pp. '+g[0]+'–'+g[g.length-1]+'</button>').join("")+'</div><div id="azChoices"></div>';
+}
+function showAZGroup(kind,g){
+  const ps=pages(),group=ps.slice(g*10,g*10+10),current=db.clues[6]&&db.clues[6][kind];
+  $("azChoices").innerHTML='<div class="saved-inputs"><div class="page-choice-grid">'+group.map(p=>'<button class="btn page-choice '+(current===p?"selected":"")+'" onclick="chooseAZ(\''+kind+'\','+p+')">'+p+(current===p?" ✓":"")+'</button>').join("")+'</div></div>';
+}
+function chooseAZ(kind,p){
+  const before=snapshot(db.clues[6]||{});
+  db.clues[6]=Object.assign({},db.clues[6]||{}, {[kind]:p});
+  let after=snapshot(db.clues[6]);
+  recordHistory(6,(kind==="anna"?"Anna":"Zack")+" page selected","clues",before,after);
+  if(db.clues[6].anna&&db.clues[6].zack){
+    const lo=Math.min(db.clues[6].anna,db.clues[6].zack),hi=Math.max(db.clues[6].anna,db.clues[6].zack),fb=snapshot(db.findings);
+    pages().filter(p=>p<=lo||p>=hi).forEach(p=>{if(!db.findings.some(x=>x.clue===6&&x.page===p&&x.type==="elim"))db.findings.push({clue:6,page:p,type:"elim"})});
+    const fa=snapshot(db.findings);
+    if(JSON.stringify(fb)!==JSON.stringify(fa))recordHistory(6,"Pages outside Anna/Zack range eliminated","findings",fb,fa);
+  }
+  save();openClue(6);
+}
+function hasChapterFinding(n,ch){return db.findings.some(x=>x.clue===n&&x.type==="chapter"&&x.chapter===ch)}
+function toggleChapter(n,ch){
+  const before=snapshot(db.findings),idx=db.findings.findIndex(x=>x.clue===n&&x.type==="chapter"&&x.chapter===ch);
+  if(idx>=0)db.findings.splice(idx,1);else db.findings.push({clue:n,type:"chapter",chapter:+ch});
+  const after=snapshot(db.findings);recordHistory(n,idx>=0?"Chapter exclusion removed":"Chapter marked invalid","findings",before,after);save();openClue(n);
+}
+function inputLabel(x){
+  if(x.type==="elim")return"Page "+x.page+" · invalid";
+  if(x.type==="source")return"Page "+x.page+" · reference";
+  if(x.type==="chapter")return"Chapter "+x.chapter+" · invalid";
+  return"Recorded input";
+}
+function clueInputs(n){
+  return db.history.filter(h=>+h.clue===n&&!h.undone);
+}
+function openInputs(n){
+  const f=db.findings.filter(x=>x.clue===n),h=clueInputs(n);
+  const rows=f.map(x=>'<div class="saved-row"><span>'+esc(inputLabel(x))+'</span><button class="btn small" onclick="removeFindingFromPopup('+n+',\''+encodeURIComponent(JSON.stringify(x))+'\')">Undo</button></div>').join("");
+  const history=h.map(x=>'<div class="saved-row"><span>'+esc(x.label)+'</span><button class="btn small" onclick="undoHistory(\''+x.id+'\');openInputs('+n+')">Undo</button></div>').join("");
+  openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">CLUE '+n+'</span><h2 class="modal-title">Saved Inputs</h2>'+(rows?'<h3>Current findings</h3>'+rows:'<div class="empty">No current page or chapter inputs.</div>')+(history?'<h3>Recent recorded actions</h3>'+history:"")+'<div class="line"></div><div class="actions"><button class="btn" onclick="closeModal()">Close</button><button class="btn accent" onclick="closeModal();goArchiveForClue('+n+')">Open Full Archive</button></div>');
+}
+function removeFindingFromPopup(n,encoded){
+  const target=JSON.parse(decodeURIComponent(encoded)),before=snapshot(db.findings),idx=db.findings.findIndex(x=>JSON.stringify(x)===JSON.stringify(target));
+  if(idx>=0)db.findings.splice(idx,1);
+  const after=snapshot(db.findings);recordHistory(n,"Finding removed","findings",before,after);save();openInputs(n);
+}
+function goArchiveForClue(n){window.archiveClue=String(n);go("archive")}
+function addElims(n){
+  const vals=parseNums($("nums").value);if(!vals.length)return;
+  const before=snapshot(db.findings);vals.forEach(p=>{if(!db.findings.some(x=>x.clue===n&&x.page===p&&x.type==="elim"))db.findings.push({clue:n,page:p,type:"elim"})});
+  const after=snapshot(db.findings);recordHistory(n,"Pages marked invalid","findings",before,after);save();openClue(n);
+}
+function addSources(n){
+  const vals=parseNums($("nums").value);if(!vals.length)return;
+  const before=snapshot(db.findings);vals.forEach(p=>{if(!db.findings.some(x=>x.clue===n&&x.page===p&&x.type==="source"))db.findings.push({clue:n,page:p,type:"source"})});
+  const after=snapshot(db.findings);recordHistory(n,"Reference pages recorded","findings",before,after);save();openClue(n);
+}
+function finalClueBody(){
+  const potentials=db.potentialKillers||[];
+  return '<div class="prompt">This is the final decision. Choose a saved Potential Killer or enter the killer’s name manually.</div><div class="field"><label>Killer name</label><input id="finalName" placeholder="Enter a name"></div><div class="field"><label>Or choose a Potential Killer</label><select id="finalPotential"><option value="">Choose from saved potentials</option>'+potentials.map((x,i)=>'<option value="'+i+'">'+esc(x.name)+' · p.'+x.page+'</option>').join("")+'</select></div><button class="btn primary" onclick="finalSolve()">THE KILLER IS…</button>';
+}
+function finalSolve(){
+  const typed=($("finalName").value||"").trim(),idx=$("finalPotential").value;
+  let name=typed,page=null;
+  if(!name&&idx!==""){name=db.potentialKillers[+idx].name;page=db.potentialKillers[+idx].page}
+  if(!name){openModal('<button class="close" onclick="closeModal()">×</button><h2 class="modal-title">Enter the killer first</h2><p class="sub">Choose a Potential Killer or type the final name.</p><button class="btn primary" onclick="closeModal();openClue(18)">Back</button>');return}
+  const before=snapshot(db.final);db.final={name:name,page:page,createdAt:new Date().toISOString()};recordHistory(18,"Final killer recorded","final",before,db.final);save();showCelebration(name,page);
+}
+function showCelebration(name,page){
+  openModal('<div class="case-closed"><div class="celebrate">★ ★ ★</div><span class="badge">CASE CLOSED</span><h2>THE KILLER IS…</h2><div style="font-size:44px;font-weight:1000;margin:10px 0">'+esc(name)+'</div>'+(page?'<div style="font-size:20px;font-weight:900">Page '+page+'</div>':"")+'<p class="sub" style="margin-top:16px">You solved the mystery.</p><button class="btn primary" onclick="closeModal()">Stay on Clue 18</button></div>');
+}
+function suspect(){
+  const names=db.eliminatedNames||[],pots=db.potentialKillers||[];
+  return '<div><div class="clue-toolbar"><div><h1>SUSPECT VERIFICATION</h1><p class="sub">Test a name against the clues. A failed check eliminates the name and tells you which marker to use. A passing name becomes a Potential Killer only.</p></div></div><div class="suspect-grid"><section class="suspect-card"><h2>CHECK A SUSPECT</h2><div class="field"><label>Name</label><input id="sn" style="font-size:23px" placeholder="Suspect name"></div><div class="field"><label>Page</label><input id="sp" type="number" style="font-size:23px" placeholder="Page number"></div><button class="btn primary" style="width:100%" onclick="checkSuspect()">Run Verification</button></section><section class="suspect-card"><h2>POTENTIAL KILLERS</h2>'+(pots.length?pots.map((x,i)=>'<div class="potential-name"><span><b>'+esc(x.name)+'</b> · p.'+x.page+'</span><button class="btn small" onclick="removePotential('+i+')">Undo</button></div>').join(""):'<div class="empty">No Potential Killers yet.</div>')+(pots.length?'<button class="btn danger" style="margin-top:9px" onclick="clearPotentials()">Clear All Potential Killers</button>':"")+'</section></div><section class="suspect-card" style="margin-top:12px"><h2>ELIMINATED NAMES</h2>'+(names.length?names.map((x,i)=>'<div class="eliminated-name"><span><b>'+esc(x.name)+'</b>'+(x.page?' · p.'+x.page:"")+'</span><button class="btn small" onclick="restoreEliminatedName('+i+')">Undo</button></div>').join(""):'<div class="empty">No names eliminated yet.</div>')+'</section></div>';
+}
+function checkSuspect(){
+  const n=$("sn").value.trim(),p=+$("sp").value;
+  if(!n||!p)return;
+  const checks=[1,2,3,5,7,8,4,9,10,11,12,13,14,15,16,17];
+  openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">SUSPECT</span><h2 class="modal-title">'+esc(n)+'</h2><p class="sub">Run the relevant checks. If the suspect fails one, record the failure immediately.</p>'+checks.map(c=>'<div class="verify-row"><div><b>Clue '+c+'</b><small>'+esc(clues[c-1][1])+'</small></div><button class="btn danger" onclick="failSuspect('+c+','+p+',\''+encodeURIComponent(n)+'\')">Fails</button></div>').join("")+'<div class="line"></div><button class="btn accent" style="width:100%" onclick="markPotentialKiller(\''+encodeURIComponent(n)+'\','+p+')">All checks passed — Add Potential Killer</button>');
+}
+function markerForClue(n){return CLUE_META[n]||{tool:"Use the clue’s marking tool",color:"#c0488f"}}
+function failSuspect(clueNo,p,encoded){
+  const name=decodeURIComponent(encoded),m=markerForClue(clueNo);
+  const beforeN=snapshot(db.eliminatedNames),beforeF=snapshot(db.findings);
+  if(!db.eliminatedNames.some(x=>x.name.toLowerCase()===name.toLowerCase()))db.eliminatedNames.push({name:name,page:p,clue:clueNo,marker:m.tool,color:m.color});
+  if(!db.findings.some(x=>x.clue===clueNo&&x.page===p&&x.type==="suspect"))db.findings.push({clue:clueNo,page:p,type:"suspect",name:name});
+  recordHistory(clueNo,"Suspect name eliminated","eliminatedNames",beforeN,db.eliminatedNames);
+  recordHistory(clueNo,"Suspect failed clue","findings",beforeF,db.findings);
+  save();
+  openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">NAME ELIMINATED</span><h2 class="modal-title">'+esc(name)+'</h2><div class="marker-callout"><span class="marker-dot" style="background:'+m.color+'"></span>Mark the name with: '+esc(m.tool)+'</div><p class="sub" style="margin-top:12px">The name is now in the Eliminated Names list even if the page itself remains a candidate.</p><div class="actions"><button class="btn primary" onclick="closeModal();render(\'suspect\')">Back to Suspect Verification</button><button class="btn" onclick="closeModal()">Stay Here</button></div>');
+}
+function markPotentialKiller(encoded,p){
+  const name=decodeURIComponent(encoded),exists=db.potentialKillers.some(x=>x.name.toLowerCase()===name.toLowerCase());
+  if(!exists){
+    const before=snapshot(db.potentialKillers);db.potentialKillers.push({name:name,page:p});recordHistory(0,"Potential Killer added","potentialKillers",before,db.potentialKillers);
+  }
+  db.eliminatedNames=db.eliminatedNames.filter(x=>x.name.toLowerCase()!==name.toLowerCase());
+  save();
+  openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">POTENTIAL KILLER</span><h2 class="modal-title">'+esc(name)+'</h2><div class="prompt">Saved as a Potential Killer. This is not the final decision.</div><div class="actions"><button class="btn primary" onclick="closeModal();render(\'suspect\')">Stay on Suspect Verification</button><button class="btn accent" onclick="closeModal();openClue(18)">Go to Clue 18</button></div>');
+}
+function removePotential(i){
+  const before=snapshot(db.potentialKillers);if(i>=0)db.potentialKillers.splice(i,1);
+  const after=snapshot(db.potentialKillers);recordHistory(0,"Potential Killer removed","potentialKillers",before,after);save();render("suspect");
+}
+function clearPotentials(){
+  openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">CLEAR LIST</span><h2 class="modal-title">Clear all Potential Killers?</h2><p class="sub">This removes every saved potential from the list.</p><div class="actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn danger" onclick="clearPotentialsNow()">Clear All</button></div>');
+}
+function clearPotentialsNow(){
+  const before=snapshot(db.potentialKillers);db.potentialKillers=[];recordHistory(0,"All Potential Killers cleared","potentialKillers",before,[]);save();closeModal();render("suspect");
+}
+function restoreEliminatedName(i){
+  const before=snapshot(db.eliminatedNames);if(i>=0)db.eliminatedNames.splice(i,1);
+  const after=snapshot(db.eliminatedNames);recordHistory(0,"Eliminated name restored","eliminatedNames",before,after);save();render("suspect");
+}
+function completePage(p){
+  const before=snapshot(db.findings);if(!db.findings.some(x=>x.clue===0&&x.page===p))db.findings.push({clue:0,page:p,type:"elim"});const after=snapshot(db.findings);recordHistory(0,"Page eliminated","findings",before,after);save();
+}
+function archive(){
+  const list=db.history||[],type=window.archiveType||"all",clue=window.archiveClue||"";
+  const filtered=list.filter(h=>(type==="all"||h.key===type)&&(clue===""||String(h.clue)===String(clue)));
+  const clueOptions=clues.map(x=>'<option value="'+x[0]+'" '+(String(clue)===String(x[0])?"selected":"")+'>Clue '+x[0]+'</option>').join("");
+  return '<div><div class="archive-header"><div><h1>INPUT ARCHIVE</h1><p class="sub">Filter by input type or clue number. Edit a clue or undo a recorded action.</p></div><b>'+filtered.length+' shown</b></div><div class="archive-filters"><select onchange="window.archiveType=this.value;render(\'archive\')"><option value="all">All input types</option><option value="findings" '+(type==="findings"?"selected":"")+'>Page / chapter findings</option><option value="eliminatedNames" '+(type==="eliminatedNames"?"selected":"")+'>Name eliminations</option><option value="potentialKillers" '+(type==="potentialKillers"?"selected":"")+'>Potential Killers</option><option value="clues" '+(type==="clues"?"selected":"")+'>Clue completion</option><option value="final" '+(type==="final"?"selected":"")+'>Final decision</option></select><select onchange="window.archiveClue=this.value;render(\'archive\')"><option value="">All clues</option>'+clueOptions+'</select><button class="btn" onclick="window.archiveType=\'all\';window.archiveClue=\'\';render(\'archive\')">Clear Filters</button></div><div>'+(filtered.length?filtered.map(h=>historyCard(h)).join(""):'<div class="card"><h2>No matching inputs</h2><p class="sub">Try a different filter.</p></div>')+'</div></div>';
+}
+function historyCard(h){
+  return '<div class="history-card '+(h.undone?"undone":"")+'"><div><div class="history-meta">Clue '+h.clue+' · '+new Date(h.createdAt).toLocaleString()+'</div><div class="history-label">'+esc(h.label)+'</div><div class="history-data">'+(h.undone?"UNDONE":historySummary(h))+'</div></div><div class="history-actions"><button class="btn" onclick="openClue('+h.clue+')">Edit</button>'+(h.undone?"":'<button class="btn accent" onclick="undoHistory(\''+h.id+'\')">Undo</button>')+'</div></div>';
+}
+function historySummary(h){
+  if(h.key==="findings")return"Finding change";
+  if(h.key==="eliminatedNames")return"Name list change";
+  if(h.key==="potentialKillers")return"Potential Killer list change";
+  if(h.key==="clues")return"Completion change";
+  if(h.key==="final")return"Final decision";
+  return"Recorded input";
+}
+function undoHistory(id){
+  const h=db.history.find(x=>x.id===id);if(!h||h.undone)return;
+  if(h.key==="findings"||h.key==="eliminatedNames"||h.key==="potentialKillers"){
+    const key=h.key,cur=db[key]||[],before=h.before||[],after=h.after||[];
+    const added=after.filter(x=>!before.some(y=>JSON.stringify(y)===JSON.stringify(x)));
+    const removed=before.filter(x=>!after.some(y=>JSON.stringify(y)===JSON.stringify(x)));
+    added.forEach(x=>{const i=cur.findIndex(y=>JSON.stringify(y)===JSON.stringify(x));if(i>=0)cur.splice(i,1)});
+    removed.forEach(x=>{if(!cur.some(y=>JSON.stringify(y)===JSON.stringify(x)))cur.push(snapshot(x))});
+    db[key]=cur;
+  }else if(h.key==="clues"){
+    const key=h.clue;
+    if(h.before&&h.before[key])db.clues[key]=snapshot(h.before[key]);else delete db.clues[key];
+  }else if(h.key==="final"){db.final=snapshot(h.before)}
+  h.undone=true;save();render("archive");
+}
+function openArchiveForClue(n){window.archiveClue=String(n);window.archiveType="all";go("archive")}
+function openModal(html){$("modal").innerHTML=html;$("overlay").classList.add("open")}
 function closeModal(){$("overlay").classList.remove("open")}
-
-function snapshot(v){return JSON.parse(JSON.stringify(v))}
-function recordHistory(clue,label,key,before,after){db.history=db.history||[];db.history.unshift({id:Date.now()+"_"+Math.random().toString(36).slice(2),clue:clue,label:label,key:key,before:snapshot(before),after:snapshot(after),createdAt:new Date().toISOString(),undone:false});db.history=db.history.slice(0,120)}
-function toggleComplete(n){var before=snapshot(db.clues);delete db.clues[n];var after=snapshot(db.clues);recordHistory(n,"Completion undone","clues",before,after);save();render("clues")}
-function openArchiveForClue(n){location.hash="archive";render("archive");setTimeout(function(){var e=document.getElementById("history-"+n);if(e)e.scrollIntoView({block:"start"})},50)}
-function undoHistory(id){var h=db.history.find(function(x){return x.id===id});if(!h||h.undone)return;if(h.key==="findings"||h.key==="eliminatedNames"){var cur=db[h.key]||[],before=h.before||[],after=h.after||[],added=after.filter(function(x){return !before.some(function(y){return JSON.stringify(y)===JSON.stringify(x)})}),removed=before.filter(function(x){return !after.some(function(y){return JSON.stringify(y)===JSON.stringify(x)})});added.forEach(function(x){var i=cur.findIndex(function(y){return JSON.stringify(y)===JSON.stringify(x)});if(i>=0)cur.splice(i,1)});removed.forEach(function(x){if(!cur.some(function(y){return JSON.stringify(y)===JSON.stringify(x)}))cur.push(snapshot(x))});db[h.key]=cur}else if(h.key==="clues"){if(h.before&&("anna" in h.before||"zack" in h.before)){if(Object.keys(h.before).length)db.clues[h.clue]=snapshot(h.before);else delete db.clues[h.clue]}else{if(h.before&&h.before[h.clue])db.clues[h.clue]=snapshot(h.before[h.clue]);else delete db.clues[h.clue]}}else if(h.key==="potentialKiller"){db.potentialKiller=snapshot(h.before)}h.undone=true;save();render("archive")}
-function historySummary(h){if(h.key==="findings"){var a=h.after||[],b=h.before||[];if(a.length>b.length)return"Finding added";if(a.length<b.length)return"Finding removed";return"Findings updated"}if(h.key==="clues")return"Completion state changed";if(h.key==="potentialKiller")return h.after?"Potential killer saved":"Potential killer cleared";return"Input saved"}
-function archive(){var list=db.history||[];return '<div class="archive-screen"><div class="archive-header"><div><h1>Input Archive</h1><p class="sub">Every saved decision is recorded here. Undo an input or jump back to its clue.</p></div><div style="font-size:22px;font-weight:1000">'+list.length+' inputs</div></div><div class="archive-list">'+(list.length?list.map(function(h){return '<div class="history-card '+(h.undone?"undone":"")+'" id="history-'+h.clue+'"><div><div class="history-meta">Clue '+h.clue+' · '+new Date(h.createdAt).toLocaleString()+'</div><div class="history-label">'+esc(h.label)+'</div><div class="history-data">'+(h.undone?"UNDONE":historySummary(h))+'</div></div><div class="history-actions"><button class="btn" onclick="openClue('+h.clue+')">Edit</button>'+(h.undone?"":'<button class="btn accent" onclick="undoHistory(\''+h.id+'\')">Undo</button>')+'</div></div>'}).join(""):'<div class="card"><h2>No inputs yet</h2><p class="sub">Every input will appear here.</p></div>')+'</div></div>'}
-
-function negativePagePrompt(n){return ({4:"סמני את העמודים שבהם אין שם שמופיע יותר מפעם אחת — אלה העמודים שנפסלים, כי הרוצח חייב להיות בעמוד עם שם חוזר.",9:"סמני את העמודים שאין בהם שם בן 3 אותיות במרחק של עד 10 שמות מהרוצח — אלה העמודים שנפסלים.",11:"סמני את העמודים שבהם יש 3 שמות או יותר שמתחילים ב-M — אלה העמודים שנפסלים.",12:"סמני את העמודים שאין בהם Kardashian בעמוד עצמו או בטווח של 4 עמודים — אלה העמודים שנפסלים.",13:"סמני את העמודים שבהם מספר השמות הוא זוגי — אלה העמודים שנפסלים.",14:"סמני את העמודים שהעמוד שמולם אינו מכיל שם פרטי של נשיא ארה״ב — אלה העמודים שנפסלים.",16:"סמני את העמודים שאין בהם Sasha בעמוד עצמו או בעמוד סמוך — אלה העמודים שנפסלים."}[n]||"סמני את העמודים שנפסלים לפי הרמז.");}
-function namedPagePicker(kind){var ps=pages(),current=db.clues[6]&&db.clues[6][kind],groups=[];for(var i=0;i<ps.length;i+=10)groups.push(ps.slice(i,i+10));if(ps.length<=10)return '<div class="page-choice-grid">'+ps.map(function(p){return '<button class="page-choice '+(current===p?"selected":"")+'" onclick="chooseAZ(\''+kind+'\','+p+')">'+p+(current===p?" ✓":"")+'</button>'}).join("")+'</div>';return '<div class="range-grid">'+groups.map(function(g,i){return '<button class="btn" onclick="showAZGroup(\''+kind+'\','+i+')">pp. '+g[0]+'–'+g[g.length-1]+'</button>'}).join("")+'</div><div id="azChoices"></div>'}
-function showAZGroup(kind,g){var ps=pages(),group=ps.slice(g*10,g*10+10),current=db.clues[6]&&db.clues[6][kind];$("azChoices").innerHTML='<div class="saved-inputs"><div class="page-choice-grid">'+group.map(function(p){return '<button class="page-choice '+(current===p?"selected":"")+'" onclick="chooseAZ(\''+kind+'\','+p+')">'+p+(current===p?" ✓":"")+'</button>'}).join("")+'</div></div>'}
-function chooseAZ(kind,p){var before=snapshot(db.clues[6]||{});db.clues[6]={...(db.clues[6]||{}),[kind]:p};var after=snapshot(db.clues[6]);recordHistory(6,(kind==="anna"?"Anna":"Zack")+" page selected","clues",before,after);save();openClue(6)}
-
-const start=location.hash.slice(1)||(!db.setup.first?"setup":"master");render(start);
+document.addEventListener("click",e=>{if(e.target.id==="overlay")closeModal()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
+const start=currentRoute();render(start);
 </script>
 </body></html>
 function deleteFinding(n,i){var before=snapshot(db.findings);if(i>=0)db.findings.splice(i,1);var after=snapshot(db.findings);recordHistory(n,"Input removed","findings",before,after);save();openClue(n)}
