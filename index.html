@@ -31,9 +31,9 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent}
 .top{position:sticky;top:0;z-index:30;background:var(--cream);border-bottom:4px solid var(--ink);box-shadow:0 4px 0 rgba(25,26,21,.14)}
 .bar{max-width:1180px;margin:auto;padding:9px 16px 7px;display:flex;align-items:center;justify-content:space-between;gap:14px}
 .brand{display:flex;align-items:center;gap:10px;min-width:0}
-.mark{width:43px;height:43px;display:grid;place-items:center;background:var(--ink);color:var(--pink);font-weight:1000;font-size:17px;transform:rotate(-2deg);box-shadow:4px 4px 0 var(--yellow);flex:0 0 auto}
+.mark{width:43px;height:43px;display:grid;place-items:center;background:var(--pink);color:var(--cream);font-weight:1000;font-size:17px;transform:rotate(-2deg);box-shadow:4px 4px 0 var(--blue);border:2px solid var(--ink);flex:0 0 auto}
 .brand b{font-size:19px;line-height:1;display:block;letter-spacing:-.03em}
-.brand small{font-size:12px;font-weight:850;color:var(--muted);display:block;margin-top:3px}
+.brand small{font-size:12px;font-weight:850;color:var(--pink-dark);display:block;margin-top:3px}
 .solver-chip{background:var(--blue);color:#fff;padding:7px 11px;border:2px solid var(--ink);font-weight:950;white-space:nowrap;transform:rotate(.8deg)}
 nav{max-width:1180px;margin:auto;padding:0 12px 8px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
 nav::-webkit-scrollbar{display:none}
@@ -70,10 +70,10 @@ h3{font-size:21px;margin:10px 0 7px}
 .modal-title{font-size:34px;line-height:1.03;margin:10px 42px 12px 0}
 .prompt{font-size:19px;font-weight:900;line-height:1.32;background:#f8e8ca;border:2px solid var(--line);padding:12px 13px;margin:12px 0}
 .negative-prompt{font-size:20px;font-weight:950;line-height:1.3;background:#f5d7e4;border:3px solid var(--pink);padding:13px;border-radius:3px;margin:12px 0}
-.reference-box{background:#fff0a8;border:2px solid var(--ink);padding:12px;margin:12px 0;position:relative}
-.reference-box:after{content:"REFERENCE";position:absolute;right:8px;top:-10px;background:var(--pink);color:#fff;padding:3px 7px;font-size:10px;font-weight:1000;transform:rotate(2deg)}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.chip{background:#fffdf7;border:2px solid var(--ink);padding:5px 8px;font-size:14px;font-weight:900}
+.reference-box{background:#fff0a8;border:3px solid var(--ink);padding:16px 15px;margin:14px 0;position:relative;box-shadow:4px 4px 0 rgba(25,26,21,.12)}
+.reference-box:after{content:"REFERENCE";position:absolute;right:8px;top:-12px;background:var(--pink);color:#fff;border:2px solid var(--ink);padding:4px 8px;font-size:11px;font-weight:1000;transform:rotate(2deg)}
+.chips{display:flex;flex-wrap:wrap;gap:9px;margin-top:11px}
+.chip{background:#fffdf7;border:2px solid var(--ink);padding:8px 11px;font-size:20px;font-weight:1000;line-height:1}
 .tool-strip{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}
 .tool-pill{background:#fffdf7;border:2px solid var(--ink);padding:8px 10px;font-size:15px;font-weight:950}
 .swatch{display:inline-block;width:17px;height:17px;border:2px solid var(--ink);vertical-align:-3px;margin-right:6px}
@@ -83,7 +83,7 @@ h3{font-size:21px;margin:10px 0 7px}
 .master-kicker{font-size:13px;font-weight:1000;letter-spacing:.13em;color:var(--pink-dark)}
 .master-head h1{font-size:clamp(38px,5vw,60px);margin:4px 0 0;position:relative;z-index:1}
 .master-head p{margin:7px 0 0;font-size:18px;font-weight:800;position:relative;z-index:1}
-.master-name{background:var(--yellow);border:2px solid var(--ink);padding:8px 12px;font-size:16px;font-weight:1000;transform:rotate(2deg);position:relative;z-index:2;white-space:nowrap}
+.master-name{display:none}
 .master-board{background:var(--paper);border:3px solid var(--ink);box-shadow:var(--shadow);padding:16px 18px;display:grid;grid-template-rows:auto auto 1fr auto;gap:12px;min-height:0}
 .master-status{display:grid;grid-template-columns:1.3fr .7fr .7fr;gap:10px;align-items:stretch}
 .master-main-stat{background:var(--cream);border:2px solid var(--ink);padding:12px 14px}
@@ -97,7 +97,7 @@ h3{font-size:21px;margin:10px 0 7px}
 .master-progress-label{display:flex;justify-content:space-between;align-items:center;font-size:16px;font-weight:1000;margin-top:5px}
 .clue-dots{display:grid;grid-template-columns:repeat(9,1fr);gap:8px;align-content:center}
 .clue-dot{height:45px;background:#fffdf7;border:2px solid var(--ink);display:grid;place-items:center;font-weight:1000;font-size:17px}
-.clue-dot.done{background:#cde3d2;color:#245c39;border-color:var(--green)}
+.clue-dot.done{background:#e4eee5;color:#365a40;border-color:#668b6f;box-shadow:inset 0 0 0 2px #c8d9ca}
 .master-bottom{display:flex;justify-content:space-between;align-items:center;gap:10px;border-top:3px solid var(--ink);padding-top:11px}
 .master-bottom .note{font-size:15px;font-weight:850;color:var(--muted)}
 .master-bottom .actions{justify-content:flex-end}
@@ -284,13 +284,13 @@ function status(p){return db.findings.some(x=>x.page===p&&x.type==="elim")?"elim
 function currentRoute(){return location.hash.slice(1)||(!db.setup.first||!db.setup.last?"setup":"master")}
 function go(route){location.hash=route;render(route)}
 function header(route){
-  const name=db.setup.solver?esc(db.setup.solver):"Solver";
-  const items=[["master","Master"],["clues","Clues"],["suspect","Suspect Verification"],["archive","Archive"],["setup","Setup"]];
-  return '<div class="top"><div class="bar"><div class="brand"><div class="mark">A?</div><div><b>The Killer Isn’t Alice</b><small>Case Board</small></div></div><div class="solver-chip">'+name+'</div></div><nav>'+items.map(x=>'<button type="button" class="'+(route===x[0]?"on":"")+'" onclick="go(\''+x[0]+'\')">'+x[1]+'</button>').join("")+'</nav></div>';
+  const name=db.setup.solver?esc(db.setup.solver):"";
+  const items=[["master","Master"],["clues","Clues"],["suspect","Suspect Verification"],["pages","Pages & Status"],["archive","Archive"],["setup","Setup"]];
+  return '<div class="top"><div class="bar"><div class="brand"><div class="mark">A?</div><div><b>The Killer Isn’t Alice</b><small>Case Board'+(name?" · "+name:"")+'</small></div></div></div><nav>'+items.map(x=>'<button type="button" class="'+(route===x[0]?"on":"")+'" onclick="go(\''+x[0]+'\')">'+x[1]+'</button>').join("")+'</nav></div>';
 }
 function render(route){
   if(!db.setup.first||!db.setup.last)route="setup";
-  $("app").innerHTML=header(route)+"<main>"+(route==="setup"?setup():route==="master"?master():route==="clues"?clueList():route==="suspect"?suspect():route==="archive"?archive():master())+"</main>";
+  $("app").innerHTML=header(route)+"<main>"+(route==="setup"?setup():route==="master"?master():route==="clues"?clueList():route==="suspect"?suspect():route==="pages"?pagesStatus():route==="archive"?archive():master())+"</main>";
   wire();
 }
 function wire(){}
@@ -298,7 +298,11 @@ function master(){
   const ps=pages(),elim=ps.filter(p=>status(p)==="elim").length,remain=ps.length-elim;
   const done=SOLUTION_ORDER.filter(n=>db.clues[n]&&db.clues[n].done).length;
   const percent=Math.round(done/18*100);
-  return '<div class="master"><section class="master-head tape"><div><div class="master-kicker">CASE BOARD · 46,600 SUSPECT MURDER MYSTERY</div><h1>THE KILLER<br>ISN’T ALICE.</h1><p>Updated Edition · '+done+' of 18 clues completed</p></div><div class="master-name">'+esc(db.setup.solver||"Solver")+'</div></section><section class="master-board"><div class="master-status"><div class="master-main-stat"><strong>'+done+' / 18</strong><span>CLUES COMPLETED</span></div><div class="master-stat"><strong>'+remain+'</strong><span>CANDIDATE PAGES</span></div><div class="master-stat"><strong>'+elim+'</strong><span>PAGES ELIMINATED</span></div></div><div><div class="master-progress"><i style="width:'+percent+'%"></i></div><div class="master-progress-label"><span>CASE PROGRESS</span><span>'+percent+'%</span></div></div><div class="clue-dots">'+SOLUTION_ORDER.map(n=>'<div class="clue-dot '+(db.clues[n]&&db.clues[n].done?"done":"")+'" title="Clue '+n+'">'+n+'</div>').join("")+'</div><div class="master-bottom"><div class="note">Work in solution order. All final decisions are recorded in Clue 18.</div><div class="actions"><button class="btn primary" onclick="go(\'clues\')">Open Clues</button><button class="btn accent" onclick="go(\'suspect\')">Suspect Verification</button></div></div></section></div>';
+  return '<div class="master"><section class="master-head tape"><div><div class="master-kicker">CASE BOARD · 46,600 SUSPECT MURDER MYSTERY</div><h1>THE KILLER<br>ISN’T ALICE.</h1><p>Updated Edition · '+done+' of 18 clues completed</p></div></section><section class="master-board"><div class="master-status"><div class="master-main-stat"><strong>'+done+' / 18</strong><span>CLUES COMPLETED</span></div><div class="master-stat"><strong>'+remain+'</strong><span>CANDIDATE PAGES</span></div><div class="master-stat"><strong>'+elim+'</strong><span>PAGES ELIMINATED</span></div></div><div><div class="master-progress"><i style="width:'+percent+'%"></i></div><div class="master-progress-label"><span>CASE PROGRESS</span><span>'+percent+'%</span></div></div><div class="clue-dots">'+clues.map(x=>'<div class="clue-dot '+(db.clues[x[0]]&&db.clues[x[0]].done?"done":"")+'" title="Clue '+x[0]+'">'+x[0]+'</div>').join("")+'</div><div class="master-bottom"><div class="note">Final decision happens in Clue 18.</div><div class="actions"><button class="btn primary" onclick="go(\'clues\')">Open Clues</button><button class="btn accent" onclick="go(\'suspect\')">Suspect Verification</button></div></div></section></div>';
+}
+function pagesStatus(){
+  const ps=pages(),elim=ps.filter(p=>status(p)==="elim").length,remain=ps.length-elim;
+  return '<div class="pages-screen"><div class="clue-toolbar"><div><h1>PAGES & STATUS</h1><p class="sub">Every page in the current case range, with its live candidate status.</p></div></div><div class="pages-summary"><div class="pages-stat"><strong>'+ps.length+'</strong><span>TOTAL PAGES</span></div><div class="pages-stat"><strong>'+remain+'</strong><span>CANDIDATE PAGES</span></div><div class="pages-stat"><strong>'+elim+'</strong><span>PAGES ELIMINATED</span></div></div><div class="card"><div class="page-status-grid">'+(ps.length?ps.map(p=>'<div class="page-status '+(status(p)==="elim"?"elim":"")+'"><div class="page-no">'+p+'</div><div class="page-label">'+(status(p)==="elim"?"Eliminated":"Candidate")+'</div></div>').join(""):'<div class="empty">Set the book range in Setup first.</div>')+'</div></div></div>';
 }
 function setup(){
   const chapters=Object.entries(db.setup.chapters).sort((a,b)=>+a[0]-+b[0]);
@@ -408,13 +412,18 @@ function openClue(n){
   }
   if(n===3)refs=refBox("VOWELS THAT COUNT",REFS.vowels,"Only these five letters count. Y does not.");
   if(n===6)refs=refBox("NAMES TO FIND",["Anna","Zack"],"Exact spellings only.");
-  if(n===9)refs=refBox("LOOK FOR",["Any 3-letter name"],"The three-letter condition is based on reading order."); 
+  if(n===9)refs=refBox("LOOK FOR",["Any 3-letter name"],"The three-letter condition is based on reading order.");
   if(n===12)refs=refBox("KARDASHIANS",REFS.kardashians,"Exact spellings.");
   if(n===14)refs=refBox("PRESIDENT FIRST NAMES",REFS.presidents,"Exact first names only.");
   if(n===16)refs=refBox("NAME TO FIND",["Sasha"],"Same page or one page away.");
   if(n===17)refs=refBox("THE FOUR BEATLES",REFS.beatles,"All four must be in the same chapter.");
+  if(n===18){
+    const finalState=db.final?'final-clue-modal':'final-clue-modal';
+    openModal('<div class="'+finalState+'"><button class="close" onclick="closeModal()">×</button><span class="badge">FINAL CLUE · 18</span><h2 class="modal-title">THE KILLER IS…</h2><div class="prompt">This is the final step. Choose a saved Potential Killer or enter the name that the evidence has led you to.</div>'+body+(done?'<div class="verify-result"><b>CASE CLOSED</b><br>The final answer has been recorded.</div>':"")+'</div>');
+    return;
+  }
   const inputButton='<button class="btn" onclick="openInputs('+n+')">View Inputs</button>';
-  openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">CLUE '+n+' · STAGE '+m.stage+'</span><h2 class="modal-title">'+esc(c[1])+'</h2><div class="prompt">'+esc(clueClarification(n))+'</div>'+refs+toolInfo(n)+'<div class="line"></div>'+body+'<div class="actions" style="margin-top:15px">'+inputButton+(done&&n!==18?'<button class="btn" onclick="toggleComplete('+n+');closeModal()">Undo Completion</button>':"")+'</div></div>');
+  openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">CLUE '+n+' · STAGE '+m.stage+'</span><h2 class="modal-title">'+esc(c[1])+'</h2><div class="prompt">'+esc(clueClarification(n))+'</div>'+refs+toolInfo(n)+'<div class="line"></div>'+body+'<div class="actions" style="margin-top:15px">'+inputButton+(done?'<button class="btn" onclick="toggleComplete('+n+');closeModal()">Undo Completion</button>':"")+'</div>');
 }
 function parseNums(s){return(s||"").split(",").map(x=>+x.trim()).filter(Number.isFinite)}
 function pagePicker(n){
@@ -512,17 +521,17 @@ function addSources(n){
 }
 function finalClueBody(){
   const potentials=db.potentialKillers||[];
-  return '<div class="prompt">This is the final decision. Choose a saved Potential Killer or enter the killer’s name manually.</div><div class="field"><label>Killer name</label><input id="finalName" placeholder="Enter a name"></div><div class="field"><label>Or choose a Potential Killer</label><select id="finalPotential"><option value="">Choose from saved potentials</option>'+potentials.map((x,i)=>'<option value="'+i+'">'+esc(x.name)+' · p.'+x.page+'</option>').join("")+'</select></div><button class="btn primary" onclick="finalSolve()">THE KILLER IS…</button>';
+  return '<div class="final-choice"><div class="field"><label>Killer name</label><input id="finalName" style="font-size:25px;font-weight:950" placeholder="Enter the killer’s name"></div><div class="field"><label>Or choose a Potential Killer</label><select id="finalPotential" style="font-size:21px"><option value="">Choose a Potential Killer</option>'+potentials.map((x,i)=>'<option value="'+i+'">'+esc(x.name)+' · p.'+x.page+'</option>').join("")+'</select></div><button class="btn final-action" onclick="finalSolve()">THE KILLER IS…</button></div>';
 }
 function finalSolve(){
   const typed=($("finalName").value||"").trim(),idx=$("finalPotential").value;
   let name=typed,page=null;
   if(!name&&idx!==""){name=db.potentialKillers[+idx].name;page=db.potentialKillers[+idx].page}
   if(!name){openModal('<button class="close" onclick="closeModal()">×</button><h2 class="modal-title">Enter the killer first</h2><p class="sub">Choose a Potential Killer or type the final name.</p><button class="btn primary" onclick="closeModal();openClue(18)">Back</button>');return}
-  const before=snapshot(db.final);db.final={name:name,page:page,createdAt:new Date().toISOString()};recordHistory(18,"Final killer recorded","final",before,db.final);save();showCelebration(name,page);
+  const before=snapshot(db.final);db.final={name:name,page:page,createdAt:new Date().toISOString()};recordHistory(18,"Final killer recorded","final",before,db.final);const cb=snapshot(db.clues);db.clues[18]={done:true};recordHistory(18,"Clue completed","clues",cb,db.clues);save();showCelebration(name,page);
 }
 function showCelebration(name,page){
-  openModal('<div class="case-closed"><div class="celebrate">★ ★ ★</div><span class="badge">CASE CLOSED</span><h2>THE KILLER IS…</h2><div style="font-size:44px;font-weight:1000;margin:10px 0">'+esc(name)+'</div>'+(page?'<div style="font-size:20px;font-weight:900">Page '+page+'</div>':"")+'<p class="sub" style="margin-top:16px">You solved the mystery.</p><button class="btn primary" onclick="closeModal()">Stay on Clue 18</button></div>');
+  openModal('<div class="case-closed"><div class="celebrate">★ ★ ★</div><div class="celebrate-title">CASE CLOSED</div><div class="celebrate-killer">'+esc(name)+'</div>'+(page?'<div class="celebrate-page">PAGE '+page+'</div>':"")+'<div class="celebrate-rule"></div><div class="celebrate-sub">THE MYSTERY IS SOLVED.</div><button class="btn primary final-return" onclick="closeModal();go(\'master\')">RETURN TO CASE BOARD</button></div>');
 }
 function suspect(){
   const names=db.eliminatedNames||[],pots=db.potentialKillers||[];
