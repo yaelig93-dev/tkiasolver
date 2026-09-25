@@ -1,0 +1,8 @@
+{
+  "name":"The Killer Isn't Alice — Case Board",
+  "short_name":"TKIA Case Board",
+  "start_url":"./",
+  "display":"standalone",
+  "background_color":"#f8f6f1",
+  "theme_color":"#243047"
+}
