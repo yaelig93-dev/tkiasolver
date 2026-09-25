@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#243047">
+<meta name="theme-color" content="#eadbbc"><meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon.svg">
 <title>The Killer Isn't Alice — Case Board</title>
 <style>
@@ -28,7 +28,7 @@ body{overflow-x:hidden}
 button,input,select{font:inherit}
 button{cursor:pointer;-webkit-tap-highlight-color:transparent}
 #app{min-height:100dvh;background:var(--pink)}
-.top{position:sticky;top:0;z-index:30;background:var(--cream);border-bottom:4px solid var(--ink);box-shadow:0 4px 0 rgba(25,26,21,.14);padding-top:env(safe-area-inset-top)}
+.top{position:sticky;top:0;z-index:30;background:#eadbbc!important;background-color:#eadbbc!important;border-bottom:4px solid var(--ink);box-shadow:0 4px 0 rgba(25,26,21,.14);padding-top:env(safe-area-inset-top);backdrop-filter:none!important;-webkit-backdrop-filter:none!important;isolation:isolate;transform:translateZ(0)}
 .bar{max-width:1180px;margin:auto;padding:18px 16px 12px;display:flex;align-items:center;justify-content:space-between;gap:14px}
 .brand{display:flex;align-items:center;gap:10px;min-width:0}
 .mark{width:54px;height:54px;display:grid;place-items:center;background:var(--pink);color:var(--cream);font-weight:1000;font-size:17px;transform:rotate(-2deg);box-shadow:4px 4px 0 var(--blue);border:2px solid var(--ink);flex:0 0 auto}
@@ -78,29 +78,29 @@ h3{font-size:21px;margin:10px 0 7px}
 .tool-pill{background:#fffdf7;border:2px solid var(--ink);padding:8px 10px;font-size:15px;font-weight:950}
 .swatch{display:inline-block;width:17px;height:17px;border:2px solid var(--ink);vertical-align:-3px;margin-right:6px}
 .master{min-height:calc(100dvh - 110px);display:grid;grid-template-rows:auto 1fr;gap:12px}
-.master-head{background:var(--cream);border:3px solid var(--ink);box-shadow:var(--shadow);padding:17px 20px;display:flex;align-items:center;justify-content:space-between;gap:18px;position:relative;overflow:hidden}
+.master-head{background:var(--cream);border:3px solid var(--ink);box-shadow:var(--shadow);padding:24px 26px;min-height:154px;display:flex;align-items:center;justify-content:space-between;gap:18px;position:relative;overflow:hidden}
 .master-head:after{content:"";position:absolute;right:-30px;bottom:-65px;width:180px;height:180px;border-radius:50%;background:var(--blue);opacity:.95}
 .master-kicker{font-size:13px;font-weight:1000;letter-spacing:.13em;color:var(--pink-dark)}
-.master-head h1{font-size:clamp(38px,5vw,60px);margin:4px 0 0;position:relative;z-index:1}
+.master-head h1{font-size:clamp(46px,5.6vw,68px);margin:4px 0 0;position:relative;z-index:1}
 .master-head p{margin:7px 0 0;font-size:18px;font-weight:800;position:relative;z-index:1}
 .master-name{display:none}
 .master-board{background:var(--paper);border:3px solid var(--ink);box-shadow:var(--shadow);padding:16px 18px;display:grid;grid-template-rows:auto auto 1fr auto;gap:12px;min-height:0}
 .master-status{display:grid;grid-template-columns:1.3fr .7fr .7fr;gap:10px;align-items:stretch}
-.master-main-stat{background:var(--cream);border:3px solid var(--ink);padding:12px 14px;box-shadow:5px 6px 0 rgba(25,26,21,.13);border-top:8px solid var(--pink)}.master-stat.candidate-stat{background:var(--cream);border:3px solid var(--ink);border-top:8px solid var(--blue);padding:11px 12px;box-shadow:5px 6px 0 rgba(25,26,21,.13)}.master-stat.eliminated-stat{background:var(--cream);border:3px solid var(--ink);border-top:8px solid var(--pink-dark);padding:11px 12px;box-shadow:5px 6px 0 rgba(25,26,21,.13)}
+.master-main-stat,.master-stat.candidate-stat,.master-stat.eliminated-stat{background:var(--cream);border:3px solid var(--ink);padding:12px 14px;box-shadow:5px 6px 0 rgba(25,26,21,.13)}
 .master-main-stat strong{font-size:48px;line-height:1;display:block}
 .master-main-stat span{font-size:15px;font-weight:950}
 .master-stat{background:var(--cream);border:3px solid var(--ink);padding:11px 12px}
-.master-stat strong{font-size:34px;line-height:1;display:block}
-.master-stat span{font-size:14px;font-weight:900;color:var(--muted)}
-.master-progress{height:18px;border:2px solid var(--ink);background:#e3d4b5;display:flex;overflow:hidden}
+.master-stat strong{font-size:48px;line-height:1;display:block}
+.master-stat span{font-size:15px;font-weight:950;color:var(--muted)}
+.master-progress{height:24px;border:2px solid var(--ink);background:#e3d4b5;display:flex;overflow:hidden}
 .master-progress i{height:100%;background:var(--pink);display:block}
 .master-progress-label{display:flex;justify-content:space-between;align-items:center;font-size:16px;font-weight:1000;margin-top:5px}
-.clue-dots{display:grid;grid-template-columns:repeat(9,1fr);gap:8px;align-content:center}
+.clue-dots{display:none}
 .clue-dot{height:45px;background:#fffdf7;border:2px solid var(--ink);display:grid;place-items:center;font-weight:1000;font-size:17px}
 .clue-dot.done{background:#e4eee5;color:#365a40;border-color:#668b6f;box-shadow:inset 0 0 0 2px #c8d9ca}
-.master-bottom{display:flex;justify-content:space-between;align-items:center;gap:10px;border-top:3px solid var(--ink);padding-top:11px}
-.master-bottom .note{font-size:15px;font-weight:850;color:var(--muted)}
-.master-bottom .actions{justify-content:flex-end}
+.master-bottom{display:flex;justify-content:center;align-items:center;gap:10px;border-top:3px solid var(--ink);padding-top:13px}
+.master-bottom .note{font-size:18px;font-weight:950;color:var(--muted);text-align:center}
+.master-bottom .actions{display:none}
 .setup-wrap{max-width:800px;margin:auto}
 .setup-paper{background:var(--cream);border:3px solid var(--ink);box-shadow:var(--shadow);padding:25px}
 .setup-title{text-align:center}
@@ -133,7 +133,7 @@ h3{font-size:21px;margin:10px 0 7px}
 .clue-card .btn{font-size:14px;padding:8px 9px;min-height:40px}
 .page-choice-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}
 .page-choice{min-height:52px!important;font-size:20px!important;font-weight:1000!important;background:#fffdf7!important}
-.page-choice.selected{background:#d8e8dc!important;border-color:var(--green)!important;box-shadow:inset 0 0 0 3px var(--green)}.selection-feedback{margin-top:10px;background:var(--green-soft);border:2px solid var(--green);padding:9px 11px;font-weight:950}.selected-page-list{margin-top:10px;background:#f6ead4;border:2px solid var(--line);padding:10px}.selected-page-list h3{margin:0 0 6px;font-size:17px}.selected-page-row{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fffdf7;border:1px solid var(--line);padding:7px 9px;margin-top:6px;font-weight:950}.selected-page-row .remove-page{width:32px;height:32px;min-height:32px;padding:0;border:2px solid var(--ink);background:#f5d4df;color:#7d234b;font-weight:1000;line-height:1}
+.page-choice.selected{background:#d8e8dc!important;border-color:var(--green)!important;box-shadow:inset 0 0 0 3px var(--green)}.selection-feedback{margin-top:10px;background:var(--green-soft);border:2px solid var(--green);padding:9px 11px;font-weight:950}.selected-page-list{margin-top:10px;background:#f6ead4;border:2px solid var(--line);padding:10px}.selected-page-list h3{margin:0 0 6px;font-size:17px}.selected-page-row{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fffdf7;border:1px solid var(--line);padding:7px 9px;margin-top:6px;font-weight:950}.selected-page-list:empty{display:none}.selected-page-row .remove-page{width:32px;height:32px;min-height:32px;padding:0;border:2px solid var(--ink);background:#f5d4df;color:#7d234b;font-weight:1000;line-height:1}
 .range-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .range-grid .btn{font-size:16px}
 .saved-inputs{background:#f6ead4;border:2px solid var(--line);padding:11px;margin-top:11px}
@@ -179,7 +179,7 @@ h3{font-size:21px;margin:10px 0 7px}
   .solver-chip{font-size:12px;padding:6px 8px}
   nav{padding:0 8px 7px}
   nav button{font-size:16px;padding:8px 11px;min-height:44px}
-  .master-head{display:block;padding:14px}
+  .master-head{display:block;padding:20px 16px;min-height:136px}
   .master-head h1{font-size:40px}
   .master-name{display:inline-block;margin-top:8px}
   .master-head:after{display:none}
@@ -203,12 +203,12 @@ h3{font-size:21px;margin:10px 0 7px}
 <style id="polish-final-v3">
 .master-stat.clickable,.master-main-stat.clickable{cursor:pointer;transition:transform .12s ease,box-shadow .12s ease}
 .master-stat.clickable:hover,.master-main-stat.clickable:hover{transform:translateY(-2px);box-shadow:5px 6px 0 rgba(25,26,21,.14)}
-.final-master-ribbon{margin-top:14px;background:linear-gradient(120deg,#4f3150 0%,var(--pink) 52%,#5f6f9f 100%);color:#fff;border:4px solid var(--ink);padding:20px 22px;box-shadow:8px 8px 0 rgba(25,26,21,.18);display:block;text-align:center;position:relative;overflow:hidden}
-.final-master-ribbon:after{content:"";position:absolute;width:180px;height:180px;border:18px solid rgba(255,255,255,.1);border-radius:50%;right:-70px;top:-105px}
-.final-master-ribbon .final-kicker{color:#fff0f7;font-size:12px;font-weight:1000;letter-spacing:.2em;position:relative;z-index:1}
-.final-master-ribbon .final-name{font-size:clamp(34px,4vw,48px);font-weight:1000;line-height:1;margin:7px 0;position:relative;z-index:1}
-.final-master-ribbon .final-page{font-size:15px;font-weight:1000;letter-spacing:.08em;position:relative;z-index:1}
-.page-controls{background:var(--cream);border:3px solid var(--ink);padding:10px;box-shadow:4px 4px 0 rgba(25,26,21,.1)}
+.final-master-ribbon{width:min(760px,88%);margin:16px auto 6px;background:#bfe6eb;color:var(--ink);border:3px solid var(--ink);padding:22px 26px 20px;box-shadow:8px 9px 0 var(--pink);display:block;text-align:center;position:relative;overflow:visible;transform:rotate(-1.2deg)}
+.final-master-ribbon:before{content:"";position:absolute;left:50%;top:-13px;transform:translateX(-50%) rotate(2deg);width:118px;height:24px;background:rgba(242,223,0,.84);border:2px solid rgba(25,26,21,.18);z-index:2}
+.final-master-ribbon:after{content:"";position:absolute;right:-3px;bottom:-3px;width:28px;height:28px;background:linear-gradient(135deg,transparent 49%,#9ecfd5 50%);border-left:3px solid var(--ink);border-top:3px solid var(--ink)}
+.final-master-ribbon .final-kicker{color:var(--pink-dark);font-size:12px;font-weight:1000;letter-spacing:.16em;position:relative;z-index:1}
+.final-master-ribbon .final-name{font-size:clamp(34px,4vw,48px);font-weight:1000;line-height:1;margin:8px 0;position:relative;z-index:1}
+.final-master-ribbon .final-page{font-size:15px;font-weight:1000;letter-spacing:.08em;position:relative;z-index:1}.page-controls{background:var(--cream);border:3px solid var(--ink);padding:10px;box-shadow:4px 4px 0 rgba(25,26,21,.1)}
 .page-filter-btn{border:3px solid var(--ink)!important;font-weight:1000}
 .page-filter-btn.all-filter.active{background:var(--blue)!important;color:#fff!important}
 .page-filter-btn.candidate-filter{background:#e5edf5}
@@ -329,7 +329,7 @@ function master(){
   const ps=pages(),elim=ps.filter(p=>status(p)==="elim").length,remain=ps.length-elim;
   const done=SOLUTION_ORDER.filter(n=>db.clues[n]&&db.clues[n].done).length;
   const percent=Math.round(done/18*100),killer=db.final&&db.final.name?db.final.name:"";
-  return '<div class="master"><section class="master-head tape"><div><div class="master-kicker">CASE BOARD · 46,600 SUSPECT MURDER MYSTERY</div><h1>THE KILLER<br>ISN’T ALICE.</h1><p>Updated Edition · '+done+' of 18 clues completed</p></div></section><section class="master-board"><div class="master-status"><div class="master-main-stat clickable" onclick="go(\'clues\')"><strong>'+done+' / 18</strong><span>CLUES COMPLETED</span></div><div class="master-stat clickable" onclick="window.pageFilter=\'candidate\';go(\'pages\')"><strong>'+remain+'</strong><span>CANDIDATE PAGES</span></div><div class="master-stat clickable" onclick="window.pageFilter=\'eliminated\';go(\'pages\')"><strong>'+elim+'</strong><span>PAGES ELIMINATED</span></div></div><div><div class="master-progress"><i style="width:'+percent+'%"></i></div><div class="master-progress-label"><span>CASE PROGRESS</span><span>'+percent+'%</span></div></div><div class="clue-dots">'+clues.map(x=>'<div class="clue-dot '+(db.clues[x[0]]&&db.clues[x[0]].done?"done":"")+'" title="Clue '+x[0]+'">'+x[0]+'</div>').join("")+'</div>'+(killer?'<div class="final-master-ribbon"><div><div class="final-kicker">CASE CLOSED · THE KILLER FOUND</div><div class="final-name">'+esc(killer)+'</div></div><div class="final-page">'+(db.final.page?'PAGE '+db.final.page+' · GO CHECK YOUR ANSWER!':"GO CHECK YOUR ANSWER!")+'</div></div>':"")+'<div class="master-bottom"><div class="note">'+(killer?"THE CASE IS CLOSED. THE FINAL ANSWER IS RECORDED.":"Final decision happens in Clue 18.")+'</div><div class="actions"><button class="btn primary" onclick="go(\'clues\')">Open Clues</button><button class="btn accent" onclick="go(\'suspect\')">Suspect Verification</button></div></div></section></div>';
+  return '<div class="master"><section class="master-head tape"><div><div class="master-kicker">CASE BOARD · 46,600 SUSPECT MURDER MYSTERY</div><h1>THE KILLER<br>ISN’T ALICE.</h1></div></section><section class="master-board"><div class="master-status"><div class="master-main-stat clickable" onclick="go(\'clues\')"><strong>'+done+' / 18</strong><span>CLUES COMPLETED</span></div><div class="master-stat candidate-stat clickable" onclick="window.pageFilter=\'candidate\';go(\'pages\')"><strong>'+remain+'</strong><span>CANDIDATE PAGES</span></div><div class="master-stat eliminated-stat clickable" onclick="window.pageFilter=\'eliminated\';go(\'pages\')"><strong>'+elim+'</strong><span>PAGES ELIMINATED</span></div></div><div><div class="master-progress"><i style="width:'+percent+'%"></i></div><div class="master-progress-label"><span>CASE PROGRESS</span><span>'+percent+'%</span></div></div>'+(killer?'<div class="final-master-ribbon"><div><div class="final-kicker">CASE CLOSED · THE KILLER FOUND</div><div class="final-name">'+esc(killer)+'</div></div><div class="final-page">'+(db.final.page?'PAGE '+db.final.page+' · GO CHECK YOUR ANSWER!':"GO CHECK YOUR ANSWER!")+'</div></div>':"")+'<div class="master-bottom"><div class="note">'+(killer?"THE CASE IS CLOSED. THE FINAL ANSWER IS RECORDED.":"Final decision happens in Clue 18.")+'</div><div class="actions"><button class="btn primary" onclick="go(\'clues\')">Open Clues</button><button class="btn accent" onclick="go(\'suspect\')">Suspect Verification</button></div></div></section></div>';
 }
 function pagesStatus(){
   const ps=pages(),filter=window.pageFilter||"all",query=String(window.pageQuery||"").trim();
@@ -492,72 +492,41 @@ function parseNums(s){return(s||"").split(",").map(x=>+x.trim()).filter(Number.i
 function pagePicker(n){
   const selected=db.findings.filter(x=>x.clue===n&&x.type==="elim").map(x=>x.page);
   const ps=pages().filter(p=>status(p)!=="elim"||selected.includes(p));
-  if(!ps.length)return'<div class="empty">No candidate pages remain.</div>';
-  const feedback='<div class="selection-feedback">✓ '+selected.length+' page'+(selected.length===1?"":"s")+' selected as invalid</div>';
-  if(ps.length<=10)return'<div class="page-choice-grid">'+ps.map(p=>'<button class="btn page-choice '+(selected.includes(p)?"selected":"")+'" onclick="toggleFinding('+n+','+p+',\'elim\')">'+p+(selected.includes(p)?" ✓":"")+'</button>').join("")+'</div>'+feedback;
+  if(!ps.length)return'<div id="pagePickerUI" class="empty">No candidate pages remain.</div>';
+  const feedback='<div id="pageFeedback-'+n+'" class="selection-feedback">✓ '+selected.length+' page'+(selected.length===1?"":"s")+' selected as invalid</div>';
+  if(ps.length<=10)return'<div id="pagePickerUI"><div class="page-choice-grid">'+ps.map(p=>'<button class="btn page-choice '+(selected.includes(p)?"selected":"")+'" onclick="toggleFinding('+n+','+p+',\'elim\')">'+p+(selected.includes(p)?" ✓":"")+'</button>').join("")+'</div>'+feedback+'</div>';
   const groups=[];for(let i=0;i<ps.length;i+=10)groups.push(ps.slice(i,i+10));
-  return '<div class="range-grid">'+groups.map((g,i)=>'<button class="btn" onclick="showPageGroup('+n+','+i+')">pp. '+g[0]+'–'+g[g.length-1]+'</button>').join("")+'</div><div id="pageChoices"></div>'+feedback;
+  return '<div id="pagePickerUI"><div class="range-grid">'+groups.map((g,i)=>'<button class="btn" onclick="showPageGroup('+n+','+i+')">pp. '+g[0]+'–'+g[g.length-1]+'</button>').join("")+'</div><div id="pageChoices"></div>'+feedback+'</div>';
 }
 function selectedPageFindings(n){
   const selected=db.findings.filter(x=>x.clue===n&&x.type==="elim").map(x=>x.page);
-  if(!selected.length)return"";
-  return '<div class="selected-page-list"><h3>Pages already marked invalid</h3>'+selected.sort((a,b)=>a-b).map(p=>'<div class="selected-page-row"><span>Page '+p+'</span><button class="remove-page" title="Remove page from invalid list" aria-label="Remove page '+p+'" onclick="removePageFinding('+n+','+p+')">×</button></div>').join("")+'</div>';
+  const inner=selected.length?'<h3>Pages already marked invalid</h3>'+selected.sort((a,b)=>a-b).map(p=>'<div class="selected-page-row"><span>Page '+p+'</span><button class="remove-page" title="Remove page from invalid list" aria-label="Remove page '+p+'" onclick="removePageFinding('+n+','+p+')">×</button></div>').join(""):"";
+  return '<div id="selectedPages-'+n+'" class="selected-page-list">'+inner+'</div>';
+}
+function refreshPageSelectionUI(n){
+  const selected=db.findings.filter(x=>x.clue===n&&x.type==="elim").map(x=>x.page);
+  const fb=$("pageFeedback-"+n);if(fb)fb.innerHTML='✓ '+selected.length+' page'+(selected.length===1?"":"s")+' selected as invalid';
+  const list=$("selectedPages-"+n);
+  if(list){list.innerHTML=selected.length?'<h3>Pages already marked invalid</h3>'+selected.sort((a,b)=>a-b).map(p=>'<div class="selected-page-row"><span>Page '+p+'</span><button class="remove-page" title="Remove page from invalid list" aria-label="Remove page '+p+'" onclick="removePageFinding('+n+','+p+')">×</button></div>').join(""):"";}
 }
 function showPageGroup(n,g){
+  window.pageDrillGroup={n:n,g:g};
   const selected=db.findings.filter(x=>x.clue===n&&x.type==="elim").map(x=>x.page),ps=pages().filter(p=>status(p)!=="elim"||selected.includes(p)),group=ps.slice(g*10,g*10+10);
   $("pageChoices").innerHTML='<div class="saved-inputs"><div class="page-choice-grid">'+group.map(p=>'<button class="btn page-choice '+(selected.includes(p)?"selected":"")+'" onclick="toggleFinding('+n+','+p+',\'elim\')">'+p+(selected.includes(p)?" ✓":"")+'</button>').join("")+'</div></div>';
 }
 function removePageFinding(n,p){
   const before=snapshot(db.findings),idx=db.findings.findIndex(x=>x.clue===n&&x.page===p&&x.type==="elim");
   if(idx>=0){db.findings.splice(idx,1);const after=snapshot(db.findings);recordHistory(n,"Page finding removed","findings",before,after);save();}
-  openClue(n);
+  refreshPageSelectionUI(n);
+  if(window.pageDrillGroup&&window.pageDrillGroup.n===n){showPageGroup(n,window.pageDrillGroup.g);}
 }
 function toggleFinding(n,p,type){
   const before=snapshot(db.findings),idx=db.findings.findIndex(x=>x.clue===n&&x.page===p&&x.type===type);
   if(idx>=0)db.findings.splice(idx,1);else db.findings.push({clue:n,page:p,type:type});
   const after=snapshot(db.findings);
   recordHistory(n,(idx>=0?"Page finding removed":"Page marked invalid"),"findings",before,after);
-  save();openClue(n);
-}
-function namedPagePicker(kind){
-  const ps=pages(),current=db.clues[6]&&db.clues[6][kind];
-  if(ps.length<=10)return'<div class="page-choice-grid">'+ps.map(p=>'<button class="btn page-choice '+(current===p?"selected":"")+'" onclick="chooseAZ(\''+kind+'\','+p+')">'+p+(current===p?" ✓":"")+'</button>').join("")+'</div>';
-  const groups=[];for(let i=0;i<ps.length;i+=10)groups.push(ps.slice(i,i+10));
-  return'<div class="range-grid">'+groups.map((g,i)=>'<button class="btn" onclick="showAZGroup(\''+kind+'\','+i+')">pp. '+g[0]+'–'+g[g.length-1]+'</button>').join("")+'</div><div id="azChoices"></div>';
-}
-function showAZGroup(kind,g){
-  const ps=pages(),group=ps.slice(g*10,g*10+10),current=db.clues[6]&&db.clues[6][kind];
-  $("azChoices").innerHTML='<div class="saved-inputs"><div class="page-choice-grid">'+group.map(p=>'<button class="btn page-choice '+(current===p?"selected":"")+'" onclick="chooseAZ(\''+kind+'\','+p+')">'+p+(current===p?" ✓":"")+'</button>').join("")+'</div></div>';
-}
-function chooseAZ(kind,p){
-  const before=snapshot(db.clues[6]||{});
-  db.clues[6]=Object.assign({},db.clues[6]||{}, {[kind]:p});
-  const after=snapshot(db.clues[6]);
-  recordHistory(6,(kind==="anna"?"Anna":"Zack")+" page selected","clues",before,after);
-  const fb=snapshot(db.findings);
-  db.findings=db.findings.filter(x=>!(x.clue===6&&x.type==="elim"));
-  if(db.clues[6].anna&&db.clues[6].zack){
-    const lo=Math.min(db.clues[6].anna,db.clues[6].zack),hi=Math.max(db.clues[6].anna,db.clues[6].zack);
-    pages().filter(p=>p<=lo||p>=hi).forEach(p=>db.findings.push({clue:6,page:p,type:"elim"}));
-  }
-  const fa=snapshot(db.findings);
-  if(JSON.stringify(fb)!==JSON.stringify(fa))recordHistory(6,"Clue 6 page range recalculated","findings",fb,fa);
-  save();openClue(6);
-}
-function hasChapterFinding(n,ch){return db.findings.some(x=>x.clue===n&&x.type==="chapter"&&x.chapter===ch)}
-function toggleChapter(n,ch){
-  const before=snapshot(db.findings),idx=db.findings.findIndex(x=>x.clue===n&&x.type==="chapter"&&x.chapter===ch);
-  if(idx>=0)db.findings.splice(idx,1);else db.findings.push({clue:n,type:"chapter",chapter:+ch});
-  const after=snapshot(db.findings);recordHistory(n,idx>=0?"Chapter exclusion removed":"Chapter marked invalid","findings",before,after);save();openClue(n);
-}
-function inputLabel(x){
-  if(x.type==="elim")return"Page "+x.page+" · invalid";
-  if(x.type==="source")return"Page "+x.page+" · reference";
-  if(x.type==="chapter")return"Chapter "+x.chapter+" · invalid";
-  return"Recorded input";
-}
-function clueInputs(n){
-  return db.history.filter(h=>+h.clue===n&&!h.undone);
+  save();refreshPageSelectionUI(n);
+  if(window.pageDrillGroup&&window.pageDrillGroup.n===n){showPageGroup(n,window.pageDrillGroup.g);}
 }
 function openInputs(n){
   const f=db.findings.filter(x=>x.clue===n),h=clueInputs(n);
