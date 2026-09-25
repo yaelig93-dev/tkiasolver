@@ -528,6 +528,60 @@ function toggleFinding(n,p,type){
   save();refreshPageSelectionUI(n);
   if(window.pageDrillGroup&&window.pageDrillGroup.n===n){showPageGroup(n,window.pageDrillGroup.g);}
 }
+function toggleFinding(n,p,type){
+  const before=snapshot(db.findings),idx=db.findings.findIndex(x=>x.clue===n&&x.page===p&&x.type===type);
+  if(idx>=0)db.findings.splice(idx,1);else db.findings.push({clue:n,page:p,type:type});
+  const after=snapshot(db.findings);
+  recordHistory(n,(idx>=0?"Page finding removed":"Page marked invalid"),"findings",before,after);
+  save();refreshPageSelectionUI(n);
+  if(window.pageDrillGroup&&window.pageDrillGroup.n===n){showPageGroup(n,window.pageDrillGroup.g);}
+}
+function namedPagePicker(kind){
+  const ps=pages(),current=db.clues[6]&&db.clues[6][kind];
+  if(ps.length<=10)return'<div class="page-choice-grid">'+ps.map(p=>'<button class="btn page-choice '+(current===p?"selected":"")+'" onclick="chooseAZ(\''+kind+'\','+p+')">'+p+(current===p?" ✓":"")+'</button>').join("")+'</div>';
+  const groups=[];for(let i=0;i<ps.length;i+=10)groups.push(ps.slice(i,i+10));
+  return'<div class="range-grid">'+groups.map((g,i)=>'<button class="btn" onclick="showAZGroup(\''+kind+'\','+i+')">pp. '+g[0]+'–'+g[g.length-1]+'</button>').join("")+'</div><div id="azChoices"></div>';
+}
+function showAZGroup(kind,g){
+  window.azDrillGroup={kind:kind,g:g};
+  const ps=pages(),group=ps.slice(g*10,g*10+10),current=db.clues[6]&&db.clues[6][kind];
+  $("azChoices").innerHTML='<div class="saved-inputs"><div class="page-choice-grid">'+group.map(p=>'<button class="btn page-choice '+(current===p?"selected":"")+'" onclick="chooseAZ(\''+kind+'\','+p+')">'+p+(current===p?" ✓":"")+'</button>').join("")+'</div></div>';
+}
+function chooseAZ(kind,p){
+  const before=snapshot(db.clues[6]||{});
+  db.clues[6]=Object.assign({},db.clues[6]||{}, {[kind]:p});
+  const after=snapshot(db.clues[6]);
+  recordHistory(6,(kind==="anna"?"Anna":"Zack")+" page selected","clues",before,after);
+  const fb=snapshot(db.findings);
+  db.findings=db.findings.filter(x=>!(x.clue===6&&x.type==="elim"));
+  if(db.clues[6].anna&&db.clues[6].zack){
+    const lo=Math.min(db.clues[6].anna,db.clues[6].zack),hi=Math.max(db.clues[6].anna,db.clues[6].zack);
+    pages().filter(p=>p<=lo||p>=hi).forEach(p=>db.findings.push({clue:6,page:p,type:"elim"}));
+  }
+  const fa=snapshot(db.findings);
+  if(JSON.stringify(fb)!==JSON.stringify(fa))recordHistory(6,"Clue 6 page range recalculated","findings",fb,fa);
+  save();
+  const host=document.getElementById("azChoices");
+  if(host){
+    const current=db.clues[6]&&db.clues[6][kind],ps=pages(),g=window.azDrillGroup&&window.azDrillGroup.kind===kind?window.azDrillGroup.g:0,group=ps.slice(g*10,g*10+10);
+    host.innerHTML='<div class="saved-inputs"><div class="page-choice-grid">'+group.map(x=>'<button class="btn page-choice '+(current===x?"selected":"")+'" onclick="chooseAZ(\''+kind+'\','+x+')">'+x+(current===x?" ✓":"")+'</button>').join("")+'</div></div>';
+  }
+}
+function hasChapterFinding(n,ch){return db.findings.some(x=>x.clue===n&&x.type==="chapter"&&x.chapter===ch)}
+function toggleChapter(n,ch){
+  const before=snapshot(db.findings),idx=db.findings.findIndex(x=>x.clue===n&&x.type==="chapter"&&x.chapter===ch);
+  if(idx>=0)db.findings.splice(idx,1);else db.findings.push({clue:n,type:"chapter",chapter:+ch});
+  const after=snapshot(db.findings);recordHistory(n,idx>=0?"Chapter exclusion removed":"Chapter marked invalid","findings",before,after);save();openClue(n);
+}
+function inputLabel(x){
+  if(x.type==="elim")return"Page "+x.page+" · invalid";
+  if(x.type==="source")return"Page "+x.page+" · reference";
+  if(x.type==="chapter")return"Chapter "+x.chapter+" · invalid";
+  return"Recorded input";
+}
+function clueInputs(n){
+  return db.history.filter(h=>+h.clue===n&&!h.undone);
+}
 function openInputs(n){
   const f=db.findings.filter(x=>x.clue===n),h=clueInputs(n);
   const rows=f.map(x=>'<div class="saved-row"><span>'+esc(inputLabel(x))+'</span><button class="btn small" onclick="removeFindingFromPopup('+n+',\''+encodeURIComponent(JSON.stringify(x))+'\')">Undo</button></div>').join("");
