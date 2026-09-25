@@ -362,8 +362,12 @@ function addChapter(){
   openModal('<button class="close" onclick="closeModal()">×</button><h2 class="modal-title">Add Chapter</h2><div class="field"><label>Chapter number</label><input id="cn" type="number"></div><div class="field"><label>Chapter title</label><input id="ct"></div><div class="field"><label>Start page</label><input id="cs" type="number"></div><div class="field"><label>End page</label><input id="ce" type="number"></div><button class="btn primary" onclick="saveChapter()">Save Chapter</button>');
 }
 function saveChapter(){
-  const n=+$("cn").value,s=+$("cs").value,e=+$("ce").value;
+  const n=+$("cn").value,s=+$("cs").value,e=+$("ce").value,bookPages=pages();
   if(!n||!s||!e)return;
+  if(!bookPages.includes(s)||!bookPages.includes(e)||s>e){
+    openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">INVALID PAGE RANGE</span><h2 class="modal-title">Chapter pages are outside the case range</h2><p class="sub">Chapter start and end pages must both exist in the book range and the start page must come first.</p><button class="btn primary" onclick="closeModal()">OK</button>');
+    return;
+  }
   db.setup.chapters[n]={title:$("ct").value.trim(),start:s,end:e};save();closeModal();render("setup");
 }
 function delChapter(n){delete db.setup.chapters[n];save();render("setup")}
