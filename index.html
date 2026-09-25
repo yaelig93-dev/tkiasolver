@@ -595,4 +595,3 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
 const start=currentRoute();render(start);
 </script>
 </body></html>
-function deleteFinding(n,i){var before=snapshot(db.findings);if(i>=0)db.findings.splice(i,1);var after=snapshot(db.findings);recordHistory(n,"Input removed","findings",before,after);save();openClue(n)}
