@@ -28,23 +28,23 @@ body{overflow-x:hidden}
 button,input,select{font:inherit}
 button{cursor:pointer;-webkit-tap-highlight-color:transparent}
 #app{min-height:100dvh}
-.top{position:sticky;top:0;z-index:30;background:var(--cream);border-bottom:4px solid var(--ink);box-shadow:0 4px 0 rgba(25,26,21,.14)}
-.bar{max-width:1180px;margin:auto;padding:9px 16px 7px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.top{position:sticky;top:0;z-index:30;background:var(--cream);border-bottom:4px solid var(--ink);box-shadow:0 4px 0 rgba(25,26,21,.14);padding-top:env(safe-area-inset-top)}
+.bar{max-width:1180px;margin:auto;padding:15px 16px 11px;display:flex;align-items:center;justify-content:space-between;gap:14px}
 .brand{display:flex;align-items:center;gap:10px;min-width:0}
 .mark{width:43px;height:43px;display:grid;place-items:center;background:var(--pink);color:var(--cream);font-weight:1000;font-size:17px;transform:rotate(-2deg);box-shadow:4px 4px 0 var(--blue);border:2px solid var(--ink);flex:0 0 auto}
-.brand b{font-size:19px;line-height:1;display:block;letter-spacing:-.03em}
-.brand small{font-size:12px;font-weight:850;color:var(--pink-dark);display:block;margin-top:3px}
+.brand b{font-size:25px;line-height:1;display:block;letter-spacing:-.03em}
+.brand small{font-size:16px;font-weight:850;color:var(--pink-dark);display:block;margin-top:3px}
 .solver-chip{background:var(--blue);color:#fff;padding:7px 11px;border:2px solid var(--ink);font-weight:950;white-space:nowrap;transform:rotate(.8deg)}
-nav{max-width:1180px;margin:auto;padding:0 12px 8px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+nav{max-width:1180px;margin:auto;padding:0 12px 12px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
 nav::-webkit-scrollbar{display:none}
-nav button{border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:4px;padding:7px 11px;white-space:nowrap;font-weight:950;font-size:16px}
-nav button.on{background:var(--pink);color:#fff;border-color:var(--ink)}
+nav button{border:3px solid var(--ink);background:transparent;color:var(--ink);border-radius:5px;padding:11px 15px;white-space:nowrap;font-weight:1000;font-size:18px;min-height:52px}
+nav button.on{background:var(--pink);color:#fff;border-color:var(--ink);box-shadow:3px 3px 0 rgba(25,26,21,.14)}
 main{max-width:1180px;margin:auto;padding:18px 16px 34px}
 h1,h2,h3{font-weight:1000;letter-spacing:-.045em}
 h1{font-size:48px;line-height:.92;margin:0 0 10px}
 h2{font-size:31px;margin:8px 0 12px}
 h3{font-size:21px;margin:10px 0 7px}
-.sub{color:var(--muted);font-size:17px;line-height:1.4;margin:0 0 18px}
+.sub{color:#3f3a35;font-size:17px;line-height:1.4;margin:0 0 18px}
 .card{background:var(--paper);border:3px solid var(--ink);padding:18px;box-shadow:var(--shadow)}
 .btn{border:2px solid var(--ink);background:var(--white);color:var(--ink);border-radius:4px;padding:10px 13px;font-weight:950;box-shadow:3px 3px 0 rgba(25,26,21,.16);min-height:46px}
 .btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(25,26,21,.16)}
@@ -109,7 +109,7 @@ h3{font-size:21px;margin:10px 0 7px}
 .chapter-list{display:grid;gap:7px;margin-top:10px}
 .finding-row{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#fffdf7;border:2px solid var(--line);padding:9px 10px}
 .clue-toolbar{display:flex;align-items:end;justify-content:space-between;gap:14px;margin-bottom:10px}
-.clue-toolbar h1{font-size:42px;margin:0}
+.clue-toolbar h1{font-size:50px;margin:0
 .clue-toolbar .sub{margin:4px 0 0}
 .toolbar-group{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
 .toolbar-group .btn{font-size:15px}
@@ -237,14 +237,14 @@ h3{font-size:21px;margin:10px 0 7px}
 const KEY="tkia_pwa_v1";
 const SOLUTION_ORDER=[1,2,3,5,7,8,6,15,17,12,16,14,4,11,13,9,10,18];
 const CLUE_META={
-1:{stage:1,cat:"Wide elimination",tool:"PEN 68 · 31 · Ultramarine",color:"#2f78d6"},
-2:{stage:1,cat:"Wide elimination",tool:"PEN 68 · 16 · Light emerald",color:"#43c8a3"},
-3:{stage:1,cat:"Wide elimination",tool:"PEN 68 · 24 · Yellow",color:"#f4dc00"},
-5:{stage:1,cat:"Wide elimination",tool:"PEN 68 · 40 · Red",color:"#e33d42"},
-7:{stage:1,cat:"Wide elimination",tool:"PEN 68 · 59 · Light lilac",color:"#9a68d4"},
-8:{stage:1,cat:"Wide elimination",tool:"PEN 68 · 26 · Apricot",color:"#eea16e"},
+1:{stage:1,cat:"Wide elimination",tool:"MARKER 68 · 31 · Ultramarine",color:"#2f78d6"},
+2:{stage:1,cat:"Wide elimination",tool:"MARKER 68 · 16 · Light emerald",color:"#43c8a3"},
+3:{stage:1,cat:"Wide elimination",tool:"MARKER 68 · 24 · Yellow",color:"#f4dc00"},
+5:{stage:1,cat:"Wide elimination",tool:"MARKER 68 · 40 · Red",color:"#e33d42"},
+7:{stage:1,cat:"Wide elimination",tool:"MARKER 68 · 59 · Light lilac",color:"#9a68d4"},
+8:{stage:1,cat:"Wide elimination",tool:"MARKER 68 · 26 · Apricot",color:"#eea16e"},
 6:{stage:2,cat:"Chapters & page ranges",tool:"POINT 88 · 41 · Blue + Page marker · Blue",color:"#238dd3"},
-15:{stage:2,cat:"Chapters & page ranges",tool:"TRACKING ONLY · optional PEN 68 · 13 · Light green",color:"#43c8a3"},
+15:{stage:2,cat:"Chapters & page ranges",tool:"TRACKING ONLY · optional MARKER 68 · 13 · Light green",color:"#43c8a3"},
 17:{stage:2,cat:"Chapters & page ranges",tool:"POINT 88 · 55 · Violet",color:"#8b58cf"},
 12:{stage:2,cat:"Chapters & page ranges",tool:"POINT 88 · 54 · Orange + Page marker · Orange",color:"#f06d31"},
 16:{stage:2,cat:"Chapters & page ranges",tool:"POINT 88 · 44 · Yellow",color:"#f4dc00"},
@@ -327,7 +327,7 @@ function master(){
   const ps=pages(),elim=ps.filter(p=>status(p)==="elim").length,remain=ps.length-elim;
   const done=SOLUTION_ORDER.filter(n=>db.clues[n]&&db.clues[n].done).length;
   const percent=Math.round(done/18*100),killer=db.final&&db.final.name?db.final.name:"";
-  return '<div class="master"><section class="master-head tape"><div><div class="master-kicker">CASE BOARD · 46,600 SUSPECT MURDER MYSTERY</div><h1>THE KILLER<br>ISN’T ALICE.</h1><p>Updated Edition · '+done+' of 18 clues completed</p></div></section><section class="master-board"><div class="master-status"><div class="master-main-stat clickable" onclick="go(\'clues\')"><strong>'+done+' / 18</strong><span>CLUES COMPLETED · OPEN</span></div><div class="master-stat clickable" onclick="window.pageFilter=\'candidate\';go(\'pages\')"><strong>'+remain+'</strong><span>CANDIDATE PAGES · OPEN</span></div><div class="master-stat clickable" onclick="window.pageFilter=\'eliminated\';go(\'pages\')"><strong>'+elim+'</strong><span>PAGES ELIMINATED · OPEN</span></div></div><div><div class="master-progress"><i style="width:'+percent+'%"></i></div><div class="master-progress-label"><span>CASE PROGRESS</span><span>'+percent+'%</span></div></div><div class="clue-dots">'+clues.map(x=>'<div class="clue-dot '+(db.clues[x[0]]&&db.clues[x[0]].done?"done":"")+'" title="Clue '+x[0]+'">'+x[0]+'</div>').join("")+'</div>'+(killer?'<div class="final-master-ribbon"><div><div class="final-kicker">CASE CLOSED · THE KILLER</div><div class="final-name">'+esc(killer)+'</div></div><div class="final-page">'+(db.final.page?'PAGE '+db.final.page:"FINAL ANSWER RECORDED")+'</div></div>':"")+'<div class="master-bottom"><div class="note">'+(killer?"THE CASE IS CLOSED. THE FINAL ANSWER IS RECORDED.":"Final decision happens in Clue 18.")+'</div><div class="actions"><button class="btn primary" onclick="go(\'clues\')">Open Clues</button><button class="btn accent" onclick="go(\'suspect\')">Suspect Verification</button></div></div></section></div>';
+  return '<div class="master"><section class="master-head tape"><div><div class="master-kicker">CASE BOARD · 46,600 SUSPECT MURDER MYSTERY</div><h1>THE KILLER<br>ISN’T ALICE.</h1><p>Updated Edition · '+done+' of 18 clues completed</p></div></section><section class="master-board"><div class="master-status"><div class="master-main-stat clickable" onclick="go(\'clues\')"><strong>'+done+' / 18</strong><span>CLUES COMPLETED · OPEN</span></div><div class="master-stat clickable" onclick="window.pageFilter=\'candidate\';go(\'pages\')"><strong>'+remain+'</strong><span>CANDIDATE PAGES · OPEN</span></div><div class="master-stat clickable" onclick="window.pageFilter=\'eliminated\';go(\'pages\')"><strong>'+elim+'</strong><span>PAGES ELIMINATED · OPEN</span></div></div><div><div class="master-progress"><i style="width:'+percent+'%"></i></div><div class="master-progress-label"><span>CASE PROGRESS</span><span>'+percent+'%</span></div></div><div class="clue-dots">'+clues.map(x=>'<div class="clue-dot '+(db.clues[x[0]]&&db.clues[x[0]].done?"done":"")+'" title="Clue '+x[0]+'">'+x[0]+'</div>').join("")+'</div>'+(killer?'<div class="final-master-ribbon"><div><div class="final-kicker">CASE CLOSED · THE KILLER FOUND</div><div class="final-name">'+esc(killer)+'</div></div><div class="final-page">'+(db.final.page?'PAGE '+db.final.page:"GO CHECK YOUR ANSWER!")+'</div></div>':"")+'<div class="master-bottom"><div class="note">'+(killer?"THE CASE IS CLOSED. THE FINAL ANSWER IS RECORDED.":"Final decision happens in Clue 18.")+'</div><div class="actions"><button class="btn primary" onclick="go(\'clues\')">Open Clues</button><button class="btn accent" onclick="go(\'suspect\')">Suspect Verification</button></div></div></section></div>';
 }
 function pagesStatus(){
   const ps=pages(),filter=window.pageFilter||"all",query=String(window.pageQuery||"").trim();
@@ -397,22 +397,22 @@ function clueClarification(n){
   return {
 1:"Only the name length matters. Three letters or fewer can be crossed out.",
 2:"The initial letter must not be S.",
-3:"Count A, E, I, O and U only. Y does not count. Repeated vowels count separately.",
-4:"A repeated name means the exact same spelling appears at least twice on the same numbered page. Different spellings do not count.",
+3:"Only A, E, I, O and U count as vowels. Y does not count. Repeated vowels count separately — for example, Alan or Brenden contain two vowels.",
+4:"There must be two identical names on a single numbered page. The exact same spelling must appear at least twice; different spellings do not count.",
 5:"Any consecutive repeated letter rules the name out, including repeated vowels.",
-6:"There is one Anna and one Zack. The killer’s page is strictly between their pages.",
-7:"Names that are exactly six letters long are ruled out.",
+6:"The names Anna and Zack each appear only once in the book. The killer’s page number must be strictly between Anna’s page and Zack’s page.",
+7:"This excludes names that are exactly six letters long. Names that are seven, eight or more letters long may not be eliminated by this clue.",
 8:"None of X, Y or Z may appear anywhere in the killer’s name.",
-9:"Read names in normal left-to-right order. The three-letter name can be on the previous or next page if it is within ten names.",
-10:"Use the first name in the main body of the page. Ignore the book title and chapter title. This check can also be run in Suspect Verification.",
+9:"The three-letter name can be on the previous or next page, and the count can continue across a chapter if necessary. It must be no more than ten names away in normal reading order.",
+10:"Use the first name in the main body of the page. Ignore the book title and chapter title. This clue can also be tested directly in Suspect Verification.",
 11:"Count every M-starting name on the page, including duplicates. The page must contain fewer than three.",
-12:"The killer’s page itself counts. Check four pages on either side.",
-13:"Count every name on the numbered page, including duplicates. Ignore the book title and chapter title.",
-14:"Check the physical facing page. Page 2 faces 3, page 4 faces 5, and so on.",
-15:"For this updated edition, the clue is specifically about a city in the chapter title.",
-16:"Sasha can be on the killer’s page itself, or exactly one page before or after.",
-17:"The chapter containing the killer must contain all four Beatles.",
-18:"Enter the final killer here. You may choose a saved Potential Killer or type a name."
+12:"The killer’s own page counts. At least one Kardashian must appear on one of the killer’s page, the four pages before it, or the four pages after it.",
+13:"Count only names in the main text of the numbered page, including duplicates. The book title and chapter title do not count.",
+14:"Check the physical facing page. For example, page 2 faces page 3 and page 4 faces page 5. The facing page must contain a qualifying President first name.",
+15:"Only widely accepted cities count — not small towns, villages, states, etc. A city still counts when the word is used with a different meaning in the chapter title, such as “Pop the Cork.”",
+16:"Sasha may be on the killer’s page itself, or exactly one page before or after.",
+17:"The chapter containing the killer must contain all four Beatles: George, John, Paul and Ringo.",
+18:"This is the final decision. Choose a saved Potential Killer or enter the killer’s name and the page where that name appears."
 }[n]||"Use the book as the source of truth.";
 }
 function negativePagePrompt(n){
@@ -459,7 +459,7 @@ function openClue(n){
   if(n===17)refs=refBox("THE FOUR BEATLES",REFS.beatles,"All four must be in the same chapter.");
   if(n===18){
     if(db.final&&db.final.name){
-      openModal('<div class="final-clue-modal"><button class="close" onclick="closeModal()">×</button><span class="badge">FINAL STAGE · CLUE 18</span><h2 class="modal-title">CASE CLOSED</h2><div class="celebrate-title">THE KILLER IS</div><div class="celebrate-killer">'+esc(db.final.name)+'</div>'+(db.final.page?'<div class="celebrate-page">PAGE '+db.final.page+'</div>':"")+'<div class="celebrate-rule"></div><div class="celebrate-sub">THE FINAL ANSWER HAS BEEN RECORDED.</div><div class="actions" style="margin-top:22px"><button class="btn primary" onclick="closeModal();go(\'master\')">RETURN TO CASE BOARD</button></div></div>');
+      openModal('<div class="final-clue-modal"><button class="close" onclick="closeModal()">×</button><span class="badge">FINAL STAGE · CLUE 18</span><h2 class="modal-title">CASE CLOSED</h2><div class="celebrate-title">THE KILLER IS</div><div class="celebrate-killer">'+esc(db.final.name)+'</div>'+(db.final.page?'<div class="celebrate-page">PAGE '+db.final.page+'</div>':"")+'<div class="celebrate-rule"></div><div class="celebrate-sub">GO CHECK YOUR ANSWER!</div><div class="actions" style="margin-top:22px"><button class="btn primary" onclick="closeModal();go(\'master\')">RETURN TO CASE BOARD</button></div></div>');
     }else{
       openModal('<div class="final-clue-modal"><button class="close" onclick="closeModal()">×</button><span class="badge">FINAL STAGE · CLUE 18</span><h2 class="modal-title">THE KILLER IS…</h2><div class="prompt">This is the final decision. Choose a saved Potential Killer or enter the name that the evidence has led you to.</div>'+body+'</div>');
     }
@@ -564,17 +564,21 @@ function addSources(n){
 }
 function finalClueBody(){
   const potentials=db.potentialKillers||[];
-  return '<div class="final-choice"><div class="field"><label>Killer name</label><input id="finalName" style="font-size:25px;font-weight:950" placeholder="Enter the killer’s name"></div><div class="field"><label>Or choose a Potential Killer</label><select id="finalPotential" style="font-size:21px"><option value="">Choose a Potential Killer</option>'+potentials.map((x,i)=>'<option value="'+i+'">'+esc(x.name)+' · p.'+x.page+'</option>').join("")+'</select></div><button class="btn final-action" onclick="finalSolve()">CONFIRM KILLER NAME</button></div>';
+  return '<div class="final-choice"><div class="field"><label>Killer name</label><input id="finalName" style="font-size:25px;font-weight:950" placeholder="Enter the killer’s name"></div><div class="field"><label>Page containing the killer’s name</label><input id="finalPage" type="number" style="font-size:25px;font-weight:950" placeholder="Page number"></div><div class="field"><label>Or choose a Potential Killer</label><select id="finalPotential" style="font-size:21px" onchange="syncFinalPotential()"><option value="">Choose a Potential Killer</option>'+potentials.map((x,i)=>'<option value="'+i+'">'+esc(x.name)+' · p.'+x.page+'</option>').join("")+'</select></div><button class="btn final-action" onclick="finalSolve()">CONFIRM KILLER NAME</button></div>';
+}
+function syncFinalPotential(){
+  const s=$("finalPotential"),i=s?s.value:"";
+  if(i!==""&&db.potentialKillers[+i]){ $("finalName").value=db.potentialKillers[+i].name; $("finalPage").value=db.potentialKillers[+i].page; }
 }
 function finalSolve(){
-  const typed=($("finalName").value||"").trim(),idx=$("finalPotential").value;
-  let name=typed,page=null;
-  if(!name&&idx!==""){name=db.potentialKillers[+idx].name;page=db.potentialKillers[+idx].page}
-  if(!name){openModal('<button class="close" onclick="closeModal()">×</button><h2 class="modal-title">Enter the killer first</h2><p class="sub">Choose a Potential Killer or type the final name.</p><button class="btn primary" onclick="closeModal();openClue(18)">Back</button>');return}
+  const typed=($("finalName").value||"").trim(),pageInput=+$("finalPage").value,idx=$("finalPotential").value;
+  let name=typed,page=pageInput||null;
+  if(idx!==""){name=db.potentialKillers[+idx].name;page=db.potentialKillers[+idx].page}
+  if(!name||!page){openModal('<button class="close" onclick="closeModal()">×</button><h2 class="modal-title">Final answer incomplete</h2><p class="sub">Enter the killer’s name and the page where that name appears, or choose a Potential Killer.</p><button class="btn primary" onclick="closeModal();openClue(18)">Back to Final Clue</button>');return}
   const before=snapshot(db.final);db.final={name:name,page:page,createdAt:new Date().toISOString()};recordHistory(18,"Final killer recorded","final",before,db.final);const cb=snapshot(db.clues);db.clues[18]={done:true};recordHistory(18,"Clue completed","clues",cb,db.clues);save();showCelebration(name,page);
 }
 function showCelebration(name,page){
-  openModal('<div class="case-closed"><div class="celebrate">★ ★ ★</div><div class="celebrate-title">CASE CLOSED</div><div style="font-size:17px;font-weight:1000;letter-spacing:.12em">THE 46,600 SUSPECT MURDER MYSTERY</div><div class="celebrate-killer">'+esc(name)+'</div>'+(page?'<div class="celebrate-page">PAGE '+page+'</div>':"")+'<div class="celebrate-rule"></div><div class="celebrate-sub">THE EVIDENCE HAS SPOKEN.<br>THE CASE IS SOLVED.</div><div style="font-size:34px;margin-top:18px">◆ ◆ ◆</div></div>');
+  openModal('<div class="case-closed"><div class="celebrate">★ ★ ★</div><div class="celebrate-title">CASE CLOSED</div><div style="font-size:17px;font-weight:1000;letter-spacing:.12em">THE 46,600 SUSPECT MURDER MYSTERY</div><div class="celebrate-killer">'+esc(name)+'</div><div class="celebrate-page">PAGE '+page+'</div><div class="celebrate-rule"></div><div class="celebrate-sub">THE EVIDENCE HAS SPOKEN.<br>THE CASE IS SOLVED.</div><div style="font-size:34px;margin-top:18px">◆ ◆ ◆</div><button class="btn primary final-return" style="margin-top:22px;width:100%;font-size:22px" onclick="closeModal();go(\'master\')">RETURN TO CASE BOARD</button></div>');
 }
 function suspect(){
   const names=db.eliminatedNames||[],pots=db.potentialKillers||[];
@@ -586,16 +590,30 @@ function checkSuspect(){
   const checks=[1,2,3,5,7,8,4,9,10,11,12,13,14,15,16,17];
   openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">SUSPECT</span><h2 class="modal-title">'+esc(n)+'</h2><p class="sub">Run the relevant checks. If the suspect fails one, record the failure immediately.</p>'+checks.map(c=>'<div class="verify-row"><div><b>Clue '+c+'</b><small>'+esc(clues[c-1][1])+'</small></div><button class="btn danger" onclick="failSuspect('+c+','+p+',\''+encodeURIComponent(n)+'\')">Fails</button></div>').join("")+'<div class="line"></div><button class="btn accent" style="width:100%" onclick="markPotentialKiller(\''+encodeURIComponent(n)+'\','+p+')">All checks passed — Add Potential Killer</button>');
 }
-function markerForClue(n){return CLUE_META[n]||{tool:"Use the clue’s marking tool",color:"#c0488f"}}
+function markerForClue(n){const m=CLUE_META[n]||{tool:"Use the clue’s marking tool",color:"#c0488f"};return Object.assign({},m,{tool:(m.tool||"").replace(/^TRACKING ONLY\s*·\s*/i,"").replace(/\s*optional\s+/i,"")})}
 function failSuspect(clueNo,p,encoded){
-  const name=decodeURIComponent(encoded),m=markerForClue(clueNo);
+  const name=decodeURIComponent(encoded),m=markerForClue(clueNo),label=(m.tool||"").replace(/^TRACKING ONLY\s*·\s*/i,"").replace(/\s*optional\s+/i,"");
   const beforeN=snapshot(db.eliminatedNames),beforeF=snapshot(db.findings);
-  if(!db.eliminatedNames.some(x=>x.name.toLowerCase()===name.toLowerCase()))db.eliminatedNames.push({name:name,page:p,clue:clueNo,marker:m.tool,color:m.color});
+  if(!db.eliminatedNames.some(x=>x.name.toLowerCase()===name.toLowerCase()))db.eliminatedNames.push({name:name,page:p,clue:clueNo,marker:label,color:m.color});
   if(!db.findings.some(x=>x.clue===clueNo&&x.page===p&&x.type==="suspect"))db.findings.push({clue:clueNo,page:p,type:"suspect",name:name});
   recordHistory(clueNo,"Suspect name eliminated","eliminatedNames",beforeN,db.eliminatedNames);
   recordHistory(clueNo,"Suspect failed clue","findings",beforeF,db.findings);
   save();
-  openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">NAME ELIMINATED</span><h2 class="modal-title">'+esc(name)+'</h2><div class="marker-callout"><span class="marker-dot" style="background:'+m.color+'"></span>Mark the name with: '+esc(m.tool)+'</div><p class="sub" style="margin-top:12px">The name is now in the Eliminated Names list even if the page itself remains a candidate.</p><div class="actions"><button class="btn primary" onclick="closeModal();render(\'suspect\')">Back to Suspect Verification</button><button class="btn" onclick="closeModal()">Stay Here</button></div>');
+  openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">NAME ELIMINATED</span><h2 class="modal-title">'+esc(name)+'</h2><div class="marker-callout"><span class="marker-dot" style="background:'+m.color+'"></span>Mark the name with: '+esc(label)+'</div><p class="sub" style="margin-top:12px">The name is now in the Eliminated Names list. The page may still remain a candidate.</p><div class="suspect-note">What do you want to do with this name?</div><div class="actions"><button class="btn danger" onclick="closeModal();askEliminateSuspectPage('+clueNo+','+p+')">Eliminate the page too</button><button class="btn accent" onclick="closeModal();keepPotentialAfterFailure(\''+encodeURIComponent(name)+'\','+p+')">Keep as Potential Killer</button><button class="btn" onclick="closeModal();render(\'suspect\')">Keep Page as Candidate</button></div>');
+}
+function askEliminateSuspectPage(clueNo,p){
+  openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">PAGE DECISION</span><h2 class="modal-title">Eliminate page '+p+'?</h2><p class="sub">If there are no other viable names on this page, you can eliminate the page as well.</p><div class="actions"><button class="btn" onclick="closeModal();render(\'suspect\')">Keep Page</button><button class="btn danger" onclick="eliminateSuspectPage('+clueNo+','+p+')">Eliminate Page</button></div>');
+}
+function eliminateSuspectPage(clueNo,p){
+  const before=snapshot(db.findings);
+  if(!db.findings.some(x=>x.clue===clueNo&&x.page===p&&x.type==="elim"))db.findings.push({clue:clueNo,page:p,type:"elim"});
+  const after=snapshot(db.findings);recordHistory(clueNo,"Page eliminated after suspect check","findings",before,after);save();closeModal();render("suspect");
+}
+function keepPotentialAfterFailure(encoded,p){
+  const name=decodeURIComponent(encoded);
+  const exists=db.potentialKillers.some(x=>x.name.toLowerCase()===name.toLowerCase());
+  if(!exists){const before=snapshot(db.potentialKillers);db.potentialKillers.push({name:name,page:p});recordHistory(0,"Potential Killer kept after failed check","potentialKillers",before,db.potentialKillers);}
+  save();closeModal();render("suspect");
 }
 function markPotentialKiller(encoded,p){
   const name=decodeURIComponent(encoded),exists=db.potentialKillers.some(x=>x.name.toLowerCase()===name.toLowerCase());
