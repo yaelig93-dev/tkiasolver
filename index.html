@@ -23,17 +23,17 @@
   --shadow:7px 8px 0 rgba(25,26,21,.16),0 14px 24px rgba(25,26,21,.12)
 }
 *{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:var(--pink);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;font-size:18px}
+html,body{margin:0;min-height:100%;background:var(--cream);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;font-size:18px}
 body{overflow-x:hidden}
 button,input,select{font:inherit}
 button{cursor:pointer;-webkit-tap-highlight-color:transparent}
-#app{min-height:100dvh}
+#app{min-height:100dvh;background:var(--pink)}
 .top{position:sticky;top:0;z-index:30;background:var(--cream);border-bottom:4px solid var(--ink);box-shadow:0 4px 0 rgba(25,26,21,.14);padding-top:env(safe-area-inset-top)}
-.bar{max-width:1180px;margin:auto;padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.bar{max-width:1180px;margin:auto;padding:18px 16px 12px;display:flex;align-items:center;justify-content:space-between;gap:14px}
 .brand{display:flex;align-items:center;gap:10px;min-width:0}
-.mark{width:48px;height:48px;display:grid;place-items:center;background:var(--pink);color:var(--cream);font-weight:1000;font-size:17px;transform:rotate(-2deg);box-shadow:4px 4px 0 var(--blue);border:2px solid var(--ink);flex:0 0 auto}
-.brand b{font-size:25px;line-height:1;display:block;letter-spacing:-.03em}
-.brand small{font-size:15px;font-weight:850;color:var(--pink-dark);display:block;margin-top:3px}
+.mark{width:54px;height:54px;display:grid;place-items:center;background:var(--pink);color:var(--cream);font-weight:1000;font-size:17px;transform:rotate(-2deg);box-shadow:4px 4px 0 var(--blue);border:2px solid var(--ink);flex:0 0 auto}
+.brand b{font-size:31px;line-height:.96;display:block;letter-spacing:-.04em}
+.brand small{font-size:16px;font-weight:850;color:var(--pink-dark);display:block;margin-top:3px}
 .solver-chip{background:var(--blue);color:#fff;padding:7px 11px;border:2px solid var(--ink);font-weight:950;white-space:nowrap;transform:rotate(.8deg)}
 nav{max-width:1180px;margin:auto;padding:0 12px 11px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
 nav::-webkit-scrollbar{display:none}
@@ -86,10 +86,10 @@ h3{font-size:21px;margin:10px 0 7px}
 .master-name{display:none}
 .master-board{background:var(--paper);border:3px solid var(--ink);box-shadow:var(--shadow);padding:16px 18px;display:grid;grid-template-rows:auto auto 1fr auto;gap:12px;min-height:0}
 .master-status{display:grid;grid-template-columns:1.3fr .7fr .7fr;gap:10px;align-items:stretch}
-.master-main-stat{background:var(--cream);border:2px solid var(--ink);padding:12px 14px}.master-stat.candidate-stat{background:#e5edf5;border-color:#6f91b5}.master-stat.eliminated-stat{background:#f3d9e5;border-color:var(--pink)}
+.master-main-stat{background:var(--cream);border:3px solid var(--ink);padding:12px 14px;box-shadow:5px 6px 0 rgba(25,26,21,.13);border-top:8px solid var(--pink)}.master-stat.candidate-stat{background:var(--cream);border:3px solid var(--ink);border-top:8px solid var(--blue);padding:11px 12px;box-shadow:5px 6px 0 rgba(25,26,21,.13)}.master-stat.eliminated-stat{background:var(--cream);border:3px solid var(--ink);border-top:8px solid var(--pink-dark);padding:11px 12px;box-shadow:5px 6px 0 rgba(25,26,21,.13)}
 .master-main-stat strong{font-size:48px;line-height:1;display:block}
 .master-main-stat span{font-size:15px;font-weight:950}
-.master-stat{background:#fffdf7;border:2px solid var(--line);padding:11px 12px}
+.master-stat{background:var(--cream);border:3px solid var(--ink);padding:11px 12px}
 .master-stat strong{font-size:34px;line-height:1;display:block}
 .master-stat span{font-size:14px;font-weight:900;color:var(--muted)}
 .master-progress{height:18px;border:2px solid var(--ink);background:#e3d4b5;display:flex;overflow:hidden}
@@ -173,9 +173,9 @@ h3{font-size:21px;margin:10px 0 7px}
 @media(max-width:700px){
   html,body{font-size:17px}
   main{padding:12px 10px 28px}
-  .bar{padding:10px 10px 8px}
-  .brand b{font-size:18px}
-  .brand small{font-size:12px}
+  .bar{padding:13px 10px 9px}
+  .brand b{font-size:22px}
+  .brand small{font-size:13px}
   .solver-chip{font-size:12px;padding:6px 8px}
   nav{padding:0 8px 7px}
   nav button{font-size:16px;padding:8px 11px;min-height:44px}
@@ -203,9 +203,9 @@ h3{font-size:21px;margin:10px 0 7px}
 <style id="polish-final-v3">
 .master-stat.clickable,.master-main-stat.clickable{cursor:pointer;transition:transform .12s ease,box-shadow .12s ease}
 .master-stat.clickable:hover,.master-main-stat.clickable:hover{transform:translateY(-2px);box-shadow:5px 6px 0 rgba(25,26,21,.14)}
-.final-master-ribbon{margin-top:14px;background:linear-gradient(120deg,var(--cream) 0%,#f0d8e4 52%,#dfe3f0 100%);color:var(--ink);border:4px solid var(--ink);padding:20px 22px;box-shadow:8px 8px 0 rgba(25,26,21,.18);display:block;text-align:center;position:relative;overflow:hidden}
+.final-master-ribbon{margin-top:14px;background:linear-gradient(120deg,#4f3150 0%,var(--pink) 52%,#5f6f9f 100%);color:#fff;border:4px solid var(--ink);padding:20px 22px;box-shadow:8px 8px 0 rgba(25,26,21,.18);display:block;text-align:center;position:relative;overflow:hidden}
 .final-master-ribbon:after{content:"";position:absolute;width:180px;height:180px;border:18px solid rgba(255,255,255,.1);border-radius:50%;right:-70px;top:-105px}
-.final-master-ribbon .final-kicker{color:var(--pink-dark);font-size:12px;font-weight:1000;letter-spacing:.2em;position:relative;z-index:1}
+.final-master-ribbon .final-kicker{color:#fff0f7;font-size:12px;font-weight:1000;letter-spacing:.2em;position:relative;z-index:1}
 .final-master-ribbon .final-name{font-size:clamp(34px,4vw,48px);font-weight:1000;line-height:1;margin:7px 0;position:relative;z-index:1}
 .final-master-ribbon .final-page{font-size:15px;font-weight:1000;letter-spacing:.08em;position:relative;z-index:1}
 .page-controls{background:var(--cream);border:3px solid var(--ink);padding:10px;box-shadow:4px 4px 0 rgba(25,26,21,.1)}
@@ -511,6 +511,23 @@ function removePageFinding(n,p){
   const before=snapshot(db.findings),idx=db.findings.findIndex(x=>x.clue===n&&x.page===p&&x.type==="elim");
   if(idx>=0){db.findings.splice(idx,1);const after=snapshot(db.findings);recordHistory(n,"Page finding removed","findings",before,after);save();}
   openClue(n);
+}
+function toggleFinding(n,p,type){
+  const before=snapshot(db.findings),idx=db.findings.findIndex(x=>x.clue===n&&x.page===p&&x.type===type);
+  if(idx>=0)db.findings.splice(idx,1);else db.findings.push({clue:n,page:p,type:type});
+  const after=snapshot(db.findings);
+  recordHistory(n,(idx>=0?"Page finding removed":"Page marked invalid"),"findings",before,after);
+  save();openClue(n);
+}
+function namedPagePicker(kind){
+  const ps=pages(),current=db.clues[6]&&db.clues[6][kind];
+  if(ps.length<=10)return'<div class="page-choice-grid">'+ps.map(p=>'<button class="btn page-choice '+(current===p?"selected":"")+'" onclick="chooseAZ(\''+kind+'\','+p+')">'+p+(current===p?" ✓":"")+'</button>').join("")+'</div>';
+  const groups=[];for(let i=0;i<ps.length;i+=10)groups.push(ps.slice(i,i+10));
+  return'<div class="range-grid">'+groups.map((g,i)=>'<button class="btn" onclick="showAZGroup(\''+kind+'\','+i+')">pp. '+g[0]+'–'+g[g.length-1]+'</button>').join("")+'</div><div id="azChoices"></div>';
+}
+function showAZGroup(kind,g){
+  const ps=pages(),group=ps.slice(g*10,g*10+10),current=db.clues[6]&&db.clues[6][kind];
+  $("azChoices").innerHTML='<div class="saved-inputs"><div class="page-choice-grid">'+group.map(p=>'<button class="btn page-choice '+(current===p?"selected":"")+'" onclick="chooseAZ(\''+kind+'\','+p+')">'+p+(current===p?" ✓":"")+'</button>').join("")+'</div></div>';
 }
 function chooseAZ(kind,p){
   const before=snapshot(db.clues[6]||{});
