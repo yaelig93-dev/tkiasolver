@@ -3,6 +3,9 @@
   "short_name":"TKIA Case Board",
   "start_url":"./",
   "display":"standalone",
-  "background_color":"#f8f6f1",
-  "theme_color":"#243047"
+  "background_color":"#eadbbc",
+  "theme_color":"#c0488f",
+  "icons":[
+    {"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
 }
