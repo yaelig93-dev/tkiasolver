@@ -271,13 +271,13 @@ h3{font-size:21px;margin:10px 0 7px}
 .chapter-impossible-marker{position:absolute;right:-4px;top:9px;width:10px;height:42px;background:#d94b4b;border:2px solid var(--ink);box-shadow:2px 2px 0 rgba(25,26,21,.12);transform:rotate(2deg);z-index:2}
 .chapter-impossible-marker:before{content:"";position:absolute;left:-2px;bottom:-8px;border-left:5px solid transparent;border-right:5px solid transparent;border-top:8px solid #d94b4b}
 .page-card{position:relative}
-</style></style><style id="layout-tightening">.master-board{grid-template-rows:auto auto auto auto;gap:10px}.clue-dots{align-content:start}</style></head>
+</style><style id="page-marker-legend-polish">.page-marker-legend{display:inline-flex;align-items:center;gap:7px}.chapter-impossible-marker.legend-marker{position:relative;display:inline-block;right:auto;top:auto;width:10px;height:22px;transform:rotate(2deg);vertical-align:-6px}.chapter-impossible-marker.legend-marker:before{bottom:-6px}</style><style id="layout-tightening">.master-board{grid-template-rows:auto auto auto auto;gap:10px}.clue-dots{align-content:start}</style></head>
 <body>
 <div id="app"></div>
 <div id="overlay" class="overlay"><div id="modal" class="modal"></div></div>
 <script>
 const KEY="tkia_pwa_v1";
-const SOLUTION_ORDER=[1,2,3,5,7,8,6,15,17,12,16,14,4,11,13,9,10,18];
+const SOLUTION_ORDER=[15,1,2,3,5,7,8,6,17,12,16,14,4,11,13,9,10,18];
 const CLUE_META={
 1:{stage:1,cat:"Wide elimination",tool:"MARKER 68 · 59 · Light lilac",color:"#c8b7e6"},
 2:{stage:1,cat:"Wide elimination",tool:"MARKER 68 · 11 · Ice blue",color:"#a8d9e8"},
@@ -286,7 +286,7 @@ const CLUE_META={
 7:{stage:1,cat:"Wide elimination",tool:"MARKER 68 · 26 · Apricot",color:"#f1a36f"},
 8:{stage:1,cat:"Wide elimination",tool:"MARKER 68 · 031 · Neon blue",color:"#2798f5"},
 6:{stage:2,cat:"Chapters & page ranges",tool:"POINT 88 · 44 · Yellow + Page marker · Yellow",color:"#f2d43b"},
-15:{stage:2,cat:"Chapters & page ranges",tool:"NO MARKING",color:"#d8d2c7",noTool:true},
+15:{stage:1,cat:"Wide elimination",tool:"NO MARKING",color:"#d8d2c7",noTool:true},
 17:{stage:2,cat:"Chapters & page ranges",tool:"POINT 88 · 41 · Blue",color:"#3f76b5"},
 12:{stage:2,cat:"Chapters & page ranges",tool:"POINT 88 · 54 · Orange + Page marker · Orange",color:"#ef7736"},
 16:{stage:2,cat:"Chapters & page ranges",tool:"POINT 88 · 43 · Light green",color:"#73c97a"},
@@ -404,7 +404,7 @@ function currentRoute(){return location.hash.slice(1)||(!db.setup.first||!db.set
 function go(route){location.hash=route;render(route)}
 function header(route){
   const name=db.setup.solver?esc(db.setup.solver):"";
-  const items=[["master","Master"],["clues","Clues"],["suspect","Suspect Verification"],["pages","Pages & Status"],["archive","Archive"],["setup","Setup"]];
+  const items=[["master","Master"],["clues","Clues"],["pages","Pages & Status"],["suspect","Suspect Verification"],["archive","Archive"],["setup","Setup"]];
   return '<div class="top"><div class="bar"><div class="brand"><div class="mark">A?</div><div><b>The Killer Isn’t Alice</b><small>Case Board'+(name?" · "+name:"")+'</small></div></div></div><nav>'+items.map(x=>'<button type="button" class="'+(route===x[0]?"on":"")+'" onclick="go(\''+x[0]+'\')">'+x[1]+'</button>').join("")+'</nav></div>';
 }
 function render(route){
@@ -424,7 +424,7 @@ function pagesStatus(){
   const ps=pages(),filter=window.pageFilter||"all",query=String(window.pageQuery||"").trim();
   const filtered=ps.filter(p=>{const a=pageAssessment(p);return(filter==="all"||(filter==="candidate"&&a.possible)||(filter==="eliminated"&&!a.possible)||(filter==="action"&&a.needsAction)||(filter==="noaction"&&!a.needsAction))&&(!query||String(p).includes(query))});
   const counts={all:ps.length,candidate:ps.filter(p=>pageAssessment(p).possible).length,eliminated:ps.filter(p=>!pageAssessment(p).possible).length,action:ps.filter(p=>pageAssessment(p).needsAction).length,noaction:ps.filter(p=>!pageAssessment(p).needsAction).length};
-  return '<div class="pages-screen"><div class="screen-heading"><div class="clue-toolbar"><div><h1>PAGES & STATUS</h1><p class="sub">Each page tracks killer possibility and whether work is still needed. Impossible chapters are marked with a red page marker.</p></div></div></div><div class="card"><div class="page-controls"><button class="btn page-filter-btn all-filter '+(filter==="all"?"active":"")+'" onclick="window.pageFilter=\'all\';render(\'pages\')">ALL · '+counts.all+'</button><button class="btn page-filter-btn candidate-filter '+(filter==="candidate"?"active":"")+'" onclick="window.pageFilter=\'candidate\';render(\'pages\')">POSSIBLE · '+counts.candidate+'</button><button class="btn page-filter-btn eliminated-filter '+(filter==="eliminated"?"active":"")+'" onclick="window.pageFilter=\'eliminated\';render(\'pages\')">IMPOSSIBLE · '+counts.eliminated+'</button><button class="btn page-filter-btn check-filter '+(filter==="action"?"active":"")+'" onclick="window.pageFilter=\'action\';render(\'pages\')">NEED TO CHECK · '+counts.action+'</button><button class="btn page-filter-btn no-check-filter '+(filter==="noaction"?"active":"")+'" onclick="window.pageFilter=\'noaction\';render(\'pages\')">NO NEED TO CHECK · '+counts.noaction+'</button><input class="btn" style="flex:1;min-width:150px;text-align:left" value="'+esc(query)+'" placeholder="Find page number" oninput="window.pageQuery=this.value;render(\'pages\')"><button class="btn" onclick="window.pageFilter=\'all\';window.pageQuery=\'\';render(\'pages\')">Clear</button></div><div class="page-cards">'+(filtered.length?filtered.map(p=>{const a=pageAssessment(p),f=db.findings.filter(x=>x.page===p),chapter=chapterForPage(p),chapterImpossible=chapter!=null&&chapterIsImpossible(chapter);return '<div class="page-card '+(a.possible?"candidate":"eliminated")+(chapterImpossible?" chapter-impossible":"")+'" onclick="openPageStatus('+p+')">'+(chapterImpossible?'<span class="chapter-impossible-marker" title="This page is in an impossible chapter"></span>':"")+'<div class="page-number">'+p+'</div><div class="page-state-row"><span class="page-state possibility-state">'+(a.possible?"POSSIBLE":"IMPOSSIBLE")+'</span><span class="page-state work-state '+(a.needsAction?"need-check":"no-need-check")+'">'+(a.needsAction?"NEED TO CHECK":"NO NEED TO CHECK")+'</span></div><div class="page-findings">'+(f.length?(f.length+" finding"+(f.length===1?"":"s")):"No findings yet")+'</div></div>'}).join(""):'<div class="empty">No pages match this filter.</div>')+'</div></div></div>';
+  return '<div class="pages-screen"><div class="screen-heading"><div class="clue-toolbar"><div><h1>PAGES & STATUS</h1><p class="sub">Each page tracks killer possibility and whether work is still needed. <span class="page-marker-legend"><span class="chapter-impossible-marker legend-marker"></span> Impossible chapters are marked with a red page marker.</span></p></div></div></div><div class="card"><div class="page-controls"><button class="btn page-filter-btn all-filter '+(filter==="all"?"active":"")+'" onclick="window.pageFilter=\'all\';render(\'pages\')">ALL · '+counts.all+'</button><button class="btn page-filter-btn candidate-filter '+(filter==="candidate"?"active":"")+'" onclick="window.pageFilter=\'candidate\';render(\'pages\')">POSSIBLE · '+counts.candidate+'</button><button class="btn page-filter-btn eliminated-filter '+(filter==="eliminated"?"active":"")+'" onclick="window.pageFilter=\'eliminated\';render(\'pages\')">IMPOSSIBLE · '+counts.eliminated+'</button><button class="btn page-filter-btn check-filter '+(filter==="action"?"active":"")+'" onclick="window.pageFilter=\'action\';render(\'pages\')">NEED TO CHECK · '+counts.action+'</button><button class="btn page-filter-btn no-check-filter '+(filter==="noaction"?"active":"")+'" onclick="window.pageFilter=\'noaction\';render(\'pages\')">NO NEED TO CHECK · '+counts.noaction+'</button><input class="btn" style="flex:1;min-width:150px;text-align:left" value="'+esc(query)+'" placeholder="Find page number" oninput="window.pageQuery=this.value;render(\'pages\')"><button class="btn" onclick="window.pageFilter=\'all\';window.pageQuery=\'\';render(\'pages\')">Clear</button></div><div class="page-cards">'+(filtered.length?filtered.map(p=>{const a=pageAssessment(p),f=db.findings.filter(x=>x.page===p),chapter=chapterForPage(p),chapterImpossible=chapter!=null&&chapterIsImpossible(chapter);return '<div class="page-card '+(a.possible?"candidate":"eliminated")+(chapterImpossible?" chapter-impossible":"")+'" onclick="openPageStatus('+p+')">'+(chapterImpossible?'<span class="chapter-impossible-marker" title="This page is in an impossible chapter"></span>':"")+'<div class="page-number">'+p+'</div><div class="page-state-row"><span class="page-state possibility-state">'+(a.possible?"POSSIBLE":"IMPOSSIBLE")+'</span><span class="page-state work-state '+(a.needsAction?"need-check":"no-need-check")+'">'+(a.needsAction?"NEED TO CHECK":"NO NEED TO CHECK")+'</span></div><div class="page-findings">'+(f.length?(f.length+" finding"+(f.length===1?"":"s")):"No findings yet")+'</div></div>'}).join(""):'<div class="empty">No pages match this filter.</div>')+'</div></div></div>';
 }
 
 function openPageStatus(p){
@@ -498,12 +498,16 @@ function clueList(){
   const groups=[{id:0,name:"All Clues"},{id:1,name:"Stage 1"},{id:2,name:"Stage 2"},{id:3,name:"Stage 3"},{id:4,name:"Final Stage"}];
   let visible=clues.filter(x=>!selected||CLUE_META[x[0]].stage===selected);
   const order=sortMode==="solution"?SOLUTION_ORDER:clues.map(x=>x[0]);
-  visible.sort((a,b)=>order.indexOf(a[0])-order.indexOf(b[0]));
+  visible.sort((a,b)=>{
+    const ad=!!(db.clues[a[0]]&&db.clues[a[0]].done),bd=!!(db.clues[b[0]]&&db.clues[b[0]].done);
+    if(ad!==bd)return ad?1:-1;
+    return order.indexOf(a[0])-order.indexOf(b[0]);
+  });
   return '<div><div class="screen-heading"><div class="clue-toolbar"><div><h1>CLUES</h1><p class="sub">Follow the working order. Mark a clue complete only when you have finished it.</p></div><div class="toolbar-group">'+(selected===0?'<button class="btn '+(sortMode==="solution"?"active":"")+'" onclick="window.clueSort=\'solution\';render(\'clues\')">Solution Order</button><button class="btn '+(sortMode==="number"?"active":"")+'" onclick="window.clueSort=\'number\';render(\'clues\')">Clue Number</button>':"")+'</div></div></div><div class="progress-line"><i style="width:'+(done/18*100)+'%"></i></div><div class="category-tabs">'+groups.map(g=>'<button class="btn '+(selected===g.id?"active":"")+'" onclick="window.clueCategory='+g.id+';render(\'clues\')">'+g.name+'</button>').join("")+'</div>'+(selected===4?'<div class="final-stage-banner"><strong>FINAL STAGE · CLUE 18</strong><span>The case ends here. Enter the killer’s name only when the evidence is complete.</span></div>':"")+'<div class="clue-grid">'+visible.map(x=>clueCard(x)).join("")+'</div></div>';
 }
 function clueCard(x){
   const n=x[0],m=CLUE_META[n],done=!!(db.clues[n]&&db.clues[n].done),final=n===18;
-  const progress=clueProgressConfig(n),mode=progress?clueProgressMode(n):null,units=progress?clueProgressUnits(n,mode):[],checked=progress?units.filter(id=>clueUnitChecked(n,mode,id)).length:0;
+  const progress=clueProgressConfig(n),mode=progress?clueProgressMode(n):null,units=progress?clueProgressUnits(n,mode):[],relevant=progress?units.filter(id=>clueUnitNeedsAction(n,mode,id)):[],checked=progress?relevant.filter(id=>clueUnitChecked(n,mode,id)).length:0;
   return '<article class="clue-card '+(done?"done ":"")+(final?"final-clue-card":"")+'"><div class="clue-num">'+n+'</div><div><div class="clue-title-big">'+esc(x[1])+(final?"…":"")+'</div><div class="clue-cat">'+(final?"FINAL STAGE":"Stage "+m.stage+" · "+m.cat)+'</div>'+(done?'<div class="clue-status">✓ COMPLETED</div>':progress&&units.length?'<div class="clue-progress-mini">'+checked+'/'+units.length+' '+(mode==="page"?"pages":"chapters")+' checked</div>':"")+'</div><div class="actions">'+(final?'<button class="btn primary" onclick="openClue(18)">Open Final Clue</button>':'<button class="btn primary" onclick="openClue('+n+')">Open</button><button class="btn" onclick="openInputs('+n+')">Inputs</button>')+'</div></article>';
 }
 function complete(n){
@@ -600,7 +604,7 @@ function clueUnitRelevance(n,mode,id){
     if(mode==="chapter"&&chapterIsImpossible(id))return{state:"irrelevant",reason:"This chapter is already impossible as the killer's chapter, so it cannot contribute new evidence to this clue."};
     return{state:"irrelevant",reason:"No page in this unit can currently contribute to this clue."};
   }
-  if(n===9&&mode==="page"&&!killerPossibleOnPage(+id))return{state:"partial",reason:"Clue 9 can reach across page/chapter boundaries because the three-letter name may be up to ten names away. The board does not store name positions, so this page is kept as a conservative partial check."};
+  if(n===9&&mode==="page"&&!killerPossibleOnPage(+id))return{state:"partial",reason:"Clue 9 can cross a page or chapter boundary. Because there are more than ten names on a page, only the adjacent page can still contribute to the ten-name window."};
   if(relevant.length===units.length){
     if(n===12&&mode==="page"&&!killerPossibleOnPage(+id))return{state:"partial",reason:"This page is not a possible killer page, but it is within four pages of a current candidate and may contain the Kardashian evidence."};
     if(n===16&&mode==="page"&&!killerPossibleOnPage(+id))return{state:"partial",reason:"This page is not a possible killer page, but it is within one page of a current candidate and may contain the Sasha evidence."};
@@ -610,7 +614,7 @@ function clueUnitRelevance(n,mode,id){
   if(n===12)return{state:"partial",reason:"Only some pages in this unit are within four pages of a current candidate, so the unit is only partially relevant."};
   if(n===16)return{state:"partial",reason:"Only some pages in this unit are within one page of a current candidate, so the unit is only partially relevant."};
   if(n===14)return{state:"partial",reason:"Only some pages in this unit can be the opposite-page evidence source for a current candidate."};
-  if(n===9)return{state:"partial",reason:"Only part of this unit is inside the conservative ten-page boundary around current candidates; Clue 9 can cross page and chapter boundaries."};
+  if(n===9)return{state:"partial",reason:"Only part of this unit is adjacent to a current candidate; Clue 9 can cross a page or chapter boundary."};
   return{state:"partial",reason:"Only some pages in this unit can currently contribute to this clue."};
 }
 function clueUnitNeedsAction(n,mode,id){return clueUnitRelevance(n,mode,id).state!=="irrelevant";}
