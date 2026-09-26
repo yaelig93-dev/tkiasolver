@@ -707,7 +707,7 @@ function openClue(n){
   }else if(n===18){
     body=finalClueBody();
   }else{
-    body='<button class="btn '+(done?"":"primary")+'" onclick="toggleComplete('+n+')">'+(done?"Undo Completion":"Mark Clue Complete")+'</button>';
+    body="";
   }
   if(n===3)refs=refBox("VOWELS THAT COUNT",REFS.vowels,"Only these five letters count. Y does not.");
   if(n===6)refs=refBox("NAMES TO FIND",["Anna","Zack"],"Exact spellings only.");
