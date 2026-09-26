@@ -604,6 +604,10 @@ function toggleClueUnit(n,mode,id){
 function completeFromProgress(n){
   const cfg=clueProgressConfig(n),mode=clueProgressMode(n),units=clueProgressUnits(n,mode);
   if(!cfg||!units.length||!units.every(id=>clueUnitChecked(n,mode,id)))return;
+  if(n===6&&!(db.clues[6]&&db.clues[6].anna&&db.clues[6].zack)){
+    openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">CLUE 6</span><h2 class="modal-title">One more input is needed</h2><p class="sub">Select both the Anna page and the Zack page before completing this clue.</p><button class="btn primary" onclick="closeModal();openClue(6)">Back to Clue 6</button>');
+    return;
+  }
   complete(n);
 }
 
