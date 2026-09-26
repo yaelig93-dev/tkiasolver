@@ -204,19 +204,22 @@ h3{font-size:21px;margin:10px 0 7px}
 .master-stat.clickable,.master-main-stat.clickable{cursor:pointer;transition:transform .12s ease,box-shadow .12s ease}
 .master-stat.clickable:hover,.master-main-stat.clickable:hover{transform:translateY(-2px);box-shadow:5px 6px 0 rgba(25,26,21,.14)}
 .master-investigation{position:relative}
-.master-evidence{position:relative;min-height:190px;margin:14px 0 0;overflow:hidden;background:var(--cream);border:3px solid var(--ink);box-shadow:5px 6px 0 rgba(25,26,21,.12);padding:20px 26px}
-.master-evidence-words{position:relative;z-index:1;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px 22px;align-items:center;width:84%;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:20px;font-weight:800;line-height:1.35}
-.master-evidence-words span{position:relative;display:inline-block;text-align:left;white-space:nowrap}
-.master-evidence-words .cross{text-decoration:line-through;text-decoration-thickness:3px}
-.master-evidence-words .circle{border:3px solid var(--pink);border-radius:50%;padding:0 10px;transform:rotate(-4deg);width:max-content}
-.master-evidence-words .circle.alt{transform:rotate(3deg)}
-.master-silhouette{position:absolute;right:3%;bottom:-8px;width:150px;height:205px;z-index:2}
-.master-silhouette svg{width:100%;height:100%;display:block}
-.master-postit{position:absolute;z-index:20;left:50%;top:50%;width:min(440px,78%);aspect-ratio:1/1;transform:translate(-50%,-50%) rotate(-2.2deg);background:#f6dc53;color:var(--ink);border:3px solid var(--ink);box-shadow:11px 12px 0 rgba(25,26,21,.22);padding:42px 38px 34px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
-.master-postit:before{content:"";position:absolute;left:50%;top:-12px;transform:translateX(-50%) rotate(1deg);width:112px;height:25px;background:rgba(242,223,0,.72);border:2px solid rgba(25,26,21,.13)}
-.master-postit .final-kicker{color:var(--pink-dark);font-size:16px;font-weight:1000;letter-spacing:.12em}
-.master-postit .final-name{font-size:clamp(42px,5.2vw,62px);font-weight:1000;line-height:.98;margin:12px 0}
-.master-postit .final-page{font-size:19px;font-weight:1000;letter-spacing:.05em}.page-controls{background:var(--cream);border:3px solid var(--ink);padding:10px;box-shadow:4px 4px 0 rgba(25,26,21,.1)}
+.master-investigation{position:relative}
+.master-evidence{position:relative;min-height:190px;margin:14px 0 0;overflow:hidden;background:var(--cream);border:3px solid var(--ink);box-shadow:5px 6px 0 rgba(25,26,21,.12);padding:16px 28px}
+.master-evidence-words{position:relative;z-index:1;width:100%;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:20px;font-weight:800;line-height:1.42;letter-spacing:.01em}
+.master-name-line{display:flex;align-items:center;gap:0;white-space:nowrap;height:29px}
+.master-name-line span{display:inline-block;margin-right:25px;position:relative}
+.master-name-line .marker{background:linear-gradient(transparent 28%,#f4df45 29%,#f4df45 82%,transparent 83%);padding:0 4px}
+.master-name-line .cross{text-decoration:line-through;text-decoration-thickness:3px}
+.master-name-line .circle{border:3px solid var(--pink);border-radius:50%;padding:0 10px;margin-left:-8px;margin-right:22px;transform:rotate(-3deg)}
+.master-name-line .circle.alt{transform:rotate(2deg)}
+.master-silhouette{position:absolute;right:4%;bottom:-8px;width:150px;height:205px;z-index:2;pointer-events:none}
+.master-silhouette img{width:100%;height:100%;display:block;object-fit:contain}
+.master-postit{position:absolute;z-index:20;left:50%;top:13%;width:min(430px,42vw);aspect-ratio:1/1;transform:translateX(-50%) rotate(-3deg);background:#f4dc4d;color:var(--ink);border:3px solid var(--ink);box-shadow:12px 13px 0 rgba(25,26,21,.22);padding:44px 38px 34px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;pointer-events:none}
+.master-postit:before{content:"";position:absolute;left:50%;top:-11px;transform:translateX(-50%) rotate(1deg);width:125px;height:26px;background:rgba(239,224,185,.72);border:1px solid rgba(25,26,21,.12)}
+.master-postit .final-kicker{color:var(--pink-dark);font-size:17px;font-weight:1000;letter-spacing:.1em}
+.master-postit .final-name{font-size:clamp(44px,5.4vw,64px);font-weight:1000;line-height:.96;margin:12px 0}
+.master-postit .final-page{font-size:20px;font-weight:1000;letter-spacing:.04em}.page-controls{background:var(--cream);border:3px solid var(--ink);padding:10px;box-shadow:4px 4px 0 rgba(25,26,21,.1)}
 .page-filter-btn{border:3px solid var(--ink)!important;font-weight:1000}
 .page-filter-btn.all-filter.active{background:var(--blue)!important;color:#fff!important}
 .page-filter-btn.candidate-filter{background:#e5edf5}
@@ -238,16 +241,7 @@ h3{font-size:21px;margin:10px 0 7px}
 .tool-pill.marker-pill .swatch{border-radius:2px}
 @media(max-width:1000px){.page-cards{grid-template-columns:repeat(5,minmax(0,1fr))}}
 @media(max-width:700px){.page-cards{grid-template-columns:repeat(3,minmax(0,1fr))}.final-master-ribbon{display:block}.final-master-ribbon .final-page{margin-top:8px}}
-</style><style id="layout-tightening">.master-board{grid-template-rows:auto auto auto auto;gap:10px}.clue-dots{align-content:start}</style><style id="master-cover-mobile">
-@media(max-width:760px){
-  .master-evidence-words{grid-template-columns:repeat(3,minmax(0,1fr));width:100%;font-size:15px;gap:8px 10px}
-  .master-silhouette{right:1%;width:105px;height:155px}
-  .master-postit{width:min(330px,82vw);padding:34px 24px 28px}
-  .master-postit .final-kicker{font-size:12px}
-  .master-postit .final-name{font-size:clamp(34px,9vw,48px)}
-  .master-postit .final-page{font-size:15px}
-}
-</style></head>
+</style><style id="layout-tightening">.master-board{grid-template-rows:auto auto auto auto;gap:10px}.clue-dots{align-content:start}</style><style id="master-cover-mobile">@media(max-width:760px){.master-evidence-words{font-size:15px;line-height:1.35}.master-name-line{height:25px}.master-name-line span{margin-right:12px}.master-name-line .circle{padding:0 7px;margin-right:10px}.master-silhouette{right:0;width:105px;height:155px}.master-postit{width:min(340px,84vw);top:10%;padding:34px 25px 28px}.master-postit .final-kicker{font-size:12px}.master-postit .final-name{font-size:clamp(34px,9vw,50px)}.master-postit .final-page{font-size:15px}}</style></head>
 <body>
 <div id="app"></div>
 <div id="overlay" class="overlay"><div id="modal" class="modal"></div></div>
@@ -346,7 +340,7 @@ function master(){
   const ps=pages(),elim=ps.filter(p=>status(p)==="elim").length,remain=ps.length-elim;
   const done=SOLUTION_ORDER.filter(n=>db.clues[n]&&db.clues[n].done).length;
   const percent=Math.round(done/18*100),killer=db.final&&db.final.name?db.final.name:"";
-  const evidence='<div class="master-investigation"><div class="master-status"><div class="master-main-stat clickable" onclick="go(\'clues\')"><strong>'+done+' / 18</strong><span>CLUES COMPLETED</span></div><div class="master-stat candidate-stat clickable" onclick="window.pageFilter=\'candidate\';go(\'pages\')"><strong>'+remain+'</strong><span>CANDIDATE PAGES</span></div><div class="master-stat eliminated-stat clickable" onclick="window.pageFilter=\'eliminated\';go(\'pages\')"><strong>'+elim+'</strong><span>PAGES ELIMINATED</span></div></div><div><div class="master-progress"><i style="width:'+percent+'%"></i></div><div class="master-progress-label"><span>CASE PROGRESS</span><span>'+percent+'%</span></div></div><div class="master-evidence"><div class="master-evidence-words"><span>Gordon</span><span class="cross">Hannah</span><span>Heather</span><span class="cross">Faye</span><span class="circle">Anna</span><span>Stella</span><span>Isaac</span><span class="circle alt">Yvette</span><span>Ronnie</span><span class="cross">Erika</span><span>Darren</span><span>Sasha</span><span>Claire</span><span class="cross">Sarah</span><span>Elizabeth</span><span>Ana</span><span>Lottie</span><span>Matthew</span><span class="cross">Jill</span><span>Blake</span><span>Sophie</span><span>Hugh</span><span>Caroline</span><span class="cross">Sebastian</span></div><div class="master-silhouette"><svg viewBox="0 0 180 300" aria-hidden="true"><path fill="var(--ink)" d="M91 8c17 0 28 12 28 29 0 14-6 25-16 31 8 4 15 12 19 24l7 22c3 10 7 22 13 34 6 14 14 29 21 42-7 8-17 11-28 9l-17-31-8 38 9 71c2 17-7 26-21 26-11 0-18-7-19-20l-5-67-8 67c-2 14-9 20-21 20-14 0-22-9-19-25l13-77-20 29c-7 10-15 15-24 11-8-4-10-12-5-20l34-57c7-11 13-25 17-40l7-27c4-12 11-21 21-25-10-7-16-18-16-32C63 20 74 8 91 8z"/><path fill="var(--ink)" d="M72 62c-15 7-24 18-29 34l-13 45-17 28 10 7 28-29 14-38zM111 68c14 6 23 16 28 31l12 37 19 30-10 7-29-30-15-35z"/><path fill="var(--pink)" d="M40 172l72-52 4 8-72 53z"/><path fill="var(--ink)" d="M40 174l-13-5 8-10 13 7z"/></svg></div></div>'+(killer?'<div class="master-postit"><div class="final-kicker">CASE CLOSED · THE KILLER FOUND</div><div class="final-name">'+esc(killer)+'</div><div class="final-page">'+(db.final.page?'PAGE '+db.final.page+' · GO CHECK YOUR ANSWER!':"GO CHECK YOUR ANSWER!")+'</div></div>':"")+'</div>';
+  const evidence=`<div class="master-investigation"><div class="master-status"><div class="master-main-stat clickable" onclick="go('clues')"><strong>${done} / 18</strong><span>CLUES COMPLETED</span></div><div class="master-stat candidate-stat clickable" onclick="window.pageFilter='candidate';go('pages')"><strong>${remain}</strong><span>CANDIDATE PAGES</span></div><div class="master-stat eliminated-stat clickable" onclick="window.pageFilter='eliminated';go('pages')"><strong>${elim}</strong><span>PAGES ELIMINATED</span></div></div><div><div class="master-progress"><i style="width:${percent}%"></i></div><div class="master-progress-label"><span>CASE PROGRESS</span><span>${percent}%</span></div></div><div class="master-evidence"><div class="master-evidence-words"><div class="master-name-line"><span class="marker">Gordon</span><span>Hannah</span><span>Heather</span><span class="cross">Faye</span><span>Anna</span><span>Peter</span></div><div class="master-name-line"><span>Stella</span><span>Isaac</span><span>Yvette</span><span class="marker">Ronnie</span><span>Erika</span><span>Alicia</span></div><div class="master-name-line"><span class="cross">Sebastian</span><span>Kyle</span><span>Erika</span><span>Denise</span><span>Gabriel</span></div><div class="master-name-line"><span>Darren</span><span class="circle">Sasha</span><span>Sophie</span><span>Hugh</span><span>Caroline</span></div><div class="master-name-line"><span>Claire</span><span>Sarah</span><span class="cross">Gabrielle</span><span>Aimee</span></div><div class="master-name-line"><span class="circle alt">Elizabeth</span><span>Ana</span><span>Lottie</span><span>Matthew</span><span>Jill</span><span>Blake</span></div></div><div class="master-silhouette"><img src="cover-silhouette.svg" alt=""></div></div></div>`+(killer?`<div class="master-postit"><div class="final-kicker">CASE CLOSED · THE KILLER FOUND</div><div class="final-name">${esc(killer)}</div><div class="final-page">${db.final.page?'PAGE '+db.final.page+' · GO CHECK YOUR ANSWER!':'GO CHECK YOUR ANSWER!'}</div></div>`:"")+'';
   return '<div class="master"><section class="master-head tape"><div><div class="master-kicker">CASE BOARD · 46,600 SUSPECT MURDER MYSTERY</div><h1>THE KILLER<br>ISN’T ALICE.</h1></div></section><section class="master-board">'+evidence+'<div class="master-bottom"><div class="note">'+(killer?"THE CASE IS CLOSED. THE FINAL ANSWER IS RECORDED.":"Final decision happens in Clue 18.")+'</div><div class="actions"><button class="btn primary" onclick="go(\'clues\')">Open Clues</button><button class="btn accent" onclick="go(\'suspect\')">Suspect Verification</button></div></div></section></div>';
 }
 function pagesStatus(){
