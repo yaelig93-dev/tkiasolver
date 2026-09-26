@@ -243,6 +243,19 @@ h3{font-size:21px;margin:10px 0 7px}
 .check-reasons{background:#fbf1cc;border-color:#cbbd82;color:#665d3c}
 .no-check-reasons{background:#e6e3dc;border-color:#aaa59b;color:#625e55}
 .page-findings{font-size:12px;font-weight:900;opacity:.8}
+.clue-progress{background:#f6ead4;border:2px solid var(--line);padding:12px;margin:12px 0}
+.clue-progress-head{display:flex;align-items:end;justify-content:space-between;gap:10px;margin-bottom:9px}
+.clue-progress-head h3{margin:0;font-size:18px}
+.clue-progress-head .btn.active{background:var(--blue);color:#fff}
+.clue-progress-summary{background:#fffdf7;border:2px solid var(--line);padding:8px 10px;font-size:14px;margin-bottom:9px}
+.clue-progress-summary.complete{background:var(--green-soft);border-color:var(--green);color:#365a40}
+.clue-progress-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;max-height:190px;overflow:auto}
+.clue-progress-unit{min-height:40px;padding:6px 7px;font-size:13px;background:#fffdf7}
+.clue-progress-unit.checked{background:#d8e8dc;border-color:var(--green);color:#365a40;box-shadow:inset 0 0 0 2px var(--green)}
+.clue-progress .sub{font-size:13px}
+.clue-progress-mini{font-size:12px;color:var(--muted);font-weight:950;margin-top:4px}
+@media(max-width:700px){.clue-progress-head{display:block}.clue-progress-head .actions{margin-top:8px}.clue-progress-grid{grid-template-columns:repeat(3,minmax(0,1fr));max-height:230px}}
+
 .tool-pills{display:flex;flex-wrap:wrap;gap:9px}
 .tool-pill.marker-pill{background:#fffdf7}
 .tool-pill.marker-pill .swatch{border-radius:2px}
@@ -480,7 +493,8 @@ function clueList(){
 }
 function clueCard(x){
   const n=x[0],m=CLUE_META[n],done=!!(db.clues[n]&&db.clues[n].done),final=n===18;
-  return '<article class="clue-card '+(done?"done ":"")+(final?"final-clue-card":"")+'"><div class="clue-num">'+n+'</div><div><div class="clue-title-big">'+esc(x[1])+(final?"…":"")+'</div><div class="clue-cat">'+(final?"FINAL STAGE":"Stage "+m.stage+" · "+m.cat)+'</div>'+(done?'<div class="clue-status">✓ COMPLETED</div>':"")+'</div><div class="actions">'+(final?'<button class="btn primary" onclick="openClue(18)">Open Final Clue</button>':'<button class="btn primary" onclick="openClue('+n+')">Open</button><button class="btn" onclick="toggleComplete('+n+')">'+(done?"Undo Completion":"Mark Complete")+'</button><button class="btn" onclick="openInputs('+n+')">Inputs</button>')+'</div></article>';
+  const progress=clueProgressConfig(n),mode=progress?clueProgressMode(n):null,units=progress?clueProgressUnits(n,mode):[],checked=progress?units.filter(id=>clueUnitChecked(n,mode,id)).length:0;
+  return '<article class="clue-card '+(done?"done ":"")+(final?"final-clue-card":"")+'"><div class="clue-num">'+n+'</div><div><div class="clue-title-big">'+esc(x[1])+(final?"…":"")+'</div><div class="clue-cat">'+(final?"FINAL STAGE":"Stage "+m.stage+" · "+m.cat)+'</div>'+(done?'<div class="clue-status">✓ COMPLETED</div>':progress&&units.length?'<div class="clue-progress-mini">'+checked+'/'+units.length+' '+(mode==="page"?"pages":"chapters")+' checked</div>':"")+'</div><div class="actions">'+(final?'<button class="btn primary" onclick="openClue(18)">Open Final Clue</button>':'<button class="btn primary" onclick="openClue('+n+')">Open</button><button class="btn" onclick="openInputs('+n+')">Inputs</button>')+'</div></article>';
 }
 function complete(n){
   const before=snapshot(db.clues);
@@ -541,6 +555,58 @@ function toolInfo(n){
   if(markerMap[n])parts.push('<div class="tool-pill marker-pill"><span class="swatch" style="background:'+markerMap[n][0]+'"></span>'+markerMap[n][1]+'</div>');
   return '<div><h3>MARKING</h3><div class="tool-pills">'+parts.join("")+'</div></div>';
 }
+function clueProgressConfig(n){
+  if(n===18)return null;
+  if(n===15||n===17)return {defaultMode:"chapter",allowPages:false,allowChapters:true};
+  return {defaultMode:"page",allowPages:true,allowChapters:true};
+}
+function clueProgressMode(n){
+  const cfg=clueProgressConfig(n);
+  if(!cfg)return null;
+  if(cfg.allowPages&&!cfg.allowChapters)return"page";
+  if(!cfg.allowPages&&cfg.allowChapters)return"chapter";
+  return window.clueProgressMode&&window.clueProgressMode[n]||cfg.defaultMode;
+}
+function clueProgressUnits(n,mode){
+  if(mode==="chapter")return Object.entries(db.setup.chapters||{}).sort((a,b)=>+a[0]-+b[0]).map(([ch])=>+ch);
+  return pages();
+}
+function clueUnitChecked(n,mode,id){
+  return db.findings.some(x=>x.clue===n&&x.type==="checked-"+mode&&+(mode==="page"?x.page:x.chapter)===+id);
+}
+function clueProgress(n){
+  const cfg=clueProgressConfig(n);
+  if(!cfg)return"";
+  const mode=clueProgressMode(n),units=clueProgressUnits(n,mode),checked=units.filter(id=>clueUnitChecked(n,mode,id)),complete=units.length>0&&checked.length===units.length;
+  const pageBtn=cfg.allowPages?'<button class="btn small '+(mode==="page"?"active":"")+'" onclick="setClueProgressMode('+n+',\'page\')">Pages</button>':"";
+  const chapterBtn=cfg.allowChapters?'<button class="btn small '+(mode==="chapter"?"active":"")+'" onclick="setClueProgressMode('+n+',\'chapter\')">Chapters</button>':"";
+  const cards=units.length?units.map(id=>{
+    const label=mode==="page"?"Page "+id:"Chapter "+id;
+    return '<button class="btn clue-progress-unit '+(clueUnitChecked(n,mode,id)?"checked":"")+'" onclick="toggleClueUnit('+n+',\''+mode+'\','+id+')">'+label+(clueUnitChecked(n,mode,id)?" ✓":"")+'</button>';
+  }).join(""):'<div class="empty">No '+(mode==="page"?"pages":"chapters")+' available for this case yet.</div>';
+  const status=units.length?'<div class="clue-progress-summary '+(complete?"complete":"")+'"><b>'+checked.length+' / '+units.length+' '+(mode==="page"?"pages":"chapters")+' checked</b>'+(complete?" · Everything in this view has been checked.":"")+'</div>':"";
+  const completion=complete&&!db.clues[n]?.done?'<button class="btn green" style="width:100%;margin-top:10px" onclick="completeFromProgress('+n+')">All '+(mode==="page"?"pages":"chapters")+' checked — Mark Clue Complete</button>':"";
+  return '<section class="clue-progress"><div class="clue-progress-head"><div><h3>CHECK PROGRESS</h3><p class="sub" style="margin:2px 0 0">Mark each '+(mode==="page"?"page":"chapter")+' once you have finished checking this clue.</p></div><div class="actions">'+pageBtn+chapterBtn+'</div></div>'+status+'<div class="clue-progress-grid">'+cards+'</div>'+completion+'</section>';
+}
+function setClueProgressMode(n,mode){
+  window.clueProgressMode=window.clueProgressMode||{};
+  window.clueProgressMode[n]=mode;
+  openClue(n);
+}
+function toggleClueUnit(n,mode,id){
+  const before=snapshot(db.findings),field=mode==="page"?"page":"chapter",type="checked-"+mode;
+  const idx=db.findings.findIndex(x=>x.clue===n&&x.type===type&&+x[field]===+id);
+  if(idx>=0)db.findings.splice(idx,1);else db.findings.push({clue:n,type:type,[field]:+id});
+  const after=snapshot(db.findings);
+  recordHistory(n,idx>=0?"Check progress undone":(mode==="page"?"Page checked":"Chapter checked"),"findings",before,after);
+  save();openClue(n);
+}
+function completeFromProgress(n){
+  const cfg=clueProgressConfig(n),mode=clueProgressMode(n),units=clueProgressUnits(n,mode);
+  if(!cfg||!units.length||!units.every(id=>clueUnitChecked(n,mode,id)))return;
+  complete(n);
+}
+
 function openClue(n){
   const c=clues.find(x=>x[0]===n),m=CLUE_META[n],done=!!(db.clues[n]&&db.clues[n].done);
   let body="",refs="";
@@ -572,7 +638,8 @@ function openClue(n){
     return;
   }
   const inputButton='<button class="btn" onclick="openInputs('+n+')">View Inputs</button>';
-  openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">CLUE '+n+' · STAGE '+m.stage+'</span><h2 class="modal-title">'+esc(c[1])+'</h2><div class="prompt">'+esc(clueClarification(n))+'</div>'+refs+toolInfo(n)+'<div class="line"></div>'+body+'<div class="actions" style="margin-top:15px">'+inputButton+(done?'<button class="btn" onclick="toggleComplete('+n+');closeModal()">Undo Completion</button>':"")+'</div>');
+  const progress=(n===18?"":clueProgress(n));
+  openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">CLUE '+n+' · STAGE '+m.stage+'</span><h2 class="modal-title">'+esc(c[1])+'</h2><div class="prompt">'+esc(clueClarification(n))+'</div>'+refs+toolInfo(n)+'<div class="line"></div>'+progress+body+'<div class="actions" style="margin-top:15px">'+inputButton+(done?'<button class="btn" onclick="toggleComplete('+n+');closeModal()">Undo Completion</button>':"")+'</div>');
 }
 function validateManualPage(p,requireCandidate=true){
   const n=Number(p),all=pages();
@@ -675,6 +742,8 @@ function inputLabel(x){
   if(x.type==="elim")return"Page "+x.page+" · invalid";
   if(x.type==="source")return"Page "+x.page+" · reference";
   if(x.type==="chapter")return"Chapter "+x.chapter+" · invalid";
+  if(x.type==="checked-page")return"Page "+x.page+" · checked";
+  if(x.type==="checked-chapter")return"Chapter "+x.chapter+" · checked";
   return"Recorded input";
 }
 function clueInputs(n){
