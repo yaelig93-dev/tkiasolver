@@ -590,7 +590,7 @@ function clueRelevantPageSet(n){
   }
   if(n===9){
     const set=new Set(candidates);
-    candidates.forEach(q=>pages().filter(p=>Math.abs(p-q)<=10).forEach(p=>set.add(p)));
+    candidates.forEach(q=>pages().filter(p=>Math.abs(p-q)<=1).forEach(p=>set.add(p)));
     return set;
   }
   return new Set(candidates);
@@ -604,8 +604,8 @@ function clueUnitRelevance(n,mode,id){
     if(mode==="chapter"&&chapterIsImpossible(id))return{state:"irrelevant",reason:"This chapter is already impossible as the killer's chapter, so it cannot contribute new evidence to this clue."};
     return{state:"irrelevant",reason:"No page in this unit can currently contribute to this clue."};
   }
-  if(n===9&&mode==="page"&&!killerPossibleOnPage(+id))return{state:"partial",reason:"Clue 9 can cross a page or chapter boundary. Because there are more than ten names on a page, only the adjacent page can still contribute to the ten-name window."};
   if(relevant.length===units.length){
+    if(n===9&&mode==="page"&&!killerPossibleOnPage(+id))return{state:"partial",reason:"This page is not a possible killer page, but it is the adjacent page to a current candidate and may still contribute to the ten-name window."};
     if(n===12&&mode==="page"&&!killerPossibleOnPage(+id))return{state:"partial",reason:"This page is not a possible killer page, but it is within four pages of a current candidate and may contain the Kardashian evidence."};
     if(n===16&&mode==="page"&&!killerPossibleOnPage(+id))return{state:"partial",reason:"This page is not a possible killer page, but it is within one page of a current candidate and may contain the Sasha evidence."};
     if(n===14&&mode==="page"&&!killerPossibleOnPage(+id))return{state:"partial",reason:"This page is not a possible killer page, but it can be the opposite-page evidence source for a current candidate."};
@@ -672,7 +672,7 @@ function openClueProgressUnit(n,mode,id){
   const markButton=checked
     ?'<button class="btn danger" onclick="toggleClueUnit('+n+',\''+mode+'\','+id+')">Mark as not checked</button>'
     :'<button class="btn green" onclick="toggleClueUnit('+n+',\''+mode+'\','+id+')">Mark as checked</button>';
-  openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">CLUE '+n+' · '+(mode==="page"?"PAGE":"CHAPTER")+'</span><h2 class="modal-title">'+label+' is partially relevant</h2><div class="page-reasons partial-detail"><b>WHY THIS IS PARTIAL</b><div>• '+esc(rel.reason)+'</div></div><p class="sub">Because only part of this unit can contribute, it stays yellow until you decide you have finished the relevant portion.</p><div class="actions" style="margin-top:14px">'+markButton+'<button class="btn" onclick="closeModal()">Close</button></div>');
+  openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">CLUE '+n+' · '+(mode==="page"?"PAGE":"CHAPTER")+'</span><h2 class="modal-title">'+label+' is partially relevant</h2><div class="page-reasons partial-detail"><b>WHY THIS IS PARTIAL</b><div>• '+esc(rel.reason)+'</div></div><p class="sub">Because only part of this unit can contribute, it stays yellow until you decide you have finished the relevant portion.</p><div class="actions" style="margin-top:14px">'+markButton+'<button class="btn" onclick="closeModal()">Close</button></div>',n);
 }
 
 function setClueProgressMode(n,mode){
@@ -1033,8 +1033,8 @@ function undoHistory(id){
   h.undone=true;save();render("archive");
 }
 function openArchiveForClue(n){window.archiveClue=String(n);window.archiveType="all";go("archive")}
-function openModal(html){$("modal").innerHTML=html;$("overlay").classList.add("open")}
-function closeModal(){$("overlay").classList.remove("open")}
+function openModal(html,returnClue=null){window.modalReturnClue=returnClue;$("modal").innerHTML=html;$("overlay").classList.add("open")}
+function closeModal(){const returnClue=window.modalReturnClue||null;window.modalReturnClue=null;$("overlay").classList.remove("open");if(returnClue!=null)openClue(returnClue)}
 document.addEventListener("click",e=>{if(e.target.id==="overlay")closeModal()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
 const start=currentRoute();render(start);
