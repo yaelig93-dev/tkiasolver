@@ -636,7 +636,14 @@ function clueProgressUnits(n,mode){
   return pages();
 }
 function clueUnitChecked(n,mode,id){
-  return db.findings.some(x=>x.clue===n&&x.type==="checked-"+mode&&+(mode==="page"?x.page:x.chapter)===+id);
+  if(mode==="chapter"){
+    if(db.findings.some(x=>x.clue===n&&x.type==="checked-chapter"&&+x.chapter===+id))return true;
+    const chapterRelevant=chapterPages(+id).filter(p=>clueUnitNeedsAction(n,"page",p));
+    return chapterRelevant.length>0&&chapterRelevant.every(p=>clueUnitChecked(n,"page",p));
+  }
+  if(db.findings.some(x=>x.clue===n&&x.type==="checked-page"&&+x.page===+id))return true;
+  const ch=chapterForPage(+id);
+  return ch!=null&&db.findings.some(x=>x.clue===n&&x.type==="checked-chapter"&&+x.chapter===+ch);
 }
 
 function clueProgress(n){
@@ -681,11 +688,37 @@ function setClueProgressMode(n,mode){
   openClue(n);
 }
 function toggleClueUnit(n,mode,id){
-  const before=snapshot(db.findings),field=mode==="page"?"page":"chapter",type="checked-"+mode;
-  const idx=db.findings.findIndex(x=>x.clue===n&&x.type===type&&+x[field]===+id);
-  if(idx>=0)db.findings.splice(idx,1);else db.findings.push({clue:n,type:type,[field]:+id});
+  const before=snapshot(db.findings);
+  const checked=clueUnitChecked(n,mode,id);
+  if(mode==="chapter"){
+    const ch=+id;
+    const chapterPagesList=chapterPages(ch).filter(p=>clueUnitNeedsAction(n,"page",p));
+    if(checked){
+      db.findings=db.findings.filter(x=>!(x.clue===n&&x.type==="checked-chapter"&&+x.chapter===ch));
+      db.findings=db.findings.filter(x=>!(x.clue===n&&x.type==="checked-page"&&chapterPagesList.includes(+x.page)));
+    }else{
+      if(!db.findings.some(x=>x.clue===n&&x.type==="checked-chapter"&&+x.chapter===ch))db.findings.push({clue:n,type:"checked-chapter",chapter:ch});
+      chapterPagesList.forEach(p=>{
+        if(!db.findings.some(x=>x.clue===n&&x.type==="checked-page"&&+x.page===p))db.findings.push({clue:n,type:"checked-page",page:p});
+      });
+    }
+  }else{
+    const p=+id,ch=chapterForPage(p);
+    if(checked){
+      db.findings=db.findings.filter(x=>!(x.clue===n&&x.type==="checked-page"&&+x.page===p));
+    }else{
+      if(!db.findings.some(x=>x.clue===n&&x.type==="checked-page"&&+x.page===p))db.findings.push({clue:n,type:"checked-page",page:p});
+    }
+    if(ch!=null){
+      const relevantPages=chapterPages(ch).filter(q=>clueUnitNeedsAction(n,"page",q));
+      const allChecked=relevantPages.length>0&&relevantPages.every(q=>clueUnitChecked(n,"page",q));
+      const chapterIndex=db.findings.findIndex(x=>x.clue===n&&x.type==="checked-chapter"&&+x.chapter===+ch);
+      if(allChecked&&chapterIndex<0)db.findings.push({clue:n,type:"checked-chapter",chapter:+ch});
+      if(!allChecked&&chapterIndex>=0)db.findings.splice(chapterIndex,1);
+    }
+  }
   const after=snapshot(db.findings);
-  recordHistory(n,idx>=0?"Check progress undone":(mode==="page"?"Page checked":"Chapter checked"),"findings",before,after);
+  recordHistory(n,checked?"Check progress undone":(mode==="page"?"Page checked":"Chapter checked"),"findings",before,after);
   save();openClue(n);
 }
 function completeFromProgress(n){
