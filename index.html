@@ -313,6 +313,28 @@ function pages(){
   return Array.from({length:b-a+1},(_,i)=>a+i);
 }
 function status(p){return db.findings.some(x=>x.page===p&&x.type==="elim")?"elim":"work"}
+function chapterForPage(p){const hit=Object.entries(db.setup.chapters||{}).find(([,v])=>p>=+v.start&&p<=+v.end);return hit?+hit[0]:null}
+function killerPossibleOnPage(p){
+  if(db.findings.some(x=>x.page===p&&x.type==="elim"))return false;
+  const ch=chapterForPage(p);
+  for(const clueNo of [15,17]){
+    if(db.clues[clueNo]&&db.clues[clueNo].done&&ch!=null&&db.findings.some(x=>x.type==="chapter"&&x.clue===clueNo&&+x.chapter===ch))return false;
+  }
+  return true;
+}
+function pageNeedsAction(p){
+  const candidates=pages().filter(killerPossibleOnPage);
+  if([4,9,10,11,13].some(n=>!(db.clues[n]&&db.clues[n].done))&&candidates.includes(p))return true;
+  if(!(db.clues[12]&&db.clues[12].done)&&candidates.some(q=>Math.abs(q-p)<=4))return true;
+  if(!(db.clues[14]&&db.clues[14].done)){
+    const first=pages()[0],last=pages().at(-1),opp=first+last-p;
+    if(candidates.includes(opp))return true;
+  }
+  if(!(db.clues[16]&&db.clues[16].done)&&candidates.some(q=>Math.abs(q-p)<=1))return true;
+  return false;
+}
+function pageAssessment(p){return {possible:killerPossibleOnPage(p),needsAction:pageNeedsAction(p)}}
+
 function pageEliminationReason(p){
   const x=db.findings.find(x=>x.page===p&&x.type==="page-elim");
   return x&&x.reason?x.reason:"";
