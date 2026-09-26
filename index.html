@@ -222,9 +222,26 @@ h3{font-size:21px;margin:10px 0 7px}
 .page-card.candidate{background:#e5edf5;border-color:#6f91b5}
 .page-card.eliminated{background:#f3d9e5;border-color:var(--pink)}
 .page-card .page-number{font-size:34px;font-weight:1000;line-height:1}
-.page-card .page-state{font-size:11px;font-weight:1000;letter-spacing:.08em;text-transform:uppercase}
-.page-card.candidate .page-state{color:#4c6d8f}
-.page-card.eliminated .page-state{color:var(--pink-dark)}
+.page-state-row{display:flex;flex-direction:column;align-items:flex-start;gap:5px;margin-top:8px}
+.page-state{font-size:11px;font-weight:1000;letter-spacing:.08em;text-transform:uppercase}
+.possibility-state{padding:3px 6px;border:1px solid currentColor}
+.page-card.candidate .possibility-state{color:#4c6d8f}
+.page-card.eliminated .possibility-state{color:var(--pink-dark)}
+.work-state{padding:3px 6px;border:1px solid currentColor}
+.need-check{background:#f2df00;color:#5d5300;border-color:#b9aa00}
+.no-need-check{background:#dedbd3;color:#625e55;border-color:#aaa59b}
+.page-filter-btn.check-filter{background:#f2df00;color:#5d5300}
+.page-filter-btn.check-filter.active{background:#d7c800!important;color:var(--ink)!important}
+.page-filter-btn.no-check-filter{background:#dedbd3;color:#625e55}
+.page-filter-btn.no-check-filter.active{background:#bcb8ae!important;color:var(--ink)!important}
+.page-detail-status{display:flex;align-items:center;gap:10px;padding:10px 12px;border:2px solid var(--ink);margin:10px 0;font-size:16px}
+.page-detail-status span{font-weight:800}
+.possible-detail{background:#e5edf5;border-color:#6f91b5;color:#4c6d8f}
+.impossible-detail{background:#f3d9e5;border-color:var(--pink);color:var(--pink-dark)}
+.page-reasons{padding:11px 12px;margin:10px 0;border:2px solid var(--ink);font-size:15px;line-height:1.4}
+.page-reasons b{display:block;font-size:12px;letter-spacing:.08em;margin-bottom:5px}
+.check-reasons{background:#fff3a8;border-color:#b9aa00;color:#5d5300}
+.no-check-reasons{background:#e6e3dc;border-color:#aaa59b;color:#625e55}
 .page-findings{font-size:12px;font-weight:900;opacity:.8}
 .tool-pills{display:flex;flex-wrap:wrap;gap:9px}
 .tool-pill.marker-pill{background:#fffdf7}
@@ -312,7 +329,6 @@ function pages(){
   const a=Math.min(+db.setup.first,+db.setup.last),b=Math.max(+db.setup.first,+db.setup.last);
   return Array.from({length:b-a+1},(_,i)=>a+i);
 }
-function status(p){return db.findings.some(x=>x.page===p&&x.type==="elim")?"elim":"work"}
 function chapterForPage(p){const hit=Object.entries(db.setup.chapters||{}).find(([,v])=>p>=+v.start&&p<=+v.end);return hit?+hit[0]:null}
 function killerPossibleOnPage(p){
   if(db.findings.some(x=>x.page===p&&x.type==="elim"))return false;
@@ -322,23 +338,45 @@ function killerPossibleOnPage(p){
   }
   return true;
 }
+function status(p){return killerPossibleOnPage(p)?"work":"elim"}
 function pageNeedsAction(p){
   const candidates=pages().filter(killerPossibleOnPage);
   if([4,9,10,11,13].some(n=>!(db.clues[n]&&db.clues[n].done))&&candidates.includes(p))return true;
   if(!(db.clues[12]&&db.clues[12].done)&&candidates.some(q=>Math.abs(q-p)<=4))return true;
   if(!(db.clues[14]&&db.clues[14].done)){
-    const first=pages()[0],last=pages().at(-1),opp=first+last-p;
+    const first=pages()[0],last=pages()[pages().length-1],opp=first+last-p;
     if(candidates.includes(opp))return true;
   }
   if(!(db.clues[16]&&db.clues[16].done)&&candidates.some(q=>Math.abs(q-p)<=1))return true;
   return false;
 }
 function pageAssessment(p){return {possible:killerPossibleOnPage(p),needsAction:pageNeedsAction(p)}}
-
-function pageEliminationReason(p){
-  const x=db.findings.find(x=>x.page===p&&x.type==="page-elim");
-  return x&&x.reason?x.reason:"";
+function pageEliminationReasons(p){
+  const reasons=[],seen=new Set(),add=r=>{if(r&&!seen.has(r)){seen.add(r);reasons.push(r)}};
+  db.findings.filter(x=>x.page===p&&x.type==="elim").forEach(x=>{
+    if(x.type==="page-elim")add(x.reason||"Page manually eliminated");
+    else if(+x.clue===6)add("Clue 6: page is outside the required range between Anna and Zack.");
+    else if(clues[x.clue-1])add("Clue "+x.clue+": "+clues[x.clue-1][1]);
+  });
+  const ch=chapterForPage(p);
+  if(ch!=null){
+    if(db.clues[15]&&db.clues[15].done&&db.findings.some(x=>x.type==="chapter"&&x.clue===15&&+x.chapter===ch))add("Clue 15: Chapter "+ch+" does not have a city in its title.");
+    if(db.clues[17]&&db.clues[17].done&&db.findings.some(x=>x.type==="chapter"&&x.clue===17&&+x.chapter===ch))add("Clue 17: Chapter "+ch+" does not contain all four Beatles.");
+  }
+  return reasons;
 }
+function pageWorkReasons(p){
+  const reasons=[],candidates=pages().filter(killerPossibleOnPage);
+  if([4,9,10,11,13].some(n=>!(db.clues[n]&&db.clues[n].done))&&candidates.includes(p))reasons.push("Still needed for unresolved page-level clue checks (4, 9, 10, 11 and/or 13).");
+  if(!(db.clues[12]&&db.clues[12].done)&&candidates.some(q=>Math.abs(q-p)<=4))reasons.push("Could provide evidence for Clue 12: a Kardashian within four pages of the killer.");
+  if(!(db.clues[14]&&db.clues[14].done)){
+    const first=pages()[0],last=pages()[pages().length-1],opp=first+last-p;
+    if(candidates.includes(opp))reasons.push("Could provide evidence for Clue 14: a President first name on the opposite page.");
+  }
+  if(!(db.clues[16]&&db.clues[16].done)&&candidates.some(q=>Math.abs(q-p)<=1))reasons.push("Could provide evidence for Clue 16: a Sasha within one page of the killer.");
+  return reasons;
+}
+function pageEliminationReason(p){return pageEliminationReasons(p)[0]||"";}
 function currentRoute(){return location.hash.slice(1)||(!db.setup.first||!db.setup.last?"setup":"master")}
 function go(route){location.hash=route;render(route)}
 function header(route){
@@ -363,20 +401,33 @@ function pagesStatus(){
   const ps=pages(),filter=window.pageFilter||"all",query=String(window.pageQuery||"").trim();
   const filtered=ps.filter(p=>{const a=pageAssessment(p);return(filter==="all"||(filter==="candidate"&&a.possible)||(filter==="eliminated"&&!a.possible)||(filter==="action"&&a.needsAction)||(filter==="noaction"&&!a.needsAction))&&(!query||String(p).includes(query))});
   const counts={all:ps.length,candidate:ps.filter(p=>pageAssessment(p).possible).length,eliminated:ps.filter(p=>!pageAssessment(p).possible).length,action:ps.filter(p=>pageAssessment(p).needsAction).length,noaction:ps.filter(p=>!pageAssessment(p).needsAction).length};
-  return '<div class="pages-screen"><div class="screen-heading"><div class="clue-toolbar"><div><h1>PAGES & STATUS</h1><p class="sub">Each page tracks killer possibility and whether work is still needed.</p></div></div></div><div class="card"><div class="page-controls"><button class="btn page-filter-btn all-filter '+(filter==="all"?"active":"")+'" onclick="window.pageFilter=\'all\';render(\'pages\')">ALL · '+counts.all+'</button><button class="btn page-filter-btn candidate-filter '+(filter==="candidate"?"active":"")+'" onclick="window.pageFilter=\'candidate\';render(\'pages\')">POSSIBLE · '+counts.candidate+'</button><button class="btn page-filter-btn eliminated-filter '+(filter==="eliminated"?"active":"")+'" onclick="window.pageFilter=\'eliminated\';render(\'pages\')">IMPOSSIBLE · '+counts.eliminated+'</button><button class="btn '+(filter==="action"?"active":"")+'" onclick="window.pageFilter=\'action\';render(\'pages\')">ACTION · '+counts.action+'</button><button class="btn '+(filter==="noaction"?"active":"")+'" onclick="window.pageFilter=\'noaction\';render(\'pages\')">NO ACTION · '+counts.noaction+'</button><input class="btn" style="flex:1;min-width:150px;text-align:left" value="'+esc(query)+'" placeholder="Find page number" oninput="window.pageQuery=this.value;render(\'pages\')"><button class="btn" onclick="window.pageFilter=\'all\';window.pageQuery=\'\';render(\'pages\')">Clear</button></div><div class="page-cards">'+(filtered.length?filtered.map(p=>{const a=pageAssessment(p),f=db.findings.filter(x=>x.page===p);return '<div class="page-card '+(a.possible?"candidate":"eliminated")+(a.needsAction?" action-needed":" no-action")+'" onclick="openPageStatus('+p+')"><div class="page-number">'+p+'</div><div class="page-state">'+(a.possible?"POSSIBLE":"IMPOSSIBLE")+' · '+(a.needsAction?"ACTION NEEDED":"NO ACTION")+'</div><div class="page-findings">'+(f.length?(f.length+" finding"+(f.length===1?"":"s")):"No findings yet")+'</div></div>'}).join(""):'<div class="empty">No pages match this filter.</div>')+'</div></div></div>';
+  return '<div class="pages-screen"><div class="screen-heading"><div class="clue-toolbar"><div><h1>PAGES & STATUS</h1><p class="sub">Each page tracks killer possibility and whether work is still needed.</p></div></div></div><div class="card"><div class="page-controls"><button class="btn page-filter-btn all-filter '+(filter==="all"?"active":"")+'" onclick="window.pageFilter=\'all\';render(\'pages\')">ALL · '+counts.all+'</button><button class="btn page-filter-btn candidate-filter '+(filter==="candidate"?"active":"")+'" onclick="window.pageFilter=\'candidate\';render(\'pages\')">POSSIBLE · '+counts.candidate+'</button><button class="btn page-filter-btn eliminated-filter '+(filter==="eliminated"?"active":"")+'" onclick="window.pageFilter=\'eliminated\';render(\'pages\')">IMPOSSIBLE · '+counts.eliminated+'</button><button class="btn page-filter-btn check-filter '+(filter==="action"?"active":"")+'" onclick="window.pageFilter=\'action\';render(\'pages\')">NEED TO CHECK · '+counts.action+'</button><button class="btn page-filter-btn no-check-filter '+(filter==="noaction"?"active":"")+'" onclick="window.pageFilter=\'noaction\';render(\'pages\')">NO NEED TO CHECK · '+counts.noaction+'</button><input class="btn" style="flex:1;min-width:150px;text-align:left" value="'+esc(query)+'" placeholder="Find page number" oninput="window.pageQuery=this.value;render(\'pages\')"><button class="btn" onclick="window.pageFilter=\'all\';window.pageQuery=\'\';render(\'pages\')">Clear</button></div><div class="page-cards">'+(filtered.length?filtered.map(p=>{const a=pageAssessment(p),f=db.findings.filter(x=>x.page===p);return '<div class="page-card '+(a.possible?"candidate":"eliminated")+'" onclick="openPageStatus('+p+')"><div class="page-number">'+p+'</div><div class="page-state-row"><span class="page-state possibility-state">'+(a.possible?"POSSIBLE":"IMPOSSIBLE")+'</span><span class="page-state work-state '+(a.needsAction?"need-check":"no-need-check")+'">'+(a.needsAction?"NEED TO CHECK":"NO NEED TO CHECK")+'</span></div><div class="page-findings">'+(f.length?(f.length+" finding"+(f.length===1?"":"s")):"No findings yet")+'</div></div>'}).join(""):'<div class="empty">No pages match this filter.</div>')+'</div></div></div>';
 }
 
 function openPageStatus(p){
-  const findings=db.findings.filter(x=>x.page===p),elim=status(p)==="elim",reason=pageEliminationReason(p);
+  const assessment=pageAssessment(p),possible=assessment.possible,needsAction=assessment.needsAction;
+  const findings=db.findings.filter(x=>x.page===p);
+  const eliminationReasons=pageEliminationReasons(p),workReasons=pageWorkReasons(p);
   const rows=findings.length?findings.map(x=>{
     const isManual=x.type==="page-elim";
     return '<div class="saved-row"><span>'+esc(isManual?(x.reason||"Page eliminated"):"Clue "+x.clue+" · "+(x.type||"finding")+(x.name?" · "+x.name:""))+'</span>'+(isManual?'':'<button class="btn small" onclick="closeModal();openClue('+x.clue+')">Open Clue</button>')+'</div>';
   }).join(""):'<div class="empty">No recorded findings for this page.</div>';
-  const reasonLine=elim&&reason?'<div class="prompt"><b>Page elimination reason:</b><br>'+esc(reason)+'</div>':"";
-  const action=elim
+  const possibilityLine=possible
+    ?'<div class="page-detail-status possible-detail"><b>POSSIBLE</b><span>The killer can still be on this page.</span></div>'
+    :'<div class="page-detail-status impossible-detail"><b>IMPOSSIBLE</b><span>The killer cannot be on this page.</span></div>';
+  const eliminationLine=!possible
+    ?'<div class="page-reasons"><b>WHY THIS PAGE IS OUT</b>'+eliminationReasons.map(r=>'<div>• '+esc(r)+'</div>').join("")+'</div>'
+    :"";
+  const workLine=needsAction
+    ?'<div class="page-reasons check-reasons"><b>NEED TO CHECK</b>'+workReasons.map(r=>'<div>• '+esc(r)+'</div>').join("")+'</div>'
+    :'<div class="page-reasons no-check-reasons"><b>NO NEED TO CHECK</b><div>• No unresolved clue currently requires information from this page.</div></div>';
+  const manualElim=findings.some(x=>x.type==="page-elim");
+  const action=manualElim
     ?'<button class="btn danger" onclick="restorePageStatus('+p+')">Restore Page to Candidate</button>'
-    :'<button class="btn danger" onclick="closeModal();confirmPageElimination('+p+')">Eliminate This Page</button>';
-  openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">PAGE '+p+'</span><h2 class="modal-title">'+(elim?"ELIMINATED":"CANDIDATE PAGE")+'</h2>'+reasonLine+rows+'<div class="actions" style="margin-top:14px">'+action+'<button class="btn" onclick="closeModal()">Close</button></div>');
+    :possible
+      ?'<button class="btn danger" onclick="closeModal();confirmPageElimination('+p+')">Eliminate This Page</button>'
+      :"";
+  openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">PAGE '+p+'</span><h2 class="modal-title">'+(possible?"CANDIDATE PAGE":"PAGE ELIMINATED")+'</h2>'+possibilityLine+eliminationLine+workLine+rows+'<div class="actions" style="margin-top:14px">'+action+'<button class="btn" onclick="closeModal()">Close</button></div>');
 }
 function confirmPageElimination(p){
   openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">PAGE '+p+'</span><h2 class="modal-title">Why is this page out?</h2><p class="sub">This decision does not need to be tied to a specific clue.</p><div class="actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn danger" onclick="closeModal();completePage('+p+',\'All names on page are irrelevant\');render(\'pages\')">All names on this page are irrelevant</button></div>');
