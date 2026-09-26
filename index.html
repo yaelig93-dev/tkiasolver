@@ -313,6 +313,10 @@ function pages(){
   return Array.from({length:b-a+1},(_,i)=>a+i);
 }
 function status(p){return db.findings.some(x=>x.page===p&&x.type==="elim")?"elim":"work"}
+function pageEliminationReason(p){
+  const x=db.findings.find(x=>x.page===p&&x.type==="page-elim");
+  return x&&x.reason?x.reason:"";
+}
 function currentRoute(){return location.hash.slice(1)||(!db.setup.first||!db.setup.last?"setup":"master")}
 function go(route){location.hash=route;render(route)}
 function header(route){
@@ -340,8 +344,26 @@ function pagesStatus(){
   return '<div class="pages-screen"><div class="screen-heading"><div class="clue-toolbar"><div><h1>PAGES & STATUS</h1><p class="sub">Tap any page to inspect its findings. Use the filters to focus the case.</p></div></div></div><div class="card"><div class="page-controls"><button class="btn page-filter-btn all-filter '+(filter==="all"?"active":"")+'" onclick="window.pageFilter=\'all\';render(\'pages\')">ALL · '+counts.all+'</button><button class="btn page-filter-btn candidate-filter '+(filter==="candidate"?"active":"")+'" onclick="window.pageFilter=\'candidate\';render(\'pages\')">CANDIDATE · '+counts.candidate+'</button><button class="btn page-filter-btn eliminated-filter '+(filter==="eliminated"?"active":"")+'" onclick="window.pageFilter=\'eliminated\';render(\'pages\')">ELIMINATED · '+counts.eliminated+'</button><input class="btn" style="flex:1;min-width:150px;text-align:left" value="'+esc(query)+'" placeholder="Find page number" oninput="window.pageQuery=this.value;render(\'pages\')"><button class="btn page-jump" onclick="window.pageFilter=\'all\';window.pageQuery=\'\';render(\'pages\')">Clear</button></div><div class="page-cards">'+(filtered.length?filtered.map(p=>{const st=status(p),f=db.findings.filter(x=>x.page===p);return '<div class="page-card '+(st==="elim"?"eliminated":"candidate")+'" onclick="openPageStatus('+p+')"><div class="page-number">'+p+'</div><div class="page-state">'+(st==="elim"?"ELIMINATED":"CANDIDATE")+'</div><div class="page-findings">'+(f.length?(f.length+" finding"+(f.length===1?"":"s")):"No findings yet")+'</div></div>'}).join(""):'<div class="empty">No pages match this filter.</div>')+'</div></div></div>';
 }
 function openPageStatus(p){
-  const findings=db.findings.filter(x=>x.page===p);
-  openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">PAGE '+p+'</span><h2 class="modal-title">'+(status(p)==="elim"?"ELIMINATED":"CANDIDATE PAGE")+'</h2>'+(findings.length?findings.map(x=>'<div class="saved-row"><span>Clue '+x.clue+' · '+esc(x.type||"finding")+(x.name?' · '+esc(x.name):"")+'</span><button class="btn small" onclick="closeModal();openClue('+x.clue+')">Open Clue</button></div>').join(""):'<div class="empty">No recorded findings for this page.</div>')+'<div class="actions" style="margin-top:14px"><button class="btn" onclick="closeModal()">Close</button></div>');
+  const findings=db.findings.filter(x=>x.page===p),elim=status(p)==="elim",reason=pageEliminationReason(p);
+  const rows=findings.length?findings.map(x=>{
+    const isManual=x.type==="page-elim";
+    return '<div class="saved-row"><span>'+esc(isManual?(x.reason||"Page eliminated"):"Clue "+x.clue+" · "+(x.type||"finding")+(x.name?" · "+x.name:""))+'</span>'+(isManual?'':'<button class="btn small" onclick="closeModal();openClue('+x.clue+')">Open Clue</button>')+'</div>';
+  }).join(""):'<div class="empty">No recorded findings for this page.</div>';
+  const reasonLine=elim&&reason?'<div class="prompt"><b>Page elimination reason:</b><br>'+esc(reason)+'</div>':"";
+  const action=elim
+    ?'<button class="btn danger" onclick="restorePageStatus('+p+')">Restore Page to Candidate</button>'
+    :'<button class="btn danger" onclick="closeModal();confirmPageElimination('+p+')">Eliminate This Page</button>';
+  openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">PAGE '+p+'</span><h2 class="modal-title">'+(elim?"ELIMINATED":"CANDIDATE PAGE")+'</h2>'+reasonLine+rows+'<div class="actions" style="margin-top:14px">'+action+'<button class="btn" onclick="closeModal()">Close</button></div>');
+}
+function confirmPageElimination(p){
+  openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">PAGE '+p+'</span><h2 class="modal-title">Why is this page out?</h2><p class="sub">This decision does not need to be tied to a specific clue.</p><div class="actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn danger" onclick="closeModal();completePage('+p+',\'All names on page are irrelevant\');render(\'pages\')">All names on this page are irrelevant</button></div>');
+}
+function restorePageStatus(p){
+  const before=snapshot(db.findings);
+  db.findings=db.findings.filter(x=>!(x.page===p&&x.type==="page-elim"));
+  const after=snapshot(db.findings);
+  recordHistory(0,"Page restored to candidate","findings",before,after);
+  save();closeModal();render("pages");
 }
 
 function setup(){
@@ -725,8 +747,14 @@ function restoreEliminatedName(i){
   const before=snapshot(db.eliminatedNames);if(i>=0)db.eliminatedNames.splice(i,1);
   const after=snapshot(db.eliminatedNames);recordHistory(0,"Eliminated name restored","eliminatedNames",before,after);save();render("suspect");
 }
-function completePage(p){
-  const before=snapshot(db.findings);if(!db.findings.some(x=>x.clue===0&&x.page===p))db.findings.push({clue:0,page:p,type:"elim"});const after=snapshot(db.findings);recordHistory(0,"Page eliminated","findings",before,after);save();
+function completePage(p,reason){
+  const before=snapshot(db.findings);
+  if(!db.findings.some(x=>x.page===p&&x.type==="elim")){
+    db.findings.push({clue:0,page:p,type:"elim",source:"page-status",reason:reason||"Page eliminated"});
+  }
+  const after=snapshot(db.findings);
+  recordHistory(0,reason==="All names on page are irrelevant"?"Page eliminated — all names irrelevant":"Page eliminated","findings",before,after);
+  save();
 }
 function historyTypeMatch(h,type){
   if(type==="all")return true;
