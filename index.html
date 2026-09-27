@@ -769,7 +769,7 @@ const SOLUTION_VALUE_PROFILE={
   13:{e:4,i:3,u:1,c:4,d:3,x:2},
   14:{e:4,i:4,u:3,c:4,d:2,x:3},
   15:{e:5,i:4,u:4,c:5,d:1,x:1},
-  16:{e:5,i:4,u:3,c:4,d:2,x:2},
+  16:{e:5,i:4,u:3,c:4,d:3,x:4},
   17:{e:5,i:5,u:4,c:5,d:3,x:3}
 };
 
@@ -871,12 +871,20 @@ function solutionValueModel(n){
   return {n,score,effort,scope,e,i,u,c,unknown:false,band:score>0.004?"HIGH":score>0.001?"MEDIUM":"LOW",confidence:"ESTIMATED",label:"Estimated from current case state"};
 }
 function rankedSolutionClues(){
-  return clues.filter(x=>x[0]!==18&&!(db.clues[x[0]]&&db.clues[x[0]].done)).map(x=>solutionValueModel(x[0])).filter(Boolean).sort((a,b)=>b.score-a.score);
+  const open=clues.filter(x=>x[0]!==18&&!(db.clues[x[0]]&&db.clues[x[0]].done)).map(x=>solutionValueModel(x[0])).filter(Boolean).sort((a,b)=>b.score-a.score);
+  const total=open.length;
+  open.forEach((v,i)=>{
+    const pct=total?i/total:1;
+    v.rank=i+1;
+    v.percentile=1-pct;
+    v.band=pct<0.25?"high":pct<0.70?"medium":"low";
+  });
+  return open;
 }
 function solutionValueLabel(v){
   if(!v)return "—";
   if(v.unknown)return "UNKNOWN · INFORMATION-DEPENDENT";
-  return v.band+" VALUE";
+  return v.band.toUpperCase()+" VALUE";
 }
 function solutionValueDetail(v){
   if(!v)return "";
@@ -887,7 +895,10 @@ function solutionValueDetail(v){
   return scope+" · "+Math.round(v.score*10000)/100+" value/effort";
 }
 function nextChecks(){
-  return rankedSolutionClues().slice(0,5).map(v=>({n:v.n,mode:v.scope.kind==="chapters"?"chapter":"page",id:v.scope.units||0,value:v}));
+  return withPageAnalysis(()=>{
+    const ranked=rankedSolutionClues();
+    return ranked.slice(0,5).map(v=>({n:v.n,mode:v.scope.kind==="chapters"?"chapter":"page",id:v.scope.units||0,value:v}));
+  });
 }
 function openNextChecks(){
   const list=nextChecks();
@@ -896,21 +907,32 @@ function openNextChecks(){
 }
 function clueList(){
   const done=SOLUTION_ORDER.filter(n=>db.clues[n]&&db.clues[n].done).length;
-  const selected=window.clueCategory||0;
+  const selected=window.clueValueFilter||"all";
+  const sortMode=window.clueSortMode||"value";
   const ranked=rankedSolutionClues();
+  const rankMap=new Map(ranked.map((v,i)=>[v.n,i]));
   const allOpen=ranked.map(v=>clues.find(x=>x[0]===v.n)).filter(Boolean);
-  let visible=selected===4?clues.filter(x=>x[0]===18):selected===0?allOpen:allOpen.filter(x=>solutionValueModel(x[0]).band===["","HIGH","MEDIUM","LOW"][selected]);
-  const completed=clues.filter(x=>x[0]!==18&&db.clues[x[0]]&&db.clues[x[0]].done);
-  if(selected===0)visible=visible.concat(completed);
+  let visible=selected==="final"?clues.filter(x=>x[0]===18):allOpen.filter(x=>selected==="all"||solutionValueModel(x[0])?.band===selected);
+  if(selected==="all"){
+    const completed=clues.filter(x=>x[0]!==18&&db.clues[x[0]]&&db.clues[x[0]].done);
+    visible=visible.concat(completed);
+  }
   visible.sort((a,b)=>{
     const ad=!!(db.clues[a[0]]&&db.clues[a[0]].done),bd=!!(db.clues[b[0]]&&db.clues[b[0]].done);
     if(ad!==bd)return ad?1:-1;
     if(a[0]===18)return 1;
     if(b[0]===18)return -1;
-    return (solutionValueModel(b[0])?.score||0)-(solutionValueModel(a[0])?.score||0);
+    if(sortMode==="number")return a[0]-b[0];
+    return (rankMap.get(a[0])??999)-(rankMap.get(b[0])??999);
   });
-  const groups=[{id:0,name:"ALL OPEN"},{id:1,name:"HIGH VALUE"},{id:2,name:"MEDIUM VALUE"},{id:3,name:"LOW VALUE"},{id:4,name:"FINAL"}];
-  return '<div><div class="screen-heading"><div class="clue-toolbar"><div><h1>CLUES</h1><p class="sub">The working order is calculated from the current case state and the work still required.</p></div><div class="toolbar-group"><button class="btn" onclick="openNextChecks()">What should I check next?</button></div></div></div><div class="progress-line"><i style="width:'+(done/18*100)+'%"></i></div><div class="category-tabs">'+groups.map(g=>'<button class="btn '+(selected===g.id?"active":"")+'" onclick="window.clueCategory='+g.id+';render(\'clues\')">'+g.name+'</button>').join('')+'</div>'+(selected===4?'<div class="final-stage-banner"><strong>FINAL STAGE · CLUE 18</strong><span>The case ends here. Enter the killer’s name only when the evidence is complete.</span></div>':'')+'<div class="clue-grid">'+(visible.length?visible.map(x=>clueCard(x)).join(''):'<div class="empty">No clues currently fall in this value band.</div>')+'</div></div>';
+  const filters=[
+    {id:"all",name:"ALL OPEN"},
+    {id:"high",name:"HIGH VALUE"},
+    {id:"medium",name:"MEDIUM VALUE"},
+    {id:"low",name:"LOW VALUE"},
+    {id:"final",name:"FINAL"}
+  ];
+  return '<div><div class="screen-heading"><div class="clue-toolbar"><div><h1>CLUES</h1><p class="sub">The working order is calculated from the current case state and the work still required.</p></div><div class="toolbar-group"><button class="btn" onclick="openNextChecks()">What should I check next?</button><button class="btn '+(sortMode==="value"?"active":"")+'" onclick="window.clueSortMode=\'value\';render(\'clues\')">VALUE ORDER</button><button class="btn '+(sortMode==="number"?"active":"")+'" onclick="window.clueSortMode=\'number\';render(\'clues\')">CLUE NUMBER</button></div></div></div><div class="progress-line"><i style="width:'+(done/18*100)+'%"></i></div><div class="category-tabs">'+filters.map(g=>'<button class="btn '+(selected===g.id?"active":"")+'" onclick="window.clueValueFilter=\''+g.id+'\';render(\'clues\')">'+g.name+'</button>').join('')+'</div>'+(selected==="final"?'<div class="final-stage-banner"><strong>FINAL STAGE · CLUE 18</strong><span>The case ends here. Enter the killer’s name only when the evidence is complete.</span></div>':'')+'<div class="clue-grid">'+(visible.length?visible.map(x=>clueCard(x)).join(''):'<div class="empty">No clues currently fall in this value band.</div>')+'</div></div>';
 }
 function clueCard(x){
   const n=x[0],m=CLUE_META[n],done=!!(db.clues[n]&&db.clues[n].done),final=n===18;
