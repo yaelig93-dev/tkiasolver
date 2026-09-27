@@ -1237,39 +1237,61 @@ function suspectFailureFor(n,p,name){
   return activeFindings().some(x=>x.type==="suspect"&&+x.clue===+n&&+x.page===+p&&String(x.name||"").toLowerCase()===String(name||"").toLowerCase());
 }
 function selectSuspectPage(p){window.suspectPage=+p;render("suspect")}
+function submitSuspectName(){
+  const n=($("sn")?.value||"").trim();
+  if(!n){
+    openModal('<button class="close" onclick="closeModal()">×</button><h2 class="modal-title">Enter a suspect name</h2><button class="btn primary" onclick="closeModal()">OK</button>');
+    return;
+  }
+  window.suspectName=n;
+  window.suspectPage=null;
+  render("suspect");
+}
 function suspect(){
   const names=db.eliminatedNames||[];
   const pots=db.potentialKillers||[];
   const ps=pages().filter(killerPossibleOnPage);
-  const selected=window.suspectPage&&ps.includes(+window.suspectPage)?+window.suspectPage:null;
   const name=(window.suspectName||"").trim();
+  const selected=window.suspectPage&&ps.includes(+window.suspectPage)?+window.suspectPage:null;
   const rel=selected?suspectRelevantClues(selected):[];
   const checks=rel.map(c=>{
     const done=!!(db.clues[c]&&db.clues[c].done);
     const failed=name&&selected&&suspectFailureFor(c,selected,name);
-    return `<div class="verify-row"><div><b>Clue ${c}${done?' · RESOLVED':' · OPEN'}</b><small>${esc(clues[c-1][1])}${failed?' · This suspect has a recorded failure.':''}</small></div><button class="btn ${failed?'green':'danger'}" ${((failed||!name)?'disabled':'')} onclick="failSuspect(${c},${selected},'${encodeURIComponent(name)}')">${failed?'Failed':'Fails'}</button></div>`;
+    return \`<div class="verify-row"><div><b>Clue ${c}${done?' · RESOLVED':' · OPEN'}</b><small>${esc(clues[c-1][1])}${failed?' · This suspect has a recorded failure.':''}</small></div><button class="btn ${failed?'green':'danger'}" ${((failed||!name)?'disabled':'')} onclick="failSuspect(${c},${selected},'${encodeURIComponent(name)}')">${failed?'Failed':'Fails'}</button></div>\`;
   }).join("");
-  const pageOptions=ps.map(p=>{
-    const ch=chapterForPage(+p),title=ch&&db.setup.chapters[ch]?db.setup.chapters[ch].title:"";
-    return `<option value="${p}" ${selected===p?'selected':''}>Page ${p}${title?' · '+esc(title):""}</option>`;
+
+  const grouped={};
+  const standalone=[];
+  ps.forEach(p=>{
+    const ch=chapterForPage(+p);
+    if(ch!=null){
+      if(!grouped[ch])grouped[ch]=[];
+      grouped[ch].push(+p);
+    }else standalone.push(+p);
+  });
+  const chapterKeys=Object.keys(grouped).sort((a,b)=>+a-+b);
+  const chapterHtml=chapterKeys.map(ch=>{
+    const title=db.setup.chapters[ch]?.title||"";
+    const pagesHtml=grouped[ch].map(p=>\`<button type="button" class="btn small ${selected===p?'accent':''}" onclick="selectSuspectPage(${p})">Page ${p}</button>\`).join("");
+    return \`<div class="saved-row" style="display:block"><div><b>Chapter ${ch}${title?' · '+esc(title):""}</b><small>${grouped[ch].length} possible page${grouped[ch].length===1?'':'s'}</small></div><div class="actions" style="margin-top:8px">${pagesHtml}</div></div>\`;
   }).join("");
-  const pageControl=name
-    ? `<div class="field"><label>Choose page</label><select onchange="selectSuspectPage(this.value)" style="font-size:20px"><option value="">Select a possible page…</option>${pageOptions}</select></div>`
-      +(selected?`<div class="selection-feedback">Selected page: ${selected} · ${rel.length} relevant clues</div>`:'<div class="sub" style="margin-top:8px">Only pages that are still possible are shown.</div>')
-    : '<div class="empty">Enter the suspect name first. Then choose the page.</div>';
-  const potentialHtml=pots.length?pots.map((x,i)=>`<div class="potential-name"><span><b>${esc(x.name)}</b> · p.${x.page}</span><button class="btn small" onclick="openNote('suspects','${encodeURIComponent(x.name)}','Suspect Note')">Note</button><button class="btn small" onclick="removePotential(${i})">Undo</button></div>`).join(""):'<div class="empty">No Potential Killers yet.</div>';
-  const eliminatedHtml=names.length?names.map((x,i)=>`<div class="eliminated-name"><span><b>${esc(x.name)}</b>${x.page?' · p.'+x.page:""}</span><button class="btn small" onclick="restoreEliminatedName(${i})">Undo</button></div>`).join(""):'<div class="empty">No names eliminated yet.</div>';
-  return `<div>
-    <div class="screen-heading"><div class="clue-toolbar"><div><h1>SUSPECT VERIFICATION</h1><p class="sub">Enter the suspect name first, then choose the page to verify.</p></div></div></div>
+  const standaloneHtml=standalone.length?\`<div class="saved-row" style="display:block"><div><b>Pages outside a chapter</b><small>${standalone.length} possible page${standalone.length===1?'':'s'}</small></div><div class="actions" style="margin-top:8px">${standalone.map(p=>\`<button type="button" class="btn small ${selected===p?'accent':''}" onclick="selectSuspectPage(${p})">Page ${p}</button>\`).join("")}</div></div>\`:"";
+
+  const potentialHtml=pots.length?pots.map((x,i)=>\`<div class="potential-name"><span><b>${esc(x.name)}</b> · p.${x.page}</span><button class="btn small" onclick="openNote('suspects','${encodeURIComponent(x.name)}','Suspect Note')">Note</button><button class="btn small" onclick="removePotential(${i})">Undo</button></div>\`).join(""):'<div class="empty">No Potential Killers yet.</div>';
+  const eliminatedHtml=names.length?names.map((x,i)=>\`<div class="eliminated-name"><span><b>${esc(x.name)}</b>${x.page?' · p.'+x.page:""}</span><button class="btn small" onclick="restoreEliminatedName(${i})">Undo</button></div>\`).join(""):'<div class="empty">No names eliminated yet.</div>';
+
+  return \`<div>
+    <div class="screen-heading"><div class="clue-toolbar"><div><h1>SUSPECT VERIFICATION</h1><p class="sub">Enter the suspect name, confirm it, then check the relevant chapters and pages.</p></div></div></div>
     <section class="suspect-card">
       <h2>VERIFY SUSPECT</h2>
-      <div class="field"><label>Suspect name</label><input id="sn" value="${esc(name)}" style="font-size:23px" placeholder="Suspect name" oninput="window.suspectName=this.value;window.suspectPage=null"></div>
-      ${pageControl}
-      ${selected?`<h2 style="margin-top:18px">RELEVANT CLUES</h2>${rel.length?checks:'<div class="empty">No relevant clues remain.</div>'}${name?`<div class="line"></div><button class="btn accent" style="width:100%" onclick="markPotentialKiller('${encodeURIComponent(name)}',${selected})">All relevant checks passed — Add Potential Killer</button>`:""}`:""}
+      <div class="field"><label>Suspect name</label><input id="sn" value="${esc(name)}" style="font-size:23px" placeholder="Suspect name" oninput="window.suspectName=this.value"></div>
+      <button type="button" class="btn primary" style="width:100%;margin-top:10px" onclick="submitSuspectName()">OK — SHOW RELEVANT CHAPTERS</button>
+      ${name?\`<div class="line"></div><h2>RELEVANT CHAPTERS</h2><p class="sub">Only chapters containing pages that are still possible are shown. Choose a page to run the suspect checks.</p>${chapterHtml||standaloneHtml?'<div class="saved-inputs">'+chapterHtml+standaloneHtml+'</div>':'<div class="empty">No possible pages remain for this suspect check.</div>'}\`:""}
+      ${selected?\`<div class="line"></div><div class="selection-feedback">Selected page: ${selected} · ${rel.length} relevant clues</div><h2 style="margin-top:18px">RELEVANT CLUES</h2>${rel.length?checks:'<div class="empty">No relevant clues remain.</div>'}${name?\`<div class="line"></div><button class="btn accent" style="width:100%" onclick="markPotentialKiller('${encodeURIComponent(name)}',${selected})">All relevant checks passed — Add Potential Killer</button>\`:""}\`:""}
     </section>
     <section class="suspect-card" style="margin-top:12px"><h2>POTENTIAL KILLERS</h2>${potentialHtml}</section>
     <section class="suspect-card" style="margin-top:12px"><h2>ELIMINATED NAMES</h2>${eliminatedHtml}</section>
-  </div>`;
+  </div>\`;
 }
 function checkSuspect(){const n=($("sn")?.value||"").trim(),p=+window.suspectPage;if(!n){openModal('<button class="close" onclick="closeModal()">×</button><h2 class="modal-title">Enter a suspect name</h2><button class="btn primary" onclick="closeModal()">OK</button>');return}if(!p||!killerPossibleOnPage(p)){openModal('<button class="close" onclick="closeModal()">×</button><h2 class="modal-title">Choose a possible page</h2><p class="sub">Suspect Verification only accepts pages that are still possible.</p><button class="btn primary" onclick="closeModal()">OK</button>');return}window.suspectName=n;render("suspect")}
 function markerForClue(n){const m=CLUE_META[n]||{tool:"Use the clue’s marking tool",color:"#c0488f"};return Object.assign({},m,{tool:(m.tool||"").replace(/^TRACKING ONLY\s*·\s*/i,"").replace(/\s*optional\s+/i,"")})}
