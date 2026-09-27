@@ -803,11 +803,10 @@ function solutionWorkScope(n){
   }
   let required=[];
   if(n===9){
-    // Clue 9 is a reading-order window, not a one-page adjacency test.
-    // Each candidate needs enough surrounding pages to cover ten names in both directions.
-    // We conservatively include the full current case range because name density is unknown
-    // until the text is read; checked pages are then removed from the remaining work.
-    required=ps.filter(p=>candidates.some(q=>Math.abs(q-p)<=10));
+    // The exact ten-name window cannot be computed from page numbers alone.
+    // Until the book text is scanned, treat the whole active case range as the
+    // conservative work scope; this avoids pretending that ten pages equals ten names.
+    required=ps.slice();
   }else if(n===12){
     required=ps.filter(p=>candidates.some(q=>Math.abs(q-p)<=4));
   }else if(n===16){
@@ -864,22 +863,32 @@ function solutionImpact(n){
 }
 function solutionValueModel(n){
   if(n===18)return null;
+  const ctx=window.pageAnalysisContext;
+  if(ctx&&ctx.solutionValueModels&&ctx.solutionValueModels[n])return ctx.solutionValueModels[n];
   const p=SOLUTION_VALUE_PROFILE[n];
   if(!p)return null;
   const scope=solutionWorkScope(n);
   const impact=solutionImpact(n);
   const effort=Math.max(1,scope.pages||scope.units)*p.d*p.x;
+  let result;
   if(impact&&impact.unknown){
     const v=Math.min(1,p.u/5);
     const score=(0.05*v)/effort;
-    return {n,score,effort,scope,unknown:true,e:null,i:null,u:v,c:null,band:score>0.004?"HIGH":score>0.001?"MEDIUM":"LOW",confidence:"LOW",label:"Information-dependent"};
+    result={n,score,effort,scope,unknown:true,e:null,i:null,u:v,c:null,band:score>0.004?"HIGH":score>0.001?"MEDIUM":"LOW",confidence:"LOW",label:"Information-dependent"};
+  }else{
+    const e=impact.e,i=impact.i,u=impact.u,c=impact.c;
+    const raw=0.40*e+0.25*i+0.15*u+0.20*c;
+    const score=raw/effort;
+    result={n,score,effort,scope,e,i,u,c,unknown:false,band:score>0.004?"HIGH":score>0.001?"MEDIUM":"LOW",confidence:"ESTIMATED",label:"Estimated from current case state"};
   }
-  const e=impact.e,i=impact.i,u=impact.u,c=impact.c;
-  const raw=0.40*e+0.25*i+0.15*u+0.20*c;
-  const score=raw/effort;
-  return {n,score,effort,scope,e,i,u,c,unknown:false,band:score>0.004?"HIGH":score>0.001?"MEDIUM":"LOW",confidence:"ESTIMATED",label:"Estimated from current case state"};
+  if(ctx){
+    ctx.solutionValueModels=ctx.solutionValueModels||{};
+    ctx.solutionValueModels[n]=result;
+  }
+  return result;
 }
 function rankedSolutionClues(){
+  const ctx=window.pageAnalysisContext;
   const open=clues.filter(x=>x[0]!==18&&!(db.clues[x[0]]&&db.clues[x[0]].done)).map(x=>solutionValueModel(x[0])).filter(Boolean).sort((a,b)=>b.score-a.score);
   const total=open.length;
   open.forEach((v,i)=>{
@@ -904,7 +913,8 @@ function solutionValueDetail(v){
   return scope+" · "+Math.round(v.score*10000)/100+" value/effort";
 }
 function nextChecks(){
-  return withPageAnalysis(()=>{
+  return withPageAnalysis(ctx=>{
+    ctx.solutionValueModels={};
     const ranked=rankedSolutionClues();
     return ranked.slice(0,5).map(v=>({n:v.n,mode:v.scope.kind==="chapters"?"chapter":"page",id:v.scope.units||0,value:v}));
   });
@@ -920,8 +930,9 @@ function clueList(){
   const sortMode=window.clueSortMode||"value";
   const ranked=rankedSolutionClues();
   const rankMap=new Map(ranked.map((v,i)=>[v.n,i]));
+  const valueMap=new Map(ranked.map(v=>[v.n,v]));
   const allOpen=ranked.map(v=>clues.find(x=>x[0]===v.n)).filter(Boolean);
-  let visible=selected==="final"?clues.filter(x=>x[0]===18):allOpen.filter(x=>selected==="all"||solutionValueModel(x[0])?.band===selected);
+  let visible=selected==="final"?clues.filter(x=>x[0]===18):allOpen.filter(x=>selected==="all"||valueMap.get(x[0])?.band===selected);
   if(selected==="all"){
     const completed=clues.filter(x=>x[0]!==18&&db.clues[x[0]]&&db.clues[x[0]].done);
     visible=visible.concat(completed);
