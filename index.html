@@ -384,7 +384,7 @@ function historyReason(clue,key,before,after,explicit){
   if(key==="findings"){
     const added=(after||[]).filter(x=>!(before||[]).some(y=>JSON.stringify(y)===JSON.stringify(x)));
     const removed=(before||[]).filter(x=>!(after||[]).some(y=>JSON.stringify(y)===JSON.stringify(x)));
-    const reasons=added.map(x=>x.reason||((+x.clue&&clues[+x.clue-1])?clues[+x.clue-1][1]:"")).filter(Boolean);
+    const reasons=added.map(x=>String(x.type||"").startsWith("checked-")?"Progress action.":(x.reason||((+x.clue&&clues[+x.clue-1])?clues[+x.clue-1][1]:""))).filter(Boolean);
     if(reasons.length)return [...new Set(reasons)].join(" ");
     if(removed.length)return "Finding removed.";
   }
