@@ -379,13 +379,55 @@ function buildFindingDependencies(f){
 function validateFindingDependency(dep){if(dep.kind==="case-page-range"){const p=+dep.page;return {valid:pages().includes(p),message:"Page "+p+" is no longer inside the active case page range."}}if(dep.kind==="chapter-mapping"){const actual=chapterForPage(+dep.page);return {valid:actual===+dep.chapter,message:"Page "+dep.page+" is now assigned to a different chapter."}}if(dep.kind==="chapter-range"){const v=(db.setup.chapters||{})[+dep.chapter];const valid=!!v&&+v.start===+dep.start&&+v.end===+dep.end;return {valid:valid,message:"Chapter "+dep.chapter+" range changed from "+dep.start+"–"+dep.end+"."}}if(dep.kind==="case-state"){const valid=clueUnitNeedsAction(+dep.clue,dep.mode,+dep.unitId);return {valid:valid,message:"This unit is no longer relevant to Clue "+dep.clue+" in the current case state."}}return {valid:true,message:""}}
 function validateFinding(f){const reasons=(f.dependencies||[]).map(validateFindingDependency).filter(x=>!x.valid).map(x=>x.message).filter(Boolean);return {valid:!reasons.length,reasons:reasons}}
 function refreshFindingStatuses(options={}){const events=[],wasValidating=!!window.validatingFindings;window.validatingFindings=true;try{(db.findings||[]).forEach(f=>{migrateFinding(f);const before=f.status||"valid",result=validateFinding(f);f.status=result.valid?"valid":"stale";f.staleReasons=result.reasons.map(message=>({kind:"dependency",message:message}));if(before!==f.status&&!options.silent)events.push({findingId:f.id,from:before,to:f.status,reasons:snapshot(f.staleReasons)})})}finally{window.validatingFindings=wasValidating}return events}
-function activeFindings(){if(window.validatingFindings||window.renderingClueProgress)return (db.findings||[]).filter(f=>f.status!=="stale");refreshFindingStatuses({silent:true});return (db.findings||[]).filter(f=>f.status!=="stale")}
+function activeFindings(){
+  if(window.pageAnalysisContext&&window.pageAnalysisContext.findings)return window.pageAnalysisContext.findings;
+  if(window.validatingFindings||window.renderingClueProgress)return (db.findings||[]).filter(f=>f.status!=="stale");
+  refreshFindingStatuses({silent:true});
+  return (db.findings||[]).filter(f=>f.status!=="stale");
+}
+function killerPossibleOnPage(p,findings){
+  const active=findings||activeFindings();
+  if(active.some(x=>x.page===p&&x.type==="elim"))return false;
+  const ch=chapterForPage(p);
+  for(const clueNo of [15,17]){
+    if(db.clues[clueNo]&&db.clues[clueNo].done&&ch!=null&&active.some(x=>x.type==="chapter"&&x.clue===clueNo&&+x.chapter===ch))return false;
+  }
+  return true;
+}
+function pageNeedsAction(p,candidates){
+  const ctx=window.pageAnalysisContext;
+  const ps=ctx&&ctx.pages?ctx.pages:pages();
+  const candidatePages=candidates||(ctx&&ctx.candidates?ctx.candidates:ps.filter(q=>killerPossibleOnPage(q)));
+  if(ctx&&ctx.needsActionSet&&(!candidates||candidates===ctx.candidates))return ctx.needsActionSet.has(+p);
+  if([4,9,10,11,13].some(n=>!(db.clues[n]&&db.clues[n].done))&&candidatePages.includes(p))return true;
+  if(!(db.clues[12]&&db.clues[12].done)&&candidatePages.some(q=>Math.abs(q-p)<=4))return true;
+  if(!(db.clues[14]&&db.clues[14].done)){
+    const first=ps[0],last=ps[ps.length-1],opp=first+last-p;
+    if(candidatePages.includes(opp))return true;
+  }
+  if(!(db.clues[16]&&db.clues[16].done)&&candidatePages.some(q=>Math.abs(q-p)<=1))return true;
+  return false;
+}
+function pageAssessment(p,candidates){return {possible:killerPossibleOnPage(p),needsAction:pageNeedsAction(p,candidates)}}
+function withPageAnalysis(fn){
+  const previous=window.pageAnalysisContext;
+  const ps=pages(),findings=activeFindings(),candidates=ps.filter(p=>killerPossibleOnPage(p,findings));
+  const context={pages:ps,findings:findings,candidates:candidates,needsActionSet:null};
+  window.pageAnalysisContext=context;
+  try{
+    context.needsActionSet=new Set(ps.filter(p=>pageNeedsAction(p,candidates)));
+    return fn(context);
+  }finally{
+    window.pageAnalysisContext=previous;
+  }
+}
 function findingForWrite(f){migrateFinding(f);f.dependencies=buildFindingDependencies(f);f.staleReasons=[];f.status="valid";return f}
 function derivedStateSnapshot(){
-  const ps=pages(),a=activeFindings();
-  let openRelevantUnits=0;
-  SOLUTION_ORDER.forEach(n=>{const cfg=clueProgressConfig(n);if(!cfg)return;const mode=clueProgressMode(n);const units=clueProgressUnits(n,mode);openRelevantUnits+=units.filter(id=>clueUnitNeedsAction(n,mode,id)&&!clueUnitChecked(n,mode,id)).length});
-  return {possiblePages:ps.filter(p=>killerPossibleOnPage(p)).length,impossiblePages:ps.filter(p=>!killerPossibleOnPage(p)).length,pagesNeedCheck:ps.filter(p=>pageNeedsAction(p)).length,validFindings:a.length,staleFindings:(db.findings||[]).filter(f=>f.status==="stale").length,openRelevantUnits:openRelevantUnits,doneClues:SOLUTION_ORDER.filter(n=>db.clues[n]&&db.clues[n].done).length,potentialKillers:(db.potentialKillers||[]).length};
+  return withPageAnalysis(ctx=>{
+    let openRelevantUnits=0;
+    SOLUTION_ORDER.forEach(n=>{const cfg=clueProgressConfig(n);if(!cfg)return;const mode=clueProgressMode(n);const units=clueProgressUnits(n,mode);openRelevantUnits+=units.filter(id=>clueUnitNeedsAction(n,mode,id)&&!clueUnitChecked(n,mode,id)).length});
+    return {possiblePages:ctx.candidates.length,impossiblePages:ctx.pages.length-ctx.candidates.length,pagesNeedCheck:ctx.needsActionSet.size,validFindings:ctx.findings.length,staleFindings:(db.findings||[]).filter(f=>f.status==="stale").length,openRelevantUnits:openRelevantUnits,doneClues:SOLUTION_ORDER.filter(n=>db.clues[n]&&db.clues[n].done).length,potentialKillers:(db.potentialKillers||[]).length};
+  });
 }
 function findingImpact(a,b){
   const direct=[],indirect=[];
@@ -420,7 +462,6 @@ function historyReason(clue,key,before,after,explicit){
   if(key==="final")return "Final decision recorded.";
   return "";
 }
-function historyState(key,value){const holder=db[key];db[key]=snapshot(value);const state=derivedStateSnapshot();db[key]=holder;return state}
 function recordHistory(clue,label,key,before,after,reason=""){
   const beforeState=historyState(key,before),afterState=historyState(key,after),autoReason=historyReason(clue,key,before,after,reason);
   db.history.unshift({id:Date.now()+"_"+Math.random().toString(36).slice(2),clue:clue,label:label,key:key,before:snapshot(before),after:snapshot(after),reason:autoReason||null,impact:findingImpact(beforeState,afterState),createdAt:new Date().toISOString(),undone:false});
@@ -488,17 +529,17 @@ function header(route){
 }
 function render(route){
   if(!db.setup.first||!db.setup.last)route="setup";
-  $("app").innerHTML=header(route)+"<main>"+(route==="setup"?setup():route==="master"?master():route==="clues"?clueList():route==="suspect"?suspect():route==="pages"?pagesStatus():route==="archive"?archive():route==="consistency"?consistency():master())+"</main>";
-  wire();
+  withPageAnalysis(()=>{$("app").innerHTML=header(route)+"<main>"+(route==="setup"?setup():route==="master"?master():route==="clues"?clueList():route==="suspect"?suspect():route==="pages"?pagesStatus():route==="archive"?archive():route==="consistency"?consistency():master())+"</main>";});
 }
-function wire(){}
 function reasoningGraph(){
-  const active=activeFindings(),possible=pages().filter(killerPossibleOnPage),done=SOLUTION_ORDER.filter(n=>db.clues[n]&&db.clues[n].done);
-  const clueNodes=done.map(n=>'<button class="graph-node clue-node" onclick="closeModal();openClue('+n+')">CLUE '+n+'</button>').join("");
-  const pageNodes=possible.slice(0,80).map(p=>'<button class="graph-node page-node" onclick="closeModal();openPageStatus('+p+')">PAGE '+p+'</button>').join("");
-  const findingNodes=active.slice(0,80).map(f=>'<button class="graph-node finding-node" onclick="closeModal();'+(f.clue?'openClue('+f.clue+')':'go(\'archive\')')+'">FINDING '+esc(f.id)+'</button>').join("");
-  const suspectNodes=(db.potentialKillers||[]).map(x=>'<button class="graph-node suspect-node" onclick="closeModal();window.suspectName='+JSON.stringify(x.name)+';window.suspectPage='+x.page+';go(\'suspect\')">'+esc(x.name)+'</button>').join("");
-  openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">CASE LOGIC</span><h2 class="modal-title">REASONING GRAPH</h2><p class="sub">Current case state only. Select a node to open its source.</p><div class="graph-section"><h3>CLUES</h3><div class="graph-nodes">'+(clueNodes||'<div class="empty">No completed clues yet.</div>')+'</div></div><div class="graph-section"><h3>POSSIBLE PAGES</h3><div class="graph-nodes">'+(pageNodes||'<div class="empty">No possible pages.</div>')+'</div></div><div class="graph-section"><h3>ACTIVE FINDINGS</h3><div class="graph-nodes">'+(findingNodes||'<div class="empty">No active findings.</div>')+'</div></div><div class="graph-section"><h3>POTENTIAL KILLERS</h3><div class="graph-nodes">'+(suspectNodes||'<div class="empty">No Potential Killers yet.</div>')+'</div></div>');
+  return withPageAnalysis(ctx=>{
+    const active=ctx.findings,possible=ctx.candidates,done=SOLUTION_ORDER.filter(n=>db.clues[n]&&db.clues[n].done);
+    const clueNodes=done.map(n=>'<button class="graph-node clue-node" onclick="closeModal();openClue('+n+')">CLUE '+n+'</button>').join("");
+    const pageNodes=possible.slice(0,80).map(p=>'<button class="graph-node page-node" onclick="closeModal();openPageStatus('+p+')">PAGE '+p+'</button>').join("");
+    const findingNodes=active.slice(0,80).map(f=>'<button class="graph-node finding-node" onclick="closeModal();'+(f.clue?'openClue('+f.clue+')':'go(\'archive\')')+'">FINDING '+esc(f.id)+'</button>').join("");
+    const suspectNodes=(db.potentialKillers||[]).map(x=>'<button class="graph-node suspect-node" onclick="closeModal();window.suspectName='+JSON.stringify(x.name)+';window.suspectPage='+x.page+';go(\'suspect\')">'+esc(x.name)+'</button>').join("");
+    openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">CASE LOGIC</span><h2 class="modal-title">REASONING GRAPH</h2><p class="sub">Current case state only. Select a node to open its source.</p><div class="graph-section"><h3>CLUES</h3><div class="graph-nodes">'+(clueNodes||'<div class="empty">No completed clues yet.</div>')+'</div></div><div class="graph-section"><h3>POSSIBLE PAGES</h3><div class="graph-nodes">'+(pageNodes||'<div class="empty">No possible pages.</div>')+'</div></div><div class="graph-section"><h3>ACTIVE FINDINGS</h3><div class="graph-nodes">'+(findingNodes||'<div class="empty">No active findings.</div>')+'</div></div><div class="graph-section"><h3>POTENTIAL KILLERS</h3><div class="graph-nodes">'+(suspectNodes||'<div class="empty">No Potential Killers yet.</div>')+'</div></div>');
+  });
 }
 function master(){
   const ps=pages(),elim=ps.filter(p=>status(p)==="elim").length,remain=ps.length-elim;
@@ -509,9 +550,10 @@ function master(){
 }
 function pagesStatus(){
   const ps=pages(),filter=window.pageFilter||"all",query=String(window.pageQuery||"").trim();
-  const filtered=ps.filter(p=>{const a=pageAssessment(p);return(filter==="all"||(filter==="candidate"&&a.possible)||(filter==="eliminated"&&!a.possible)||(filter==="action"&&a.needsAction)||(filter==="noaction"&&!a.needsAction))&&(!query||String(p).includes(query))});
-  const counts={all:ps.length,candidate:ps.filter(p=>pageAssessment(p).possible).length,eliminated:ps.filter(p=>!pageAssessment(p).possible).length,action:ps.filter(p=>pageAssessment(p).needsAction).length,noaction:ps.filter(p=>!pageAssessment(p).needsAction).length};
-  return '<div class="pages-screen"><div class="screen-heading"><div class="clue-toolbar"><div><h1>PAGES & STATUS</h1><p class="sub">Each page tracks killer possibility and whether work is still needed. <span class="page-marker-legend"><span class="chapter-impossible-marker legend-marker"></span> Impossible chapters are marked with a red page marker.</span></p></div></div></div><div class="card"><div class="page-controls"><button class="btn page-filter-btn all-filter '+(filter==="all"?"active":"")+'" onclick="window.pageFilter=\'all\';render(\'pages\')">ALL · '+counts.all+'</button><button class="btn page-filter-btn candidate-filter '+(filter==="candidate"?"active":"")+'" onclick="window.pageFilter=\'candidate\';render(\'pages\')">POSSIBLE · '+counts.candidate+'</button><button class="btn page-filter-btn eliminated-filter '+(filter==="eliminated"?"active":"")+'" onclick="window.pageFilter=\'eliminated\';render(\'pages\')">IMPOSSIBLE · '+counts.eliminated+'</button><button class="btn page-filter-btn check-filter '+(filter==="action"?"active":"")+'" onclick="window.pageFilter=\'action\';render(\'pages\')">NEED TO CHECK · '+counts.action+'</button><button class="btn page-filter-btn no-check-filter '+(filter==="noaction"?"active":"")+'" onclick="window.pageFilter=\'noaction\';render(\'pages\')">NO NEED TO CHECK · '+counts.noaction+'</button><input class="btn" style="flex:1;min-width:150px;text-align:left" value="'+esc(query)+'" placeholder="Find page number" oninput="window.pageQuery=this.value;render(\'pages\')"><button class="btn" onclick="window.pageFilter=\'all\';window.pageQuery=\'\';render(\'pages\')">Clear</button></div><div class="page-cards">'+(filtered.length?filtered.map(p=>{const a=pageAssessment(p),f=db.findings.filter(x=>x.page===p),chapter=chapterForPage(p),chapterImpossible=chapter!=null&&chapterIsImpossible(chapter);return '<div class="page-card '+(a.possible?"candidate":"eliminated")+(chapterImpossible?" chapter-impossible":"")+'" onclick="openPageStatus('+p+')">'+(chapterImpossible?'<span class="chapter-impossible-marker" title="This page is in an impossible chapter"></span>':"")+'<div class="page-number">'+p+'</div><div class="page-state-row"><span class="page-state possibility-state">'+(a.possible?"POSSIBLE":"IMPOSSIBLE")+'</span><span class="page-state work-state '+(a.needsAction?"need-check":"no-need-check")+'">'+(a.needsAction?"NEED TO CHECK":"NO NEED TO CHECK")+'</span></div><div class="page-findings">'+(f.length?(f.length+" finding"+(f.length===1?"":"s")):"No findings yet")+'</div></div>'}).join(""):'<div class="empty">No pages match this filter.</div>')+'</div></div></div>';
+  const assessments=new Map(ps.map(p=>[p,pageAssessment(p)]));
+  const filtered=ps.filter(p=>{const a=assessments.get(p);return(filter==="all"||(filter==="candidate"&&a.possible)||(filter==="eliminated"&&!a.possible)||(filter==="action"&&a.needsAction)||(filter==="noaction"&&!a.needsAction))&&(!query||String(p).includes(query))});
+  const counts={all:ps.length,candidate:ps.filter(p=>assessments.get(p).possible).length,eliminated:ps.filter(p=>!assessments.get(p).possible).length,action:ps.filter(p=>assessments.get(p).needsAction).length,noaction:ps.filter(p=>!assessments.get(p).needsAction).length};
+  return '<div class="pages-screen"><div class="screen-heading"><div class="clue-toolbar"><div><h1>PAGES & STATUS</h1><p class="sub">Each page tracks killer possibility and whether work is still needed. <span class="page-marker-legend"><span class="chapter-impossible-marker legend-marker"></span> Impossible chapters are marked with a red page marker.</span></p></div></div></div><div class="card"><div class="page-controls"><button class="btn page-filter-btn all-filter '+(filter==="all"?"active":"")+'" onclick="window.pageFilter=\'all\';render(\'pages\')">ALL · '+counts.all+'</button><button class="btn page-filter-btn candidate-filter '+(filter==="candidate"?"active":"")+'" onclick="window.pageFilter=\'candidate\';render(\'pages\')">POSSIBLE · '+counts.candidate+'</button><button class="btn page-filter-btn eliminated-filter '+(filter==="eliminated"?"active":"")+'" onclick="window.pageFilter=\'eliminated\';render(\'pages\')">IMPOSSIBLE · '+counts.eliminated+'</button><button class="btn page-filter-btn check-filter '+(filter==="action"?"active":"")+'" onclick="window.pageFilter=\'action\';render(\'pages\')">NEED TO CHECK · '+counts.action+'</button><button class="btn page-filter-btn no-check-filter '+(filter==="noaction"?"active":"")+'" onclick="window.pageFilter=\'noaction\';render(\'pages\')">NO NEED TO CHECK · '+counts.noaction+'</button><input class="btn" style="flex:1;min-width:150px;text-align:left" value="'+esc(query)+'" placeholder="Find page number" oninput="window.pageQuery=this.value;render(\'pages\')"><button class="btn" onclick="window.pageFilter=\'all\';window.pageQuery=\'\';render(\'pages\')">Clear</button></div><div class="page-cards">'+(filtered.length?filtered.map(p=>{const a=assessments.get(p),f=db.findings.filter(x=>x.page===p),chapter=chapterForPage(p),chapterImpossible=chapter!=null&&chapterIsImpossible(chapter);return '<div class="page-card '+(a.possible?"candidate":"eliminated")+(chapterImpossible?" chapter-impossible":"")+'" onclick="openPageStatus('+p+')">'+(chapterImpossible?'<span class="chapter-impossible-marker" title="This page is in an impossible chapter"></span>':"")+'<div class="page-number">'+p+'</div><div class="page-state-row"><span class="page-state possibility-state">'+(a.possible?"POSSIBLE":"IMPOSSIBLE")+'</span><span class="page-state work-state '+(a.needsAction?"need-check":"no-need-check")+'">'+(a.needsAction?"NEED TO CHECK":"NO NEED TO CHECK")+'</span></div><div class="page-findings">'+(f.length?(f.length+" finding"+(f.length===1?"":"s")):"No findings yet")+'</div></div>'}).join(""):'<div class="empty">No pages match this filter.</div>')+'</div></div></div>';
 }
 
 function pageEvidenceCoverage(p){
@@ -949,14 +991,6 @@ function removePageFinding(n,p){
   const before=snapshot(db.findings),idx=db.findings.findIndex(x=>x.clue===n&&x.page===p&&x.type==="elim");
   if(idx>=0){db.findings.splice(idx,1);const after=snapshot(db.findings);recordHistory(n,"Page finding removed","findings",before,after);save();}
   refreshPageSelectionUI(n);
-  if(window.pageDrillGroup&&window.pageDrillGroup.n===n){showPageGroup(n,window.pageDrillGroup.g);}
-}
-function toggleFinding(n,p,type){
-  const before=snapshot(db.findings),idx=db.findings.findIndex(x=>x.clue===n&&x.page===p&&x.type===type);
-  if(idx>=0)db.findings.splice(idx,1);else db.findings.push({clue:n,page:p,type:type});
-  const after=snapshot(db.findings);
-  recordHistory(n,(idx>=0?"Page finding removed":"Page marked invalid"),"findings",before,after);
-  save();refreshPageSelectionUI(n);
   if(window.pageDrillGroup&&window.pageDrillGroup.n===n){showPageGroup(n,window.pageDrillGroup.g);}
 }
 function toggleFinding(n,p,type){
