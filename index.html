@@ -452,30 +452,24 @@ function pagesStatus(){
   return '<div class="pages-screen"><div class="screen-heading"><div class="clue-toolbar"><div><h1>PAGES & STATUS</h1><p class="sub">Each page tracks killer possibility and whether work is still needed. <span class="page-marker-legend"><span class="chapter-impossible-marker legend-marker"></span> Impossible chapters are marked with a red page marker.</span></p></div></div></div><div class="card"><div class="page-controls"><button class="btn page-filter-btn all-filter '+(filter==="all"?"active":"")+'" onclick="window.pageFilter=\'all\';render(\'pages\')">ALL · '+counts.all+'</button><button class="btn page-filter-btn candidate-filter '+(filter==="candidate"?"active":"")+'" onclick="window.pageFilter=\'candidate\';render(\'pages\')">POSSIBLE · '+counts.candidate+'</button><button class="btn page-filter-btn eliminated-filter '+(filter==="eliminated"?"active":"")+'" onclick="window.pageFilter=\'eliminated\';render(\'pages\')">IMPOSSIBLE · '+counts.eliminated+'</button><button class="btn page-filter-btn check-filter '+(filter==="action"?"active":"")+'" onclick="window.pageFilter=\'action\';render(\'pages\')">NEED TO CHECK · '+counts.action+'</button><button class="btn page-filter-btn no-check-filter '+(filter==="noaction"?"active":"")+'" onclick="window.pageFilter=\'noaction\';render(\'pages\')">NO NEED TO CHECK · '+counts.noaction+'</button><input class="btn" style="flex:1;min-width:150px;text-align:left" value="'+esc(query)+'" placeholder="Find page number" oninput="window.pageQuery=this.value;render(\'pages\')"><button class="btn" onclick="window.pageFilter=\'all\';window.pageQuery=\'\';render(\'pages\')">Clear</button></div><div class="page-cards">'+(filtered.length?filtered.map(p=>{const a=pageAssessment(p),f=db.findings.filter(x=>x.page===p),chapter=chapterForPage(p),chapterImpossible=chapter!=null&&chapterIsImpossible(chapter);return '<div class="page-card '+(a.possible?"candidate":"eliminated")+(chapterImpossible?" chapter-impossible":"")+'" onclick="openPageStatus('+p+')">'+(chapterImpossible?'<span class="chapter-impossible-marker" title="This page is in an impossible chapter"></span>':"")+'<div class="page-number">'+p+'</div><div class="page-state-row"><span class="page-state possibility-state">'+(a.possible?"POSSIBLE":"IMPOSSIBLE")+'</span><span class="page-state work-state '+(a.needsAction?"need-check":"no-need-check")+'">'+(a.needsAction?"NEED TO CHECK":"NO NEED TO CHECK")+'</span></div><div class="page-findings">'+(f.length?(f.length+" finding"+(f.length===1?"":"s")):"No findings yet")+'</div></div>'}).join(""):'<div class="empty">No pages match this filter.</div>')+'</div></div></div>';
 }
 
+function pageEvidenceCoverage(p){
+  const pageClues=[4,6,9,10,11,12,13,14,16],active=activeFindings();
+  return {
+    collected:pageClues.filter(n=>active.some(f=>+f.clue===n&&+f.page===+p)),
+    needed:pageClues.filter(n=>!(db.clues[n]&&db.clues[n].done)&&clueUnitNeedsAction(n,"page",+p)&&!active.some(f=>+f.clue===n&&+f.page===+p))
+  };
+}
 function openPageStatus(p){
-  const assessment=pageAssessment(p),possible=assessment.possible,needsAction=assessment.needsAction;
-  const findings=activeFindings().filter(x=>x.page===p);
+  const assessment=pageAssessment(p),possible=assessment.possible,needsAction=assessment.needsAction,findings=activeFindings().filter(x=>x.page===p),coverage=pageEvidenceCoverage(p);
   const eliminationReasons=pageEliminationReasons(p),workReasons=pageWorkReasons(p);
-  const rows=findings.length?findings.map(x=>{
-    const isManual=x.type==="page-elim";
-    return '<div class="saved-row"><span>'+esc(isManual?(x.reason||"Page eliminated"):"Clue "+x.clue+" · "+(x.type||"finding")+(x.name?" · "+x.name:""))+'</span>'+(isManual?'':'<button class="btn small" onclick="closeModal();openClue('+x.clue+')">Open Clue</button>')+'</div>';
-  }).join(""):'<div class="empty">No recorded findings for this page.</div>';
-  const possibilityLine=possible
-    ?'<div class="page-detail-status possible-detail"><b>POSSIBLE</b><span>The killer can still be on this page.</span></div>'
-    :'<div class="page-detail-status impossible-detail"><b>IMPOSSIBLE</b><span>The killer cannot be on this page.</span></div>';
-  const eliminationLine=!possible
-    ?'<div class="page-reasons"><b>WHY THIS PAGE IS OUT</b>'+eliminationReasons.map(r=>'<div>• '+esc(r)+'</div>').join("")+'</div>'
-    :"";
-  const workLine=needsAction
-    ?'<div class="page-reasons check-reasons"><b>NEED TO CHECK</b>'+workReasons.map(r=>'<div>• '+esc(r)+'</div>').join("")+'</div>'
-    :'<div class="page-reasons no-check-reasons"><b>NO NEED TO CHECK</b><div>• No unresolved clue currently requires information from this page.</div></div>';
+  const rows=findings.length?findings.map(x=>{const isManual=x.type==="page-elim";return '<div class="saved-row"><span>'+esc(isManual?(x.reason||"Page eliminated"):"Clue "+x.clue+" · "+(x.type||"finding")+(x.name?" · "+x.name:""))+'</span>'+(isManual?'':'<button class="btn small" onclick="closeModal();openClue('+x.clue+')">Open Clue</button>')+'</div>'}).join(""):'<div class="empty">No recorded findings for this page.</div>';
+  const possibilityLine=possible?'<div class="page-detail-status possible-detail"><b>POSSIBLE</b><span>The killer can still be on this page.</span></div>':'<div class="page-detail-status impossible-detail"><b>IMPOSSIBLE</b><span>The killer cannot be on this page.</span></div>';
+  const eliminationLine=!possible?'<div class="page-reasons"><b>WHY THIS PAGE IS OUT</b>'+eliminationReasons.map(r=>'<div>• '+esc(r)+'</div>').join("")+'</div>':"";
+  const workLine=needsAction?'<div class="page-reasons check-reasons"><b>NEED TO CHECK</b>'+workReasons.map(r=>'<div>• '+esc(r)+'</div>').join("")+'</div>':'<div class="page-reasons no-check-reasons"><b>NO NEED TO CHECK</b><div>• No unresolved clue currently requires information from this page.</div></div>';
+  const coverageLine='<div class="page-reasons evidence-coverage"><b>EVIDENCE COVERAGE</b><div><b>Collected:</b> '+(coverage.collected.length?coverage.collected.map(n=>"Clue "+n).join(", "):"None yet")+'</div><div><b>Still needed:</b> '+(coverage.needed.length?coverage.needed.map(n=>"Clue "+n).join(", "):"None")+'</div></div>';
   const manualElim=findings.some(x=>x.type==="page-elim");
-  const action=manualElim
-    ?'<button class="btn danger" onclick="restorePageStatus('+p+')">Restore Page to Candidate</button>'
-    :possible
-      ?'<button class="btn danger" onclick="closeModal();confirmPageElimination('+p+')">Eliminate This Page</button>'
-      :"";
-  openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">PAGE '+p+'</span><h2 class="modal-title">'+(possible?"CANDIDATE PAGE":"PAGE ELIMINATED")+'</h2>'+possibilityLine+eliminationLine+workLine+rows+'<div class="actions" style="margin-top:14px">'+action+'<button class="btn" onclick="closeModal()">Close</button></div>');
+  const action=manualElim?'<button class="btn danger" onclick="restorePageStatus('+p+')">Restore Page to Candidate</button>':possible?'<button class="btn danger" onclick="closeModal();confirmPageElimination('+p+')">Eliminate This Page</button>':"";
+  openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">PAGE '+p+'</span><h2 class="modal-title">'+(possible?"CANDIDATE PAGE":"PAGE ELIMINATED")+'</h2>'+possibilityLine+eliminationLine+workLine+coverageLine+rows+'<div class="actions" style="margin-top:14px">'+action+'<button class="btn" onclick="closeModal()">Close</button></div>');
 }
 function confirmPageElimination(p){
   openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">PAGE '+p+'</span><h2 class="modal-title">Why is this page out?</h2><p class="sub">This decision does not need to be tied to a specific clue.</p><div class="actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn danger" onclick="closeModal();completePage('+p+',\'All names on page are irrelevant\');render(\'pages\')">All names on this page are irrelevant</button></div>');
