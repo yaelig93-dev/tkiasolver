@@ -754,23 +754,23 @@ function saveChapter(){
 }
 function delChapter(n){const chapters=snapshot(db.setup.chapters||{});delete chapters[n];requestSetupChange(Object.assign({},db.setup,{chapters:chapters}))}
 const SOLUTION_VALUE_PROFILE={
-  1:{e:3,i:3,u:1,c:2,d:3,x:2},
-  2:{e:2,i:2,u:1,c:2,d:2,x:1},
-  3:{e:3,i:3,u:1,c:2,d:3,x:2},
-  4:{e:4,i:3,u:1,c:4,d:3,x:2},
-  5:{e:3,i:3,u:1,c:2,d:3,x:2},
-  6:{e:5,i:5,u:5,c:5,d:2,x:3},
-  7:{e:3,i:3,u:1,c:2,d:3,x:2},
-  8:{e:3,i:3,u:1,c:2,d:3,x:2},
+  1:{e:3,i:3,u:1,c:2,d:2,x:2},
+  2:{e:2,i:2,u:1,c:2,d:1,x:1},
+  3:{e:3,i:3,u:1,c:2,d:2,x:2},
+  4:{e:4,i:3,u:1,c:4,d:3,x:3},
+  5:{e:3,i:3,u:1,c:2,d:2,x:2},
+  6:{e:5,i:5,u:5,c:5,d:3,x:3},
+  7:{e:3,i:3,u:1,c:2,d:2,x:2},
+  8:{e:3,i:3,u:1,c:2,d:2,x:2},
   9:{e:4,i:4,u:3,c:3,d:4,x:4},
-  10:{e:3,i:3,u:1,c:4,d:2,x:3},
-  11:{e:4,i:3,u:1,c:4,d:3,x:2},
-  12:{e:5,i:5,u:4,c:4,d:2,x:2},
-  13:{e:4,i:3,u:1,c:4,d:3,x:2},
-  14:{e:4,i:4,u:3,c:4,d:2,x:3},
+  10:{e:3,i:3,u:1,c:4,d:3,x:3},
+  11:{e:4,i:3,u:1,c:4,d:3,x:3},
+  12:{e:5,i:5,u:4,c:4,d:3,x:3},
+  13:{e:4,i:3,u:1,c:4,d:3,x:3},
+  14:{e:4,i:4,u:3,c:4,d:3,x:3},
   15:{e:5,i:4,u:4,c:5,d:1,x:1},
-  16:{e:5,i:4,u:3,c:4,d:3,x:4},
-  17:{e:5,i:5,u:4,c:5,d:3,x:3}
+  16:{e:5,i:4,u:3,c:4,d:4,x:4},
+  17:{e:5,i:5,u:4,c:5,d:4,x:4}
 };
 
 function solutionCheckedPages(n){
@@ -780,47 +780,56 @@ function solutionCheckedChapters(n){
   return new Set(activeFindings().filter(x=>x.clue===n&&x.type==="checked-chapter"&&Number.isFinite(+x.chapter)).map(x=>+x.chapter));
 }
 function solutionWorkScope(n){
-  const ps=pages(),candidates=activeFindings().length?ps.filter(p=>killerPossibleOnPage(p)):ps.slice();
+  const ps=pages(),candidates=ps.filter(p=>killerPossibleOnPage(p));
   if(!ps.length)return {units:0,kind:"pages",pages:0,details:"No case pages are defined."};
   if(n===6){
-    const az=db.clues[6]||{};
-    const missing=[];
+    const az=db.clues[6]||{},missing=[];
     if(!Number.isFinite(+az.anna))missing.push("Anna");
     if(!Number.isFinite(+az.zack))missing.push("Zack");
-    if(missing.length){
-      return {units:ps.length,kind:"pages",pages:ps.length,details:"Search the case pages for "+missing.join(" and ")+"."};
-    }
-    return {units:0,kind:"pages",pages:0,details:"Anna and Zack are known; the range itself requires no further scan."};
+    if(missing.length)return {units:ps.length,kind:"pages",pages:ps.length,details:"Search the case pages for "+missing.join(" and ")+"."};
+    return {units:0,kind:"pages",pages:0,details:"Anna and Zack are known; the range calculation itself requires no further scan."};
   }
+  const checkedPages=solutionCheckedPages(n),checkedChapters=solutionCheckedChapters(n);
   if(n===15){
-    const checked=solutionCheckedChapters(n);
     const relevant=[...new Set(candidates.map(chapterForPage).filter(ch=>ch!=null))];
-    const units=relevant.filter(ch=>!checked.has(+ch));
-    return {units:units.length,kind:"chapters",pages:0,details:"Check the title of each relevant unchecked chapter."};
+    const units=relevant.filter(ch=>!checkedChapters.has(+ch));
+    return {units:units.length,kind:"chapters",pages:0,details:"Read the title of each relevant unchecked chapter."};
   }
   if(n===17){
-    const checked=solutionCheckedChapters(n);
     const relevant=[...new Set(candidates.map(chapterForPage).filter(ch=>ch!=null))];
-    const units=relevant.filter(ch=>!checked.has(+ch));
-    const pageCount=units.reduce((sum,ch)=>sum+chapterPages(ch).length,0);
-    return {units:units.length,kind:"chapters",pages:pageCount,details:"Read the relevant unchecked chapters to verify all four Beatles."};
+    const units=relevant.filter(ch=>!checkedChapters.has(+ch));
+    const pageCount=units.reduce((sum,ch)=>sum+chapterPages(ch).filter(p=>!checkedPages.has(+p)).length,0);
+    return {units:units.length,kind:"chapters",pages:pageCount,details:"Read the content of the relevant unchecked chapters and look for all four Beatles."};
   }
-  const checked=solutionCheckedPages(n);
-  let required;
-  if(n===12){
+  let required=[];
+  if(n===9){
+    // Clue 9 is a reading-order window, not a one-page adjacency test.
+    // Each candidate needs enough surrounding pages to cover ten names in both directions.
+    // We conservatively include the full current case range because name density is unknown
+    // until the text is read; checked pages are then removed from the remaining work.
+    required=ps.filter(p=>candidates.some(q=>Math.abs(q-p)<=10));
+  }else if(n===12){
     required=ps.filter(p=>candidates.some(q=>Math.abs(q-p)<=4));
   }else if(n===16){
     required=ps.filter(p=>candidates.some(q=>Math.abs(q-p)<=1));
   }else if(n===14){
     const first=ps[0],last=ps.at(-1);
     required=ps.filter(p=>candidates.includes(first+last-p));
-  }else if(n===9){
-    required=ps.filter(p=>candidates.some(q=>Math.abs(q-p)<=1));
   }else{
     required=candidates;
   }
-  const remaining=required.filter(p=>!checked.has(+p));
-  return {units:remaining.length,kind:"pages",pages:remaining.length,details:"Check each remaining relevant page."};
+  const remaining=required.filter(p=>!checkedPages.has(+p));
+  const kind=n===9?"pages":"pages";
+  const detail=n===9
+    ?"Search the remaining pages needed to cover the ten-name reading-order window around every candidate."
+    :n===12
+      ?"Search the remaining pages within four pages of every candidate."
+      :n===16
+        ?"Search the remaining candidate-neighborhood pages carefully for Sasha."
+        :n===14
+          ?"Check the physical opposite page for each candidate."
+          :"Check each remaining candidate page.";
+  return {units:remaining.length,kind:kind,pages:remaining.length,details:detail};
 }
 function solutionCandidateCoverage(n){
   const ps=pages(),candidates=ps.filter(p=>killerPossibleOnPage(p));
@@ -903,7 +912,7 @@ function nextChecks(){
 function openNextChecks(){
   const list=nextChecks();
   openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">DYNAMIC SOLVER</span><h2 class="modal-title">What should I check next?</h2><p class="sub">Ranked by expected progress relative to the work still required. The order is recalculated from the current case state.</p>'+
-    (list.length?'<div class="saved-inputs">'+list.map((x,i)=>'<div class="saved-row"><span><b>#'+(i+1)+' · Clue '+x.n+'</b><small>'+esc(solutionValueLabel(x.value))+' · '+esc(solutionValueDetail(x.value))+'</small><small style="display:block;margin-top:3px">'+esc(x.value.scope.details)+'</small></span><button class="btn small" onclick="closeModal();openClue('+x.n+')">Open</button></div>').join('')+'</div>':'<div class="empty">No open clues remain.</div>'));
+    (list.length?'<div class="saved-inputs">'+list.map((x,i)=>'<div class="saved-row"><span><b>#'+(i+1)+' · Clue '+x.n+'</b><small>'+esc(solutionValueLabel(x.value))+' · '+esc(solutionValueDetail(x.value))+'</small><small style="display:block;margin-top:3px">Effort: '+x.value.effort+' · '+esc(x.value.scope.details)+'</small></span><button class="btn small" onclick="closeModal();openClue('+x.n+')">Open</button></div>').join('')+'</div>':'<div class="empty">No open clues remain.</div>'));
 }
 function clueList(){
   const done=SOLUTION_ORDER.filter(n=>db.clues[n]&&db.clues[n].done).length;
