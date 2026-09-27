@@ -37,6 +37,10 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent}
 .solver-chip{background:var(--blue);color:#fff;padding:7px 11px;border:2px solid var(--ink);font-weight:950;white-space:nowrap;transform:rotate(.8deg)}
 nav{max-width:1180px;margin:auto;padding:0 12px 11px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
 nav::-webkit-scrollbar{display:none}
+.nav-wrap{position:relative;max-width:1180px;margin:auto}
+.nav-scroll-indicator{position:absolute;left:12px;right:12px;bottom:4px;height:3px;background:rgba(25,26,21,.12);border-radius:3px;pointer-events:none;opacity:.35;transition:opacity .15s}
+.nav-scroll-indicator.scrollable{opacity:.8}
+.nav-scroll-indicator i{position:absolute;top:0;left:0;height:100%;width:100%;background:var(--ink);border-radius:3px;transition:left .08s,width .08s}
 nav button{border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:4px;padding:10px 14px;white-space:nowrap;font-weight:950;font-size:18px;min-height:48px}
 nav button.on{background:var(--pink);color:#fff;border-color:var(--ink)}
 main{max-width:1180px;margin:auto;padding:18px 16px 34px}
@@ -427,7 +431,12 @@ function pageNeedsAction(p,candidates){
   const ctx=window.pageAnalysisContext;
   const ps=ctx&&ctx.pages?ctx.pages:pages();
   const candidatePages=candidates||(ctx&&ctx.candidates?ctx.candidates:ps.filter(q=>killerPossibleOnPage(q)));
-  if(ctx&&ctx.needsActionSet&&(!candidates||candidates===ctx.candidates))return ctx.needsActionSet.has(+p);
+  if(ctx&&!candidates){
+    if(!ctx.needsActionSet){
+      ctx.needsActionSet=new Set(ps.filter(q=>pageNeedsAction(q,candidatePages)));
+    }
+    return ctx.needsActionSet.has(+p);
+  }
   if([4,9,10,11,13].some(n=>!(db.clues[n]&&db.clues[n].done))&&candidatePages.includes(p))return true;
   if(!(db.clues[12]&&db.clues[12].done)&&candidatePages.some(q=>Math.abs(q-p)<=4))return true;
   if(!(db.clues[14]&&db.clues[14].done)){
@@ -441,14 +450,10 @@ function pageAssessment(p,candidates){return {possible:killerPossibleOnPage(p),n
 function withPageAnalysis(fn){
   const previous=window.pageAnalysisContext;
   const ps=pages(),findings=activeFindings(),candidates=ps.filter(p=>killerPossibleOnPage(p,findings));
-  const context={pages:ps,findings:findings,candidates:candidates,needsActionSet:null};
+  const context={pages:ps,findings:findings,candidates:candidates,needsActionSet:null,clueRelevantSets:{}};
   window.pageAnalysisContext=context;
-  try{
-    context.needsActionSet=new Set(ps.filter(p=>pageNeedsAction(p,candidates)));
-    return fn(context);
-  }finally{
-    window.pageAnalysisContext=previous;
-  }
+  try{return fn(context)}
+  finally{window.pageAnalysisContext=previous}
 }
 function findingForWrite(f){migrateFinding(f);f.dependencies=buildFindingDependencies(f);f.staleReasons=[];f.status="valid";return f}
 function derivedStateSnapshot(){
@@ -551,14 +556,34 @@ function pageWorkReasons(p){
 function pageEliminationReason(p){return pageEliminationReasons(p)[0]||"";}
 function currentRoute(){return location.hash.slice(1)||(!db.setup.first||!db.setup.last?"setup":"master")}
 function go(route){location.hash=route;render(route)}
+function updateNavScrollIndicator(nav){
+  if(!nav)return;
+  const wrap=nav.parentElement,indicator=wrap&&wrap.querySelector(".nav-scroll-indicator"),thumb=indicator&&indicator.firstElementChild;
+  if(!indicator||!thumb)return;
+  const max=Math.max(0,nav.scrollWidth-nav.clientWidth);
+  const ratio=max?nav.scrollLeft/max:0;
+  const width=max?Math.max(18,100*(nav.clientWidth/nav.scrollWidth)):100;
+  thumb.style.width=width+"%";
+  thumb.style.left=(ratio*(100-width))+"%";
+  indicator.classList.toggle("scrollable",max>2);
+}
 function header(route){
   const name=db.setup.solver?esc(db.setup.solver):"";
   const items=[["master","Master"],["clues","Clues"],["pages","Pages & Status"],["suspect","Suspect Verification"],["archive","Archive"],["consistency","Consistency"],["setup","Setup & Backup"]];
-  return '<div class="top"><div class="bar"><div class="brand"><div class="mark">A?</div><div><b>The Killer Isn’t Alice</b><small>Case Board'+(name?" · "+name:"")+'</small></div></div></div><nav>'+items.map(x=>'<button type="button" class="'+(route===x[0]?"on":"")+'" onclick="go(\''+x[0]+'\')">'+x[1]+'</button>').join("")+'</nav></div>';
+  return '<div class="top"><div class="bar"><div class="brand"><div class="mark">A?</div><div><b>The Killer Isn’t Alice</b><small>Case Board'+(name?" · "+name:"")+'</small></div></div></div><div class="nav-wrap"><nav id="mainNav" onscroll="window.tkiaNavScrollLeft=this.scrollLeft;updateNavScrollIndicator(this)">'+items.map(x=>'<button type="button" class="'+(route===x[0]?"on":"")+'" onclick="go(\''+x[0]+'\')">'+x[1]+'</button>').join("")+'</nav><div class="nav-scroll-indicator" aria-hidden="true"><i></i></div></div></div>';
 }
 function render(route){
   if(!db.setup.first||!db.setup.last)route="setup";
+  const previousNav=document.getElementById("mainNav");
+  const previousScroll=previousNav?previousNav.scrollLeft:(window.tkiaNavScrollLeft||0);
   withPageAnalysis(()=>{$("app").innerHTML=header(route)+"<main>"+(route==="setup"?setup():route==="master"?master():route==="clues"?clueList():route==="suspect"?suspect():route==="pages"?pagesStatus():route==="archive"?archive():route==="consistency"?consistency():master())+"</main>";});
+  requestAnimationFrame(()=>{
+    const nav=document.getElementById("mainNav");
+    if(!nav)return;
+    nav.scrollLeft=Math.min(previousScroll,Math.max(0,nav.scrollWidth-nav.clientWidth));
+    window.tkiaNavScrollLeft=nav.scrollLeft;
+    updateNavScrollIndicator(nav);
+  });
 }
 function reasoningGraph(){
   return withPageAnalysis(ctx=>{
@@ -789,20 +814,26 @@ function chapterPages(ch){
   return pages().filter(p=>p>=+v.start&&p<=+v.end);
 }
 function clueRelevantPageSet(n){
-  const candidates=pages().filter(killerPossibleOnPage);
-  if([1,2,3,4,5,7,8,10,11,13,6].includes(n))return new Set(candidates);
-  if(n===12)return new Set(pages().filter(p=>candidates.some(q=>Math.abs(q-p)<=4)));
-  if(n===16)return new Set(pages().filter(p=>candidates.some(q=>Math.abs(q-p)<=1)));
-  if(n===14){
-    const first=pages()[0],last=pages().at(-1);
-    return new Set(pages().filter(p=>candidates.includes(first+last-p)));
+  const ctx=window.pageAnalysisContext;
+  const ps=ctx&&ctx.pages?ctx.pages:pages();
+  const candidates=ctx&&ctx.candidates?ctx.candidates:ps.filter(killerPossibleOnPage);
+  if(ctx){
+    ctx.clueRelevantSets=ctx.clueRelevantSets||{};
+    if(ctx.clueRelevantSets[n])return ctx.clueRelevantSets[n];
   }
-  if(n===9){
-    const set=new Set(candidates);
-    candidates.forEach(q=>pages().filter(p=>Math.abs(p-q)<=1).forEach(p=>set.add(p)));
-    return set;
-  }
-  return new Set(candidates);
+  let set;
+  if([1,2,3,4,5,7,8,10,11,13,6].includes(n))set=new Set(candidates);
+  else if(n===12)set=new Set(ps.filter(p=>candidates.some(q=>Math.abs(q-p)<=4)));
+  else if(n===16)set=new Set(ps.filter(p=>candidates.some(q=>Math.abs(q-p)<=1)));
+  else if(n===14){
+    const first=ps[0],last=ps.at(-1);
+    set=new Set(ps.filter(p=>candidates.includes(first+last-p)));
+  }else if(n===9){
+    set=new Set(candidates);
+    candidates.forEach(q=>ps.filter(p=>Math.abs(p-q)<=1).forEach(p=>set.add(p)));
+  }else set=new Set(candidates);
+  if(ctx)ctx.clueRelevantSets[n]=set;
+  return set;
 }
 function clueUnitRelevance(n,mode,id){
   const units=mode==="page"?[+id]:chapterPages(+id);
