@@ -892,7 +892,7 @@ function nextChecks(){
 function openNextChecks(){
   const list=nextChecks();
   openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">DYNAMIC SOLVER</span><h2 class="modal-title">What should I check next?</h2><p class="sub">Ranked by expected progress relative to the work still required. The order is recalculated from the current case state.</p>'+
-    (list.length?'<div class="saved-inputs">'+list.map((x,i)=>'<div class="saved-row"><span><b>#'+(i+1)+' · Clue '+x.n+'</b><small>'+esc(solutionValueLabel(x.value))+' · '+esc(solutionValueDetail(x.value))+'</small></span><button class="btn small" onclick="closeModal();openClue('+x.n+')">Open</button></div>').join('')+'</div>':'<div class="empty">No open clues remain.</div>'));
+    (list.length?'<div class="saved-inputs">'+list.map((x,i)=>'<div class="saved-row"><span><b>#'+(i+1)+' · Clue '+x.n+'</b><small>'+esc(solutionValueLabel(x.value))+' · '+esc(solutionValueDetail(x.value))+'</small><small style="display:block;margin-top:3px">'+esc(x.value.scope.details)+'</small></span><button class="btn small" onclick="closeModal();openClue('+x.n+')">Open</button></div>').join('')+'</div>':'<div class="empty">No open clues remain.</div>'));
 }
 function clueList(){
   const done=SOLUTION_ORDER.filter(n=>db.clues[n]&&db.clues[n].done).length;
