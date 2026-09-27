@@ -457,10 +457,12 @@ function pageNeedsAction(p,candidates){
   return false;
 }
 function pageAssessment(p,candidates){return {possible:killerPossibleOnPage(p),needsAction:pageNeedsAction(p,candidates)}}
-function withPageAnalysis(fn){
+function withPageAnalysis(fn,options={}){
   const previous=window.pageAnalysisContext;
-  const ps=pages(),findings=activeFindings(),candidates=ps.filter(p=>killerPossibleOnPage(p,findings));
-  const context={pages:ps,findings:findings,candidates:candidates,needsActionSet:null,clueRelevantSets:{}};
+  const ps=pages();
+  const findings=options.findings||activeFindings();
+  const candidates=options.candidates||ps.filter(p=>killerPossibleOnPage(p,findings));
+  const context={pages:ps,findings:findings,candidates:candidates,needsActionSet:null,clueRelevantSets:{},solutionValueModels:{}};
   window.pageAnalysisContext=context;
   try{return fn(context)}
   finally{window.pageAnalysisContext=previous}
@@ -913,11 +915,11 @@ function solutionValueDetail(v){
   return scope+" · "+Math.round(v.score*10000)/100+" value/effort";
 }
 function nextChecks(){
+  const rawFindings=(db.findings||[]).filter(f=>f.status!=="stale");
   return withPageAnalysis(ctx=>{
-    ctx.solutionValueModels={};
     const ranked=rankedSolutionClues();
     return ranked.slice(0,5).map(v=>({n:v.n,mode:v.scope.kind==="chapters"?"chapter":"page",id:v.scope.units||0,value:v}));
-  });
+  },{findings:rawFindings});
 }
 function openNextChecks(){
   const list=nextChecks();
