@@ -469,6 +469,14 @@ function render(route){
   wire();
 }
 function wire(){}
+function reasoningGraph(){
+  const active=activeFindings(),possible=pages().filter(killerPossibleOnPage),done=SOLUTION_ORDER.filter(n=>db.clues[n]&&db.clues[n].done);
+  const clueNodes=done.map(n=>'<button class="graph-node clue-node" onclick="closeModal();openClue('+n+')">CLUE '+n+'</button>').join("");
+  const pageNodes=possible.slice(0,80).map(p=>'<button class="graph-node page-node" onclick="closeModal();openPageStatus('+p+')">PAGE '+p+'</button>').join("");
+  const findingNodes=active.slice(0,80).map(f=>'<button class="graph-node finding-node" onclick="closeModal();'+(f.clue?'openClue('+f.clue+')':'go(\'archive\')')+'">FINDING '+esc(f.id)+'</button>').join("");
+  const suspectNodes=(db.potentialKillers||[]).map(x=>'<button class="graph-node suspect-node" onclick="closeModal();window.suspectName='+JSON.stringify(x.name)+';window.suspectPage='+x.page+';go(\'suspect\')">'+esc(x.name)+'</button>').join("");
+  openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">CASE LOGIC</span><h2 class="modal-title">REASONING GRAPH</h2><p class="sub">Current case state only. Select a node to open its source.</p><div class="graph-section"><h3>CLUES</h3><div class="graph-nodes">'+(clueNodes||'<div class="empty">No completed clues yet.</div>')+'</div></div><div class="graph-section"><h3>POSSIBLE PAGES</h3><div class="graph-nodes">'+(pageNodes||'<div class="empty">No possible pages.</div>')+'</div></div><div class="graph-section"><h3>ACTIVE FINDINGS</h3><div class="graph-nodes">'+(findingNodes||'<div class="empty">No active findings.</div>')+'</div></div><div class="graph-section"><h3>POTENTIAL KILLERS</h3><div class="graph-nodes">'+(suspectNodes||'<div class="empty">No Potential Killers yet.</div>')+'</div></div>');
+}
 function master(){
   const ps=pages(),elim=ps.filter(p=>status(p)==="elim").length,remain=ps.length-elim;
   const done=SOLUTION_ORDER.filter(n=>db.clues[n]&&db.clues[n].done).length;
