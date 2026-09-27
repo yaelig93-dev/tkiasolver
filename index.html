@@ -357,10 +357,10 @@ function pages(){
 }
 function chapterForPage(p){const hit=Object.entries(db.setup.chapters||{}).find(([,v])=>p>=+v.start&&p<=+v.end);return hit?+hit[0]:null}
 function killerPossibleOnPage(p){
-  if(db.findings.some(x=>x.page===p&&x.type==="elim"))return false;
+  if(activeFindings().some(x=>x.page===p&&x.type==="elim"))return false;
   const ch=chapterForPage(p);
   for(const clueNo of [15,17]){
-    if(db.clues[clueNo]&&db.clues[clueNo].done&&ch!=null&&db.findings.some(x=>x.type==="chapter"&&x.clue===clueNo&&+x.chapter===ch))return false;
+    if(db.clues[clueNo]&&db.clues[clueNo].done&&ch!=null&&activeFindings().some(x=>x.type==="chapter"&&x.clue===clueNo&&+x.chapter===ch))return false;
   }
   return true;
 }
@@ -379,15 +379,15 @@ function pageNeedsAction(p){
 function pageAssessment(p){return {possible:killerPossibleOnPage(p),needsAction:pageNeedsAction(p)}}
 function pageEliminationReasons(p){
   const reasons=[],seen=new Set(),add=r=>{if(r&&!seen.has(r)){seen.add(r);reasons.push(r)}};
-  db.findings.filter(x=>x.page===p&&x.type==="elim").forEach(x=>{
+  activeFindings().filter(x=>x.page===p&&x.type==="elim").forEach(x=>{
     if(x.type==="page-elim")add(x.reason||"Page manually eliminated");
     else if(+x.clue===6)add("Clue 6: page is outside the required range between Anna and Zack.");
     else if(clues[x.clue-1])add("Clue "+x.clue+": "+clues[x.clue-1][1]);
   });
   const ch=chapterForPage(p);
   if(ch!=null){
-    if(db.clues[15]&&db.clues[15].done&&db.findings.some(x=>x.type==="chapter"&&x.clue===15&&+x.chapter===ch))add("Clue 15: Chapter "+ch+" does not have a city in its title.");
-    if(db.clues[17]&&db.clues[17].done&&db.findings.some(x=>x.type==="chapter"&&x.clue===17&&+x.chapter===ch))add("Clue 17: Chapter "+ch+" does not contain all four Beatles.");
+    if(db.clues[15]&&db.clues[15].done&&activeFindings().some(x=>x.type==="chapter"&&x.clue===15&&+x.chapter===ch))add("Clue 15: Chapter "+ch+" does not have a city in its title.");
+    if(db.clues[17]&&db.clues[17].done&&activeFindings().some(x=>x.type==="chapter"&&x.clue===17&&+x.chapter===ch))add("Clue 17: Chapter "+ch+" does not contain all four Beatles.");
   }
   return reasons;
 }
@@ -407,12 +407,12 @@ function currentRoute(){return location.hash.slice(1)||(!db.setup.first||!db.set
 function go(route){location.hash=route;render(route)}
 function header(route){
   const name=db.setup.solver?esc(db.setup.solver):"";
-  const items=[["master","Master"],["clues","Clues"],["pages","Pages & Status"],["suspect","Suspect Verification"],["archive","Archive"],["setup","Setup"]];
+  const items=[["master","Master"],["clues","Clues"],["pages","Pages & Status"],["suspect","Suspect Verification"],["archive","Archive"],["consistency","Consistency"],["setup","Setup & Backup"]];
   return '<div class="top"><div class="bar"><div class="brand"><div class="mark">A?</div><div><b>The Killer Isn’t Alice</b><small>Case Board'+(name?" · "+name:"")+'</small></div></div></div><nav>'+items.map(x=>'<button type="button" class="'+(route===x[0]?"on":"")+'" onclick="go(\''+x[0]+'\')">'+x[1]+'</button>').join("")+'</nav></div>';
 }
 function render(route){
   if(!db.setup.first||!db.setup.last)route="setup";
-  $("app").innerHTML=header(route)+"<main>"+(route==="setup"?setup():route==="master"?master():route==="clues"?clueList():route==="suspect"?suspect():route==="pages"?pagesStatus():route==="archive"?archive():master())+"</main>";
+  $("app").innerHTML=header(route)+"<main>"+(route==="setup"?setup():route==="master"?master():route==="clues"?clueList():route==="suspect"?suspect():route==="pages"?pagesStatus():route==="archive"?archive():route==="consistency"?consistency():master())+"</main>";
   wire();
 }
 function wire(){}
@@ -432,7 +432,7 @@ function pagesStatus(){
 
 function openPageStatus(p){
   const assessment=pageAssessment(p),possible=assessment.possible,needsAction=assessment.needsAction;
-  const findings=db.findings.filter(x=>x.page===p);
+  const findings=activeFindings().filter(x=>x.page===p);
   const eliminationReasons=pageEliminationReasons(p),workReasons=pageWorkReasons(p);
   const rows=findings.length?findings.map(x=>{
     const isManual=x.type==="page-elim";
@@ -575,7 +575,7 @@ function toolInfo(n){
 
 function chapterIsImpossible(ch){
   const id=+ch;
-  return [15,17].some(n=>db.clues[n]&&db.clues[n].done&&db.findings.some(x=>x.type==="chapter"&&x.clue===n&&+x.chapter===id));
+  return [15,17].some(n=>db.clues[n]&&db.clues[n].done&&activeFindings().some(x=>x.type==="chapter"&&x.clue===n&&+x.chapter===id));
 }
 function chapterPages(ch){
   const v=(db.setup.chapters||{})[ch];
@@ -640,13 +640,13 @@ function clueProgressUnits(n,mode){
 }
 function clueUnitChecked(n,mode,id){
   if(mode==="chapter"){
-    if(db.findings.some(x=>x.clue===n&&x.type==="checked-chapter"&&+x.chapter===+id))return true;
+    if(activeFindings().some(x=>x.clue===n&&x.type==="checked-chapter"&&+x.chapter===+id))return true;
     const chapterRelevant=chapterPages(+id).filter(p=>clueUnitNeedsAction(n,"page",p));
     return chapterRelevant.length>0&&chapterRelevant.every(p=>clueUnitChecked(n,"page",p));
   }
-  if(db.findings.some(x=>x.clue===n&&x.type==="checked-page"&&+x.page===+id))return true;
+  if(activeFindings().some(x=>x.clue===n&&x.type==="checked-page"&&+x.page===+id))return true;
   const ch=chapterForPage(+id);
-  return ch!=null&&db.findings.some(x=>x.clue===n&&x.type==="checked-chapter"&&+x.chapter===+ch);
+  return ch!=null&&activeFindings().some(x=>x.clue===n&&x.type==="checked-chapter"&&+x.chapter===+ch);
 }
 
 function clueProgress(n){
@@ -782,7 +782,7 @@ function validateManualPage(p,requireCandidate=true){
 }
 function parseNums(s){return(s||"").split(",").map(x=>+x.trim()).filter(Number.isFinite)}
 function pagePicker(n){
-  const selected=db.findings.filter(x=>x.clue===n&&x.type==="elim").map(x=>x.page);
+  const selected=activeFindings().filter(x=>x.clue===n&&x.type==="elim").map(x=>x.page);
   const ps=pages().filter(p=>status(p)!=="elim"||selected.includes(p));
   if(!ps.length)return'<div id="pagePickerUI" class="empty">No candidate pages remain.</div>';
   const feedback='<div id="pageFeedback-'+n+'" class="selection-feedback">✓ '+selected.length+' page'+(selected.length===1?"":"s")+' selected as invalid</div>';
@@ -791,19 +791,19 @@ function pagePicker(n){
   return '<div id="pagePickerUI"><div class="range-grid">'+groups.map((g,i)=>'<button class="btn" onclick="showPageGroup('+n+','+i+')">pp. '+g[0]+'–'+g[g.length-1]+'</button>').join("")+'</div><div id="pageChoices"></div>'+feedback+'</div>';
 }
 function selectedPageFindings(n){
-  const selected=db.findings.filter(x=>x.clue===n&&x.type==="elim").map(x=>x.page);
+  const selected=activeFindings().filter(x=>x.clue===n&&x.type==="elim").map(x=>x.page);
   const inner=selected.length?'<h3>Pages already marked invalid</h3>'+selected.sort((a,b)=>a-b).map(p=>'<div class="selected-page-row"><span>Page '+p+'</span><button class="remove-page" title="Remove page from invalid list" aria-label="Remove page '+p+'" onclick="removePageFinding('+n+','+p+')">×</button></div>').join(""):"";
   return '<div id="selectedPages-'+n+'" class="selected-page-list">'+inner+'</div>';
 }
 function refreshPageSelectionUI(n){
-  const selected=db.findings.filter(x=>x.clue===n&&x.type==="elim").map(x=>x.page);
+  const selected=activeFindings().filter(x=>x.clue===n&&x.type==="elim").map(x=>x.page);
   const fb=$("pageFeedback-"+n);if(fb)fb.innerHTML='✓ '+selected.length+' page'+(selected.length===1?"":"s")+' selected as invalid';
   const list=$("selectedPages-"+n);
   if(list){list.innerHTML=selected.length?'<h3>Pages already marked invalid</h3>'+selected.sort((a,b)=>a-b).map(p=>'<div class="selected-page-row"><span>Page '+p+'</span><button class="remove-page" title="Remove page from invalid list" aria-label="Remove page '+p+'" onclick="removePageFinding('+n+','+p+')">×</button></div>').join(""):"";}
 }
 function showPageGroup(n,g){
   window.pageDrillGroup={n:n,g:g};
-  const selected=db.findings.filter(x=>x.clue===n&&x.type==="elim").map(x=>x.page),ps=pages().filter(p=>status(p)!=="elim"||selected.includes(p)),group=ps.slice(g*10,g*10+10);
+  const selected=activeFindings().filter(x=>x.clue===n&&x.type==="elim").map(x=>x.page),ps=pages().filter(p=>status(p)!=="elim"||selected.includes(p)),group=ps.slice(g*10,g*10+10);
   $("pageChoices").innerHTML='<div class="saved-inputs"><div class="page-choice-grid">'+group.map(p=>'<button class="btn page-choice '+(selected.includes(p)?"selected":"")+'" onclick="toggleFinding('+n+','+p+',\'elim\')">'+p+(selected.includes(p)?" ✓":"")+'</button>').join("")+'</div></div>';
 }
 function removePageFinding(n,p){
@@ -877,7 +877,7 @@ function clueInputs(n){
   return db.history.filter(h=>+h.clue===n&&!h.undone);
 }
 function openInputs(n){
-  const f=db.findings.filter(x=>x.clue===n),h=clueInputs(n);
+  const f=activeFindings().filter(x=>x.clue===n),h=clueInputs(n);
   const rows=f.map(x=>'<div class="saved-row"><span>'+esc(inputLabel(x))+'</span><button class="btn small" onclick="removeFindingFromPopup('+n+',\''+encodeURIComponent(JSON.stringify(x))+'\')">Undo</button></div>').join("");
   const history=h.map(x=>'<div class="saved-row"><span>'+esc(x.label)+'</span><button class="btn small" onclick="undoHistoryFromPopup(\''+x.id+'\','+n+')">Undo</button></div>').join("");
   openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">CLUE '+n+'</span><h2 class="modal-title">Saved Inputs</h2>'+(rows?'<h3>Current findings</h3>'+rows:'<div class="empty">No current page or chapter inputs.</div>')+(history?'<h3>Recent recorded actions</h3>'+history:"")+'<div class="line"></div><div class="actions"><button class="btn" onclick="closeModal()">Close</button><button class="btn accent" onclick="closeModal();goArchiveForClue('+n+')">Open Full Archive</button></div>');
@@ -1019,7 +1019,7 @@ function restoreEliminatedName(i){
 }
 function completePage(p,reason){
   const before=snapshot(db.findings);
-  if(!db.findings.some(x=>x.page===p&&x.type==="elim")){
+  if(!activeFindings().some(x=>x.page===p&&x.type==="elim")){
     db.findings.push({clue:0,page:p,type:"elim",source:"page-status",reason:reason||"Page eliminated"});
   }
   const after=snapshot(db.findings);
@@ -1036,6 +1036,8 @@ function historyTypeMatch(h,type){
   if(type==="chapter")return h.key==="findings"&&[...(h.before||[]),...(h.after||[])].some(x=>x.chapter!=null);
   return false;
 }
+function consistencyIssues(){refreshFindingStatuses({silent:true});const issues=[];(db.findings||[]).filter(f=>f.status==="stale").forEach(f=>issues.push({type:"stale",finding:f,message:(f.staleReasons||[]).map(x=>x.message).join(" ")||"This finding is stale."}));[15,17].forEach(n=>{if(db.clues[n]&&db.clues[n].done&&!activeFindings().some(f=>f.clue===n&&f.type==="chapter"))issues.push({type:"clue",finding:null,message:"Clue "+n+" is marked complete but has no active chapter findings."})});return issues}
+function consistency(){const issues=consistencyIssues();return '<div><div class="screen-heading"><div class="archive-header"><div><h1>CONSISTENCY CHECKER</h1><p class="sub">Diagnose the current case. The checker does not change investigative decisions.</p></div><b>'+issues.length+' issue'+(issues.length===1?"":"s")+'</b></div></div><div class="card">'+(issues.length?issues.map(x=>'<div class="history-card"><div><div class="history-meta">'+esc(x.type.toUpperCase())+'</div><div class="history-label">'+esc(x.message)+'</div>'+(x.finding?'<div class="history-data">Finding '+esc(x.finding.id)+(x.finding.page!=null?" · Page "+x.finding.page:"")+(x.finding.chapter!=null?" · Chapter "+x.finding.chapter:"")+'</div>':"")+'</div><div class="history-actions">'+(x.finding&&x.finding.clue?'<button class="btn small" onclick="openClue('+x.finding.clue+')">Open Clue</button>':"")+'</div></div>').join(""):'<div class="empty">✓ No consistency issues detected.</div>')+'</div></div>}
 function archive(){
   const list=db.history||[],type=window.archiveType||"all",clue=window.archiveClue||"";
   const filtered=list.filter(h=>historyTypeMatch(h,type)&&(clue===""||String(h.clue)===String(clue)));
