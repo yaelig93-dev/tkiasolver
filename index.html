@@ -277,17 +277,43 @@ h3{font-size:21px;margin:10px 0 7px}
 <div id="app"></div>
 <div id="overlay" class="overlay"><div id="modal" class="modal"></div></div>
 <script>
-if("serviceWorker" in navigator){
-  navigator.serviceWorker.register("./sw.js",{updateViaCache:"none"}).then(reg=>{
-    reg.update().catch(()=>{});
-  }).catch(()=>{});
-  navigator.serviceWorker.addEventListener("controllerchange",()=>{
-    if(!sessionStorage.getItem("tkia-sw-reloaded")){
-      sessionStorage.setItem("tkia-sw-reloaded","1");
-      location.reload();
-    }
-  });
-}
+(function(){
+  const VERSION_KEY="tkia_last_loaded_version";
+  function checkForAppUpdate(){
+    fetch("./version.json?tkia_check="+Date.now(),{
+      cache:"no-store",
+      credentials:"same-origin"
+    }).then(r=>r.ok?r.json():null).then(info=>{
+      if(!info||!info.version)return;
+      const latest=String(info.version);
+      const loaded=sessionStorage.getItem(VERSION_KEY);
+      if(!loaded){
+        sessionStorage.setItem(VERSION_KEY,latest);
+        return;
+      }
+      if(loaded===latest)return;
+      sessionStorage.setItem(VERSION_KEY,latest);
+      const url=new URL("./",location.href);
+      url.searchParams.set("tkia_build",latest);
+      if(location.hash)url.hash=location.hash;
+      location.replace(url.href);
+    }).catch(()=>{});
+  }
+
+  if("serviceWorker" in navigator){
+    navigator.serviceWorker.register("./sw.js",{updateViaCache:"none"}).then(reg=>{
+      reg.update().catch(()=>{});
+    }).catch(()=>{});
+    navigator.serviceWorker.addEventListener("controllerchange",()=>{
+      if(!sessionStorage.getItem("tkia-sw-reloaded")){
+        sessionStorage.setItem("tkia-sw-reloaded","1");
+        location.reload();
+      }
+    });
+  }
+
+  checkForAppUpdate();
+})();
 </script>
 <script>
 const KEY="tkia_pwa_v1";
