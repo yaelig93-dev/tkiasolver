@@ -644,7 +644,22 @@ function openPageStatus(p){
   const rows=findings.length?findings.map(x=>{const isManual=x.type==="page-elim";return '<div class="saved-row"><span>'+esc(isManual?(x.reason||"Page eliminated"):"Clue "+x.clue+" · "+(x.type||"finding")+(x.name?" · "+x.name:""))+'</span>'+(isManual?'<button class="btn small" onclick="openNote(\'findings\',\''+x.id+'\',\'Finding Note\')">Note</button>':'<button class="btn small" onclick="closeModal();openClue('+x.clue+')">Open Clue</button><button class="btn small" onclick="openNote(\'findings\',\''+x.id+'\',\'Finding Note\')">Note</button>')+'</div>'}).join(""):'<div class="empty">No recorded findings for this page.</div>';
   const possibilityLine=possible?'<div class="page-detail-status possible-detail"><b>POSSIBLE</b><span>The killer can still be on this page.</span></div>':'<div class="page-detail-status impossible-detail"><b>IMPOSSIBLE</b><span>The killer cannot be on this page.</span></div>';
   const eliminationLine=!possible?'<div class="page-reasons"><b>WHY THIS PAGE IS OUT</b>'+eliminationReasons.map(r=>'<div>• '+esc(r)+'</div>').join("")+'</div>':"";
-  const workLine=needsAction?'<div class="page-reasons check-reasons"><b>NEED TO CHECK</b>'+workReasons.map(r=>'<div>• '+esc(r)+'</div>').join("")+'</div>':'<div class="page-reasons no-check-reasons"><b>NO NEED TO CHECK</b><div>• No unresolved clue currently requires information from this page.</div></div>';
+  const aliveReasons=[];
+  if(possible){
+    if(!(db.clues[4]&&db.clues[4].done))aliveReasons.push("Clue 4 is still unresolved for this candidate page.");
+    if(!(db.clues[10]&&db.clues[10].done))aliveReasons.push("Clue 10 is still unresolved for this candidate page.");
+    if(!(db.clues[11]&&db.clues[11].done))aliveReasons.push("Clue 11 is still unresolved for this candidate page.");
+    if(!(db.clues[13]&&db.clues[13].done))aliveReasons.push("Clue 13 is still unresolved for this candidate page.");
+    if(!(db.clues[9]&&db.clues[9].done)&&clueRelevantPageSet(9).has(+p))aliveReasons.push("Clue 9 can still provide evidence around this candidate page.");
+    if(!(db.clues[12]&&db.clues[12].done)&&clueRelevantPageSet(12).has(+p))aliveReasons.push("Clue 12 can still provide evidence around this candidate page.");
+    if(!(db.clues[14]&&db.clues[14].done))aliveReasons.push("Clue 14 is still unresolved for this candidate page.");
+    if(!(db.clues[16]&&db.clues[16].done)&&clueRelevantPageSet(16).has(+p))aliveReasons.push("Clue 16 can still provide evidence around this candidate page.");
+    const ch=chapterForPage(p);
+    if(ch!=null&&!(db.clues[15]&&db.clues[15].done))aliveReasons.push("Clue 15 has not yet ruled out this chapter.");
+    if(ch!=null&&!(db.clues[17]&&db.clues[17].done))aliveReasons.push("Clue 17 has not yet ruled out this chapter.");
+  }
+  const aliveLine=possible?'<div class="page-reasons alive-reasons"><b>WHY IS THIS PAGE STILL ALIVE?</b>'+((aliveReasons.length?aliveReasons:["No unresolved elimination route is currently recorded."]).map(r=>'<div>• '+esc(r)+'</div>').join(""))+'</div>':"";
+  const workLine=needsAction?'<div class="page-reasons check-reasons"><b>NEED TO CHECK</b>'+workReasons.map(r=>'<div>• '+esc(r)+'</div>').join("")+'</div>':'<div class="page-reasons no-check-reasons"><b>NO NEED TO CHECK</b><div>• No unresolved clue currently requires information from this page.</div></div>";
   const coverageLine='<div class="page-reasons evidence-coverage"><b>EVIDENCE COVERAGE</b><div><b>Collected:</b> '+(coverage.collected.length?coverage.collected.map(n=>"Clue "+n).join(", "):"None yet")+'</div><div><b>Still needed:</b> '+(coverage.needed.length?coverage.needed.map(n=>"Clue "+n).join(", "):"None")+'</div></div>';
   const manualElim=findings.some(x=>x.type==="page-elim");
   const action=manualElim?'<button class="btn danger" onclick="restorePageStatus('+p+')">Restore Page to Candidate</button>':possible?'<button class="btn danger" onclick="closeModal();confirmPageElimination('+p+')">Eliminate This Page</button>':"";
