@@ -379,7 +379,7 @@ function buildFindingDependencies(f){
 function validateFindingDependency(dep){if(dep.kind==="case-page-range"){const p=+dep.page;return {valid:pages().includes(p),message:"Page "+p+" is no longer inside the active case page range."}}if(dep.kind==="chapter-mapping"){const actual=chapterForPage(+dep.page);return {valid:actual===+dep.chapter,message:"Page "+dep.page+" is now assigned to a different chapter."}}if(dep.kind==="chapter-range"){const v=(db.setup.chapters||{})[+dep.chapter];const valid=!!v&&+v.start===+dep.start&&+v.end===+dep.end;return {valid:valid,message:"Chapter "+dep.chapter+" range changed from "+dep.start+"–"+dep.end+"."}}if(dep.kind==="case-state"){const valid=clueUnitNeedsAction(+dep.clue,dep.mode,+dep.unitId);return {valid:valid,message:"This unit is no longer relevant to Clue "+dep.clue+" in the current case state."}}return {valid:true,message:""}}
 function validateFinding(f){const reasons=(f.dependencies||[]).map(validateFindingDependency).filter(x=>!x.valid).map(x=>x.message).filter(Boolean);return {valid:!reasons.length,reasons:reasons}}
 function refreshFindingStatuses(options={}){const events=[],wasValidating=!!window.validatingFindings;window.validatingFindings=true;try{(db.findings||[]).forEach(f=>{migrateFinding(f);const before=f.status||"valid",result=validateFinding(f);f.status=result.valid?"valid":"stale";f.staleReasons=result.reasons.map(message=>({kind:"dependency",message:message}));if(before!==f.status&&!options.silent)events.push({findingId:f.id,from:before,to:f.status,reasons:snapshot(f.staleReasons)})})}finally{window.validatingFindings=wasValidating}return events}
-function activeFindings(){if(window.validatingFindings)return (db.findings||[]).filter(f=>f.status!=="stale");refreshFindingStatuses({silent:true});return (db.findings||[]).filter(f=>f.status!=="stale")}
+function activeFindings(){if(window.validatingFindings||window.renderingClueProgress)return (db.findings||[]).filter(f=>f.status!=="stale");refreshFindingStatuses({silent:true});return (db.findings||[]).filter(f=>f.status!=="stale")}
 function findingForWrite(f){migrateFinding(f);f.dependencies=buildFindingDependencies(f);f.staleReasons=[];f.status="valid";return f}
 function derivedStateSnapshot(){
   const ps=pages(),a=activeFindings();
@@ -787,6 +787,8 @@ function clueUnitChecked(n,mode,id){
 function clueProgress(n){
   const cfg=clueProgressConfig(n);
   if(!cfg)return"";
+  const wasRenderingClueProgress=!!window.renderingClueProgress;
+  window.renderingClueProgress=true;
   const mode=clueProgressMode(n),units=clueProgressUnits(n,mode);
   const relevantUnits=units.filter(id=>clueUnitNeedsAction(n,mode,id));
   const checked=units.filter(id=>clueUnitNeedsAction(n,mode,id)&&clueUnitChecked(n,mode,id));
@@ -806,7 +808,9 @@ function clueProgress(n){
   const status=units.length?'<div class="clue-progress-summary '+(complete?"complete":"")+'"><b>'+checked.length+' / '+relevantUnits.length+' relevant '+(mode==="page"?"pages":"chapters")+' checked</b>'+(complete?" · Everything relevant in this view has been checked.":" · "+partialCount+" partial · "+irrelevantCount+" not relevant")+'</div>':"";
   const legend='<div class="clue-progress-note"><b>Yellow = partially relevant</b> · <b>Gray = not relevant</b>. Fully relevant units keep the one-tap completion.</div>';
   const completion=complete&&!db.clues[n]?.done?'<button class="btn green" style="width:100%;margin-top:10px" onclick="completeFromProgress('+n+')">All relevant '+(mode==="page"?"pages":"chapters")+' checked — Mark Clue Complete</button>':"";
-  return '<section class="clue-progress"><div class="clue-progress-head"><div><h3>CHECK PROGRESS</h3><p class="sub" style="margin:2px 0 0">Only units that can still contribute to this clue need checking.</p></div><div class="actions">'+pageBtn+chapterBtn+'</div></div>'+legend+status+'<div class="clue-progress-grid">'+cards+'</div>'+completion+'</section>';
+  const html='<section class="clue-progress"><div class="clue-progress-head"><div><h3>CHECK PROGRESS</h3><p class="sub" style="margin:2px 0 0">Only units that can still contribute to this clue need checking.</p></div><div class="actions">'+pageBtn+chapterBtn+'</div></div>'+legend+status+'<div class="clue-progress-grid">'+cards+'</div>'+completion+'</section>';
+  window.renderingClueProgress=wasRenderingClueProgress;
+  return html;
 }
 function openClueProgressUnit(n,mode,id){
   const rel=clueUnitRelevance(n,mode,id);
@@ -1213,7 +1217,7 @@ function historyTypeMatch(h,type){
 function consistencyIssues(){
   refreshFindingStatuses({silent:true});
   const issues=[];
-  (db.findings||[]).filter(f=>f.status==="stale").forEach(f=>issues.push({type:"stale",finding:f,message:(f.staleReasons||[]).map(x=>x.message).join(" ")||"This finding is stale."}));
+  (db.findings||[]).filter(f=>f.status==="stale"&&f.type!=="checked-page"&&f.type!=="checked-chapter").forEach(f=>issues.push({type:"stale",finding:f,message:(f.staleReasons||[]).map(x=>x.message).join(" ")||"This finding is stale."}));
   (db.findings||[]).forEach(f=>{
     if(f.page!=null&&!pages().includes(+f.page))issues.push({type:"reference",finding:f,message:"Finding references Page "+f.page+", which is outside the current case range."});
     if(f.chapter!=null&&!db.setup.chapters[+f.chapter])issues.push({type:"reference",finding:f,message:"Finding references Chapter "+f.chapter+", which is not defined in Setup."});
