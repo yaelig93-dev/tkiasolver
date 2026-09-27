@@ -313,6 +313,9 @@ h3{font-size:21px;margin:10px 0 7px}
   }
 
   checkForAppUpdate();
+  document.addEventListener("visibilitychange",()=>{
+    if(document.visibilityState==="visible")checkForAppUpdate();
+  });
 })();
 </script>
 <script>
