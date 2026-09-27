@@ -368,8 +368,18 @@ function validateFinding(f){const reasons=(f.dependencies||[]).map(validateFindi
 function refreshFindingStatuses(options={}){const events=[];(db.findings||[]).forEach(f=>{migrateFinding(f);const before=f.status||"valid",result=validateFinding(f);f.status=result.valid?"valid":"stale";f.staleReasons=result.reasons.map(message=>({kind:"dependency",message:message}));if(before!==f.status&&!options.silent)events.push({findingId:f.id,from:before,to:f.status,reasons:snapshot(f.staleReasons)})});return events}
 function activeFindings(){refreshFindingStatuses({silent:true});return (db.findings||[]).filter(f=>f.status!=="stale")}
 function findingForWrite(f){migrateFinding(f);f.dependencies=buildFindingDependencies(f);f.staleReasons=[];f.status="valid";return f}
-function derivedStateSnapshot(){const ps=pages();const a=activeFindings();return {possiblePages:ps.filter(p=>killerPossibleOnPage(p)).length,impossiblePages:ps.filter(p=>!killerPossibleOnPage(p)).length,pagesNeedCheck:ps.filter(p=>pageNeedsAction(p)).length,validFindings:a.length,staleFindings:(db.findings||[]).filter(f=>f.status==="stale").length}}
-function findingImpact(a,b){const direct=[],indirect=[];["possiblePages","impossiblePages","pagesNeedCheck"].forEach(k=>{if(a[k]!==b[k])direct.push({label:k,value:a[k]+" → "+b[k]})});if(a.validFindings!==b.validFindings)indirect.push({label:"Valid findings",value:a.validFindings+" → "+b.validFindings});if(a.staleFindings!==b.staleFindings)indirect.push({label:"Stale findings",value:a.staleFindings+" → "+b.staleFindings});return {direct:direct,indirect:indirect}}
+function derivedStateSnapshot(){
+  const ps=pages(),a=activeFindings();
+  let openRelevantUnits=0;
+  SOLUTION_ORDER.forEach(n=>{const cfg=clueProgressConfig(n);if(!cfg)return;const mode=clueProgressMode(n);const units=clueProgressUnits(n,mode);openRelevantUnits+=units.filter(id=>clueUnitNeedsAction(n,mode,id)&&!clueUnitChecked(n,mode,id)).length});
+  return {possiblePages:ps.filter(p=>killerPossibleOnPage(p)).length,impossiblePages:ps.filter(p=>!killerPossibleOnPage(p)).length,pagesNeedCheck:ps.filter(p=>pageNeedsAction(p)).length,validFindings:a.length,staleFindings:(db.findings||[]).filter(f=>f.status==="stale").length,openRelevantUnits:openRelevantUnits,doneClues:SOLUTION_ORDER.filter(n=>db.clues[n]&&db.clues[n].done).length,potentialKillers:(db.potentialKillers||[]).length};
+}
+function findingImpact(a,b){
+  const direct=[],indirect=[];
+  ["possiblePages","impossiblePages","pagesNeedCheck"].forEach(k=>{if(a[k]!==b[k])direct.push({label:k,value:a[k]+" → "+b[k]})});
+  ["openRelevantUnits","doneClues","potentialKillers","validFindings","staleFindings"].forEach(k=>{if(a[k]!==b[k])indirect.push({label:k,value:a[k]+" → "+b[k]})});
+  return {direct:direct,indirect:indirect};
+}
 function recordStaleEvents(events){events.forEach(e=>db.history.unshift({id:"h_"+Date.now()+"_"+Math.random().toString(36).slice(2),clue:0,label:e.to==="stale"?"Finding became stale":"Finding returned to valid",key:"stale",findingId:e.findingId,details:e.reasons||[],createdAt:new Date().toISOString(),undone:false}))}
 function save(){(db.findings||[]).forEach(migrateFinding);const staleEvents=refreshFindingStatuses();if(staleEvents.length)recordStaleEvents(staleEvents);localStorage.setItem(KEY,JSON.stringify(db));scheduleAutoBackup()}
 function esc(x){return String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
