@@ -1119,7 +1119,19 @@ function historyTypeMatch(h,type){
   if(type==="chapter")return h.key==="findings"&&[...(h.before||[]),...(h.after||[])].some(x=>x.chapter!=null);
   return false;
 }
-function consistencyIssues(){refreshFindingStatuses({silent:true});const issues=[];(db.findings||[]).filter(f=>f.status==="stale").forEach(f=>issues.push({type:"stale",finding:f,message:(f.staleReasons||[]).map(x=>x.message).join(" ")||"This finding is stale."}));[15,17].forEach(n=>{if(db.clues[n]&&db.clues[n].done&&!activeFindings().some(f=>f.clue===n&&f.type==="chapter"))issues.push({type:"clue",finding:null,message:"Clue "+n+" is marked complete but has no active chapter findings."})});return issues}
+function consistencyIssues(){
+  refreshFindingStatuses({silent:true});
+  const issues=[];
+  (db.findings||[]).filter(f=>f.status==="stale").forEach(f=>issues.push({type:"stale",finding:f,message:(f.staleReasons||[]).map(x=>x.message).join(" ")||"This finding is stale."}));
+  (db.findings||[]).forEach(f=>{
+    if(f.page!=null&&!pages().includes(+f.page))issues.push({type:"reference",finding:f,message:"Finding references Page "+f.page+", which is outside the current case range."});
+    if(f.chapter!=null&&!db.setup.chapters[+f.chapter])issues.push({type:"reference",finding:f,message:"Finding references Chapter "+f.chapter+", which is not defined in Setup."});
+  });
+  [15,17].forEach(n=>{if(db.clues[n]&&db.clues[n].done&&!activeFindings().some(f=>f.clue===n&&f.type==="chapter"))issues.push({type:"clue",finding:null,message:"Clue "+n+" is marked complete but has no active chapter findings."})});
+  (db.potentialKillers||[]).forEach(p=>{if(!pages().includes(+p.page)||!killerPossibleOnPage(+p.page))issues.push({type:"suspect",finding:null,message:"Potential Killer "+p.name+" is on a page that is no longer possible."})});
+  if(db.final&&db.final.page&&!killerPossibleOnPage(+db.final.page))issues.push({type:"final",finding:null,message:"The recorded final answer is on a page that is no longer possible."});
+  return issues;
+}
 function consistency(){const issues=consistencyIssues();return '<div><div class="screen-heading"><div class="archive-header"><div><h1>CONSISTENCY CHECKER</h1><p class="sub">Diagnose the current case. The checker does not change investigative decisions.</p></div><b>'+issues.length+' issue'+(issues.length===1?"":"s")+'</b></div></div><div class="card">'+(issues.length?issues.map(x=>'<div class="history-card"><div><div class="history-meta">'+esc(x.type.toUpperCase())+'</div><div class="history-label">'+esc(x.message)+'</div>'+(x.finding?'<div class="history-data">Finding '+esc(x.finding.id)+(x.finding.page!=null?" · Page "+x.finding.page:"")+(x.finding.chapter!=null?" · Chapter "+x.finding.chapter:"")+'</div>':"")+'</div><div class="history-actions">'+(x.finding&&x.finding.clue?'<button class="btn small" onclick="openClue('+x.finding.clue+')">Open Clue</button>':"")+'</div></div>').join(""):'<div class="empty">✓ No consistency issues detected.</div>')+'</div></div>}
 function archive(){
   const list=db.history||[],view=window.archiveView||"actions",type=window.archiveType||"all",clue=window.archiveClue||"";
