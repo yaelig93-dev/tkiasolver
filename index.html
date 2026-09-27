@@ -502,10 +502,32 @@ function updateBackupSettings(){db.setup.backup=db.setup.backup||defaultBackupSe
 async function writeAutomaticBackup(){if(!db.setup.backup||!db.setup.backup.enabled)return false;let h=backupDirectoryHandle;if(!h)h=await loadBackupHandle();if(!h)return false;try{const perm=await h.queryPermission({mode:"readwrite"});if(perm!=="granted"){const p=await h.requestPermission({mode:"readwrite"});if(p!=="granted")return false}const f=await h.getFileHandle(backupFileName(),{create:true}),w=await f.createWritable();await w.write(JSON.stringify(backupSnapshot(),null,2));await w.close();db.setup.backup.lastBackup=new Date().toISOString();localStorage.setItem(KEY,JSON.stringify(db));return true}catch(e){return false}}
 function scheduleAutoBackup(){clearTimeout(autoBackupTimer);if(!db.setup.backup||!db.setup.backup.enabled)return;const last=db.setup.backup.lastBackup?new Date(db.setup.backup.lastBackup).getTime():0;const delay=Math.max(1000,backupIntervalMs()-(Date.now()-last));autoBackupTimer=setTimeout(async()=>{await writeAutomaticBackup();scheduleAutoBackup()},delay)}
 async function testAutomaticBackup(){const ok=await writeAutomaticBackup();if(!ok)openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">BACKUP NOT CREATED</span><h2 class="modal-title">Choose a writable backup folder first</h2><p class="sub">Automatic device-folder backups require browser folder access.</p><button class="btn primary" onclick="closeModal()">OK</button>');else{closeModal();render("setup")}}
+function setupAffectedFindings(nextSetup){
+  const oldSetup=db.setup,oldFindings=snapshot(db.findings);
+  db.setup=snapshot(nextSetup);db.findings=snapshot(oldFindings);
+  const affected=[];
+  db.findings.forEach(f=>{migrateFinding(f);const result=validateFinding(f);if(!result.valid)affected.push({id:f.id,page:f.page,chapter:f.chapter,reasons:result.reasons})});
+  db.setup=oldSetup;db.findings=oldFindings;
+  return affected;
+}
+function applySetupChange(nextSetup){
+  const before=snapshot(db.setup);
+  db.setup=snapshot(nextSetup);
+  const after=snapshot(db.setup);
+  recordHistory(0,"Setup changed","setup",before,after);
+  save();window.pendingSetupChange=null;closeModal();render("setup");
+}
+function requestSetupChange(nextSetup){
+  const affected=setupAffectedFindings(nextSetup);
+  if(!affected.length){applySetupChange(nextSetup);return}
+  window.pendingSetupChange=nextSetup;
+  openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">SETUP CHANGE</span><h2 class="modal-title">This change affects '+affected.length+' finding'+(affected.length===1?'':'s')+'</h2><p class="sub">Affected findings will become stale until their dependencies are valid again.</p><div class="saved-inputs">'+affected.map(x=>'<div class="saved-row"><span><b>Finding '+esc(x.id)+'</b>'+(x.page!=null?' · Page '+x.page:'')+(x.chapter!=null?' · Chapter '+x.chapter:'')+'<small style="display:block;color:var(--muted)">'+esc(x.reasons.join(" "))+'</small></span></div>').join("")+'</div><div class="actions"><button class="btn" onclick="window.pendingSetupChange=null;closeModal()">Cancel</button><button class="btn danger" onclick="applySetupChange(window.pendingSetupChange)">Apply Change</button></div>');
+}
 function saveSetup(){
   const solver=$("solver").value.trim(),first=+$("first").value,last=+$("last").value;
   if(!solver||!first||!last){openModal('<button class="close" onclick="closeModal()">×</button><h2 class="modal-title">Missing setup details</h2><p class="sub">Enter a solver name and both page numbers before opening the case.</p><button class="btn primary" onclick="closeModal()">OK</button>');return}
-  db.setup.solver=solver;db.setup.first=first;db.setup.last=last;save();go("master");
+  const next=Object.assign({},db.setup,{solver:solver,first:first,last:last,chapters:snapshot(db.setup.chapters||{}),backup:snapshot(db.setup.backup||defaultBackupSettings())});
+  requestSetupChange(next);
 }
 function resetCaseStep1(){
   openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">NEW CASE</span><h2 class="modal-title">Start a new case?</h2><p class="sub">This will erase the current book range, clues, page findings, suspect lists and archive from this device.</p><div class="actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn danger" onclick="resetCaseStep2()">Continue</button></div>');
@@ -524,9 +546,10 @@ function saveChapter(){
     openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">INVALID PAGE RANGE</span><h2 class="modal-title">Chapter pages are outside the case range</h2><p class="sub">Chapter start and end pages must both exist in the book range and the start page must come first.</p><button class="btn primary" onclick="closeModal()">OK</button>');
     return;
   }
-  db.setup.chapters[n]={title:$("ct").value.trim(),start:s,end:e};save();closeModal();render("setup");
+  const chapters=snapshot(db.setup.chapters||{});chapters[n]={title:$("ct").value.trim(),start:s,end:e};
+  requestSetupChange(Object.assign({},db.setup,{chapters:chapters}));
 }
-function delChapter(n){delete db.setup.chapters[n];save();render("setup")}
+function delChapter(n){const chapters=snapshot(db.setup.chapters||{});delete chapters[n];requestSetupChange(Object.assign({},db.setup,{chapters:chapters}))}
 function nextChecks(){
   const out=[];
   for(const n of SOLUTION_ORDER){
