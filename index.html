@@ -1224,7 +1224,7 @@ function undoHistory(id){
 function openArchiveForClue(n){window.archiveClue=String(n);window.archiveType="all";go("archive")}
 function openModal(html,returnClue=null){window.modalReturnClue=returnClue;$("modal").innerHTML=html;$("overlay").classList.add("open")}
 function closeModal(){const returnClue=window.modalReturnClue||null;window.modalReturnClue=null;$("overlay").classList.remove("open");if(returnClue!=null)openClue(returnClue)}
-document.addEventListener("click",e=>{if(e.target.id==="overlay")closeModal()});
+document.addEventListener("click",e=>{if(e.target.id==="overlay")closeModal()});document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("#restoreBackupBtn");if(b){e.preventDefault();e.stopPropagation();restoreBackupNow()}},true);document.addEventListener("touchend",e=>{const b=e.target.closest&&e.target.closest("#restoreBackupBtn");if(b){e.preventDefault();e.stopPropagation();restoreBackupNow()}},{capture:true,passive:false});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
 const start=currentRoute();render(start);scheduleAutoBackup();
 </script>
