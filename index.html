@@ -326,7 +326,7 @@ const clues=[
 [17,"The chapter containing the killer also contains all four Beatles.","chapter"],
 [18,"The killer is","final"]
 ];
-const blank=()=>({setup:{first:null,last:null,solver:"",chapters:{}},clues:{},findings:[],eliminatedNames:[],potentialKillers:[],final:null,history:[]});
+const blank=()=>({setup:{first:null,last:null,solver:"",chapters:{}},clues:{},findings:[],eliminatedNames:[],potentialKillers:[],final:null,history:[],notes:{case:"",pages:{},chapters:{},suspects:{},findings:{}}});
 let db=JSON.parse(localStorage.getItem(KEY)||"null")||blank();
 function migrate(){
   db.setup=db.setup||{first:null,last:null,solver:"",chapters:{}};
@@ -338,6 +338,8 @@ function migrate(){
   if(db.potentialKiller&&!db.potentialKillers.length)db.potentialKillers=[db.potentialKiller];
   delete db.potentialKiller;
   db.final=db.final||null;
+  db.notes=db.notes||{case:"",pages:{},chapters:{},suspects:{},findings:{}};
+  db.notes.pages=db.notes.pages||{};db.notes.chapters=db.notes.chapters||{};db.notes.suspects=db.notes.suspects||{};db.notes.findings=db.notes.findings||{};
   db.setup.backup=db.setup.backup||defaultBackupSettings();
   db.findings=db.findings.map(migrateFinding);
   refreshFindingStatuses({silent:true});
