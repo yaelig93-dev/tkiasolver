@@ -535,7 +535,7 @@ function resetCaseStep1(){
 function resetCaseStep2(){
   openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">FINAL CONFIRMATION</span><h2 class="modal-title">Erase this case?</h2><p class="sub">This second confirmation is required. Nothing can be recovered after you confirm.</p><div class="actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn danger" onclick="resetCaseNow()">Yes, Start New Case</button></div>');
 }
-function resetCaseNow(){db=blank();save();closeModal();go("setup")}
+function resetCaseNow(){const solver=db.setup&&db.setup.solver?db.setup.solver:"";db=blank();db.setup.solver=solver;save();closeModal();go("setup")}
 function addChapter(){
   openModal('<button class="close" onclick="closeModal()">×</button><h2 class="modal-title">Add Chapter</h2><div class="field"><label>Chapter number</label><input id="cn" type="number"></div><div class="field"><label>Chapter title</label><input id="ct"></div><div class="field"><label>Start page</label><input id="cs" type="number"></div><div class="field"><label>End page</label><input id="ce" type="number"></div><button class="btn primary" onclick="saveChapter()">Save Chapter</button>');
 }
@@ -964,7 +964,7 @@ function undoHistoryFromPopup(id,n){
     db[key]=cur;
   }else if(h.key==="clues"){
     const key=h.clue;if(h.before&&h.before[key])db.clues[key]=snapshot(h.before[key]);else delete db.clues[key];
-  }else if(h.key==="final"){db.final=snapshot(h.before)}
+  }else if(h.key==="final"){db.final=snapshot(h.before)}else if(h.key==="setup"){db.setup=snapshot(h.before);migrate()}
   h.undone=true;save();openInputs(n);
 }
 function removeFindingFromPopup(n,encoded){
