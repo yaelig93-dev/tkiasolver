@@ -1216,6 +1216,6 @@ function openModal(html,returnClue=null){window.modalReturnClue=returnClue;$("mo
 function closeModal(){const returnClue=window.modalReturnClue||null;window.modalReturnClue=null;$("overlay").classList.remove("open");if(returnClue!=null)openClue(returnClue)}
 document.addEventListener("click",e=>{if(e.target.id==="overlay")closeModal()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
-const start=currentRoute();render(start);
+const start=currentRoute();render(start);scheduleAutoBackup();
 </script>
 </body></html>
