@@ -711,16 +711,47 @@ function saveChapter(){
 }
 function delChapter(n){const chapters=snapshot(db.setup.chapters||{});delete chapters[n];requestSetupChange(Object.assign({},db.setup,{chapters:chapters}))}
 function nextChecks(){
-  const out=[];
-  for(const n of SOLUTION_ORDER){
-    if(n===18||db.clues[n]?.done)continue;
-    const cfg=clueProgressConfig(n);
-    if(!cfg)continue;
-    const mode=clueProgressMode(n),units=clueProgressUnits(n,mode).filter(id=>clueUnitNeedsAction(n,mode,id)&&!clueUnitChecked(n,mode,id));
-    if(units.length)out.push({n,mode,id:units[0]});
-    if(out.length>=5)break;
-  }
-  return out;
+  return withPageAnalysis(ctx=>{
+    const out=[],active=ctx.findings;
+    const checkedPages=new Set(active.filter(x=>x.type==="checked-page").map(x=>+x.page));
+    const checkedChapters=new Set(active.filter(x=>x.type==="checked-chapter").map(x=>+x.chapter));
+    const chapterPageCache=new Map();
+    const relevantSetCache=new Map();
+    const relevantSet=n=>{
+      if(!relevantSetCache.has(n))relevantSetCache.set(n,clueRelevantPageSet(n));
+      return relevantSetCache.get(n);
+    };
+    const chapterPageSet=ch=>{
+      if(!chapterPageCache.has(ch))chapterPageCache.set(ch,chapterPages(ch));
+      return chapterPageCache.get(ch);
+    };
+    for(const n of SOLUTION_ORDER){
+      if(n===18||db.clues[n]?.done)continue;
+      const cfg=clueProgressConfig(n);
+      if(!cfg)continue;
+      const mode=clueProgressMode(n),units=clueProgressUnits(n,mode),relevant=relevantSet(n);
+      let next=null;
+      for(const id of units){
+        let isRelevant=false,isChecked=false;
+        if(mode==="page"){
+          isRelevant=relevant.has(+id);
+          isChecked=checkedPages.has(+id)||(chapterForPage(+id)!=null&&checkedChapters.has(chapterForPage(+id)));
+        }else{
+          const ps=chapterPageSet(+id);
+          isRelevant=ps.some(p=>relevant.has(p));
+          isChecked=checkedChapters.has(+id);
+          if(!isChecked&&isRelevant){
+            const relevantPages=ps.filter(p=>relevant.has(p));
+            isChecked=relevantPages.length>0&&relevantPages.every(p=>checkedPages.has(+p)||checkedChapters.has(+id));
+          }
+        }
+        if(isRelevant&&!isChecked){next={n,mode,id};break;}
+      }
+      if(next)out.push(next);
+      if(out.length>=5)break;
+    }
+    return out;
+  });
 }
 function openNextChecks(){
   const list=nextChecks();
