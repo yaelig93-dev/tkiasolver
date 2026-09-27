@@ -277,6 +277,19 @@ h3{font-size:21px;margin:10px 0 7px}
 <div id="app"></div>
 <div id="overlay" class="overlay"><div id="modal" class="modal"></div></div>
 <script>
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("./sw.js",{updateViaCache:"none"}).then(reg=>{
+    reg.update().catch(()=>{});
+  }).catch(()=>{});
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{
+    if(!sessionStorage.getItem("tkia-sw-reloaded")){
+      sessionStorage.setItem("tkia-sw-reloaded","1");
+      location.reload();
+    }
+  });
+}
+</script>
+<script>
 const KEY="tkia_pwa_v1";
 const SOLUTION_ORDER=[15,1,2,3,5,7,8,6,17,12,16,14,4,11,13,9,10,18];
 const CLUE_META={
