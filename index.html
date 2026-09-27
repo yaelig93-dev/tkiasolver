@@ -379,9 +379,26 @@ function historyState(key,value){
   db[key]=holder;
   return state;
 }
+function historyReason(clue,key,before,after,explicit){
+  if(explicit)return explicit;
+  if(key==="findings"){
+    const added=(after||[]).filter(x=>!(before||[]).some(y=>JSON.stringify(y)===JSON.stringify(x)));
+    const removed=(before||[]).filter(x=>!(after||[]).some(y=>JSON.stringify(y)===JSON.stringify(x)));
+    const reasons=added.map(x=>x.reason||((+x.clue&&clues[+x.clue-1])?clues[+x.clue-1][1]:"")).filter(Boolean);
+    if(reasons.length)return [...new Set(reasons)].join(" ");
+    if(removed.length)return "Finding removed.";
+  }
+  if(key==="clues")return "Clue completion state changed.";
+  if(key==="eliminatedNames")return "Suspect-name status changed.";
+  if(key==="potentialKillers")return "Potential Killer list changed.";
+  if(key==="setup")return "Case setup changed.";
+  if(key==="final")return "Final decision recorded.";
+  return "";
+}
+function historyState(key,value){const holder=db[key];db[key]=snapshot(value);const state=derivedStateSnapshot();db[key]=holder;return state}
 function recordHistory(clue,label,key,before,after,reason=""){
-  const beforeState=historyState(key,before),afterState=historyState(key,after);
-  db.history.unshift({id:Date.now()+"_"+Math.random().toString(36).slice(2),clue:clue,label:label,key:key,before:snapshot(before),after:snapshot(after),reason:reason||null,impact:findingImpact(beforeState,afterState),createdAt:new Date().toISOString(),undone:false});
+  const beforeState=historyState(key,before),afterState=historyState(key,after),autoReason=historyReason(clue,key,before,after,reason);
+  db.history.unshift({id:Date.now()+"_"+Math.random().toString(36).slice(2),clue:clue,label:label,key:key,before:snapshot(before),after:snapshot(after),reason:autoReason||null,impact:findingImpact(beforeState,afterState),createdAt:new Date().toISOString(),undone:false});
   db.history=db.history.slice(0,250);
 }
 function pages(){
