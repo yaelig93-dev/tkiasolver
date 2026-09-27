@@ -516,18 +516,6 @@ function killerPossibleOnPage(p){
   return true;
 }
 function status(p){return killerPossibleOnPage(p)?"work":"elim"}
-function pageNeedsAction(p){
-  const candidates=pages().filter(killerPossibleOnPage);
-  if([4,9,10,11,13].some(n=>!(db.clues[n]&&db.clues[n].done))&&candidates.includes(p))return true;
-  if(!(db.clues[12]&&db.clues[12].done)&&candidates.some(q=>Math.abs(q-p)<=4))return true;
-  if(!(db.clues[14]&&db.clues[14].done)){
-    const first=pages()[0],last=pages()[pages().length-1],opp=first+last-p;
-    if(candidates.includes(opp))return true;
-  }
-  if(!(db.clues[16]&&db.clues[16].done)&&candidates.some(q=>Math.abs(q-p)<=1))return true;
-  return false;
-}
-function pageAssessment(p){return {possible:killerPossibleOnPage(p),needsAction:pageNeedsAction(p)}}
 function pageEliminationReasons(p){
   const reasons=[],seen=new Set(),add=r=>{if(r&&!seen.has(r)){seen.add(r);reasons.push(r)}};
   activeFindings().filter(x=>x.page===p&&x.type==="elim").forEach(x=>{
@@ -543,14 +531,21 @@ function pageEliminationReasons(p){
   return reasons;
 }
 function pageWorkReasons(p){
-  const reasons=[],candidates=pages().filter(killerPossibleOnPage);
-  if([4,9,10,11,13].some(n=>!(db.clues[n]&&db.clues[n].done))&&candidates.includes(p))reasons.push("Still needed for unresolved page-level clue checks (4, 9, 10, 11 and/or 13).");
-  if(!(db.clues[12]&&db.clues[12].done)&&candidates.some(q=>Math.abs(q-p)<=4))reasons.push("Could provide evidence for Clue 12: a Kardashian within four pages of the killer.");
-  if(!(db.clues[14]&&db.clues[14].done)){
-    const first=pages()[0],last=pages()[pages().length-1],opp=first+last-p;
-    if(candidates.includes(opp))reasons.push("Could provide evidence for Clue 14: a President first name on the opposite page.");
+  const reasons=[],ctx=window.pageAnalysisContext,ps=ctx&&ctx.pages?ctx.pages:pages(),candidates=ctx&&ctx.candidates?ctx.candidates:ps.filter(killerPossibleOnPage);
+  if(!(db.clues[4]&&db.clues[4].done)&&candidates.includes(p))reasons.push("Clue 4: check whether this page contains a repeated name.");
+  if(!(db.clues[9]&&db.clues[9].done)){
+    const relevant=clueRelevantPageSet(9);
+    if(relevant.has(+p))reasons.push("Clue 9: check whether a three-letter name is no more than ten names away from the killer; this can cross a page boundary.");
   }
-  if(!(db.clues[16]&&db.clues[16].done)&&candidates.some(q=>Math.abs(q-p)<=1))reasons.push("Could provide evidence for Clue 16: a Sasha within one page of the killer.");
+  if(!(db.clues[10]&&db.clues[10].done)&&candidates.includes(p))reasons.push("Clue 10: check whether the first name in the main body shares a letter with the killer.");
+  if(!(db.clues[11]&&db.clues[11].done)&&candidates.includes(p))reasons.push("Clue 11: check whether this page has fewer than three names starting with M.");
+  if(!(db.clues[13]&&db.clues[13].done)&&candidates.includes(p))reasons.push("Clue 13: check whether this page has an even number of names.");
+  if(!(db.clues[12]&&db.clues[12].done)&&candidates.some(q=>Math.abs(q-p)<=4))reasons.push("Clue 12: could provide evidence of a Kardashian within four pages of the killer.");
+  if(!(db.clues[14]&&db.clues[14].done)){
+    const first=ps[0],last=ps[ps.length-1],opp=first+last-p;
+    if(candidates.includes(opp))reasons.push("Clue 14: could provide evidence of a President first name on the opposite page.");
+  }
+  if(!(db.clues[16]&&db.clues[16].done)&&candidates.some(q=>Math.abs(q-p)<=1))reasons.push("Clue 16: could provide evidence of a Sasha within one page of the killer.");
   return reasons;
 }
 function pageEliminationReason(p){return pageEliminationReasons(p)[0]||"";}
@@ -603,11 +598,32 @@ function master(){
   return '<div class="master"><section class="master-head tape"><div><div class="master-kicker">CASE BOARD · 46,600 SUSPECT MURDER MYSTERY</div><h1>THE KILLER<br>ISN’T ALICE.</h1></div></section><section class="master-board">'+evidence+'<div class="master-bottom"><div class="note">'+(killer?"THE CASE IS CLOSED. THE FINAL ANSWER IS RECORDED.":"Final decision happens in Clue 18.")+'</div><div class="actions"><button class="btn primary" onclick="go(\'clues\')">Open Clues</button><button class="btn accent" onclick="go(\'suspect\')">Suspect Verification</button><button class="btn" onclick="reasoningGraph()">Reasoning Graph</button></div></div></section></div>';
 }
 function pagesStatus(){
-  const ps=pages(),filter=window.pageFilter||"all",query=String(window.pageQuery||"").trim();
-  const assessments=new Map(ps.map(p=>[p,pageAssessment(p)]));
-  const filtered=ps.filter(p=>{const a=assessments.get(p);return(filter==="all"||(filter==="candidate"&&a.possible)||(filter==="eliminated"&&!a.possible)||(filter==="action"&&a.needsAction)||(filter==="noaction"&&!a.needsAction))&&(!query||String(p).includes(query))});
-  const counts={all:ps.length,candidate:ps.filter(p=>assessments.get(p).possible).length,eliminated:ps.filter(p=>!assessments.get(p).possible).length,action:ps.filter(p=>assessments.get(p).needsAction).length,noaction:ps.filter(p=>!assessments.get(p).needsAction).length};
-  return '<div class="pages-screen"><div class="screen-heading"><div class="clue-toolbar"><div><h1>PAGES & STATUS</h1><p class="sub">Each page tracks killer possibility and whether work is still needed. <span class="page-marker-legend"><span class="chapter-impossible-marker legend-marker"></span> Impossible chapters are marked with a red page marker.</span></p></div></div></div><div class="card"><div class="page-controls"><button class="btn page-filter-btn all-filter '+(filter==="all"?"active":"")+'" onclick="window.pageFilter=\'all\';render(\'pages\')">ALL · '+counts.all+'</button><button class="btn page-filter-btn candidate-filter '+(filter==="candidate"?"active":"")+'" onclick="window.pageFilter=\'candidate\';render(\'pages\')">POSSIBLE · '+counts.candidate+'</button><button class="btn page-filter-btn eliminated-filter '+(filter==="eliminated"?"active":"")+'" onclick="window.pageFilter=\'eliminated\';render(\'pages\')">IMPOSSIBLE · '+counts.eliminated+'</button><button class="btn page-filter-btn check-filter '+(filter==="action"?"active":"")+'" onclick="window.pageFilter=\'action\';render(\'pages\')">NEED TO CHECK · '+counts.action+'</button><button class="btn page-filter-btn no-check-filter '+(filter==="noaction"?"active":"")+'" onclick="window.pageFilter=\'noaction\';render(\'pages\')">NO NEED TO CHECK · '+counts.noaction+'</button><input class="btn" style="flex:1;min-width:150px;text-align:left" value="'+esc(query)+'" placeholder="Find page number" oninput="window.pageQuery=this.value;render(\'pages\')"><button class="btn" onclick="window.pageFilter=\'all\';window.pageQuery=\'\';render(\'pages\')">Clear</button></div><div class="page-cards">'+(filtered.length?filtered.map(p=>{const a=assessments.get(p),f=db.findings.filter(x=>x.page===p),chapter=chapterForPage(p),chapterImpossible=chapter!=null&&chapterIsImpossible(chapter);return '<div class="page-card '+(a.possible?"candidate":"eliminated")+(chapterImpossible?" chapter-impossible":"")+'" onclick="openPageStatus('+p+')">'+(chapterImpossible?'<span class="chapter-impossible-marker" title="This page is in an impossible chapter"></span>':"")+'<div class="page-number">'+p+'</div><div class="page-state-row"><span class="page-state possibility-state">'+(a.possible?"POSSIBLE":"IMPOSSIBLE")+'</span><span class="page-state work-state '+(a.needsAction?"need-check":"no-need-check")+'">'+(a.needsAction?"NEED TO CHECK":"NO NEED TO CHECK")+'</span></div><div class="page-findings">'+(f.length?(f.length+" finding"+(f.length===1?"":"s")):"No findings yet")+'</div></div>'}).join(""):'<div class="empty">No pages match this filter.</div>')+'</div></div></div>';
+  return withPageAnalysis(ctx=>{
+    const ps=ctx.pages,filter=window.pageFilter||"all",query=String(window.pageQuery||"").trim(),view=window.pagesViewMode||"pages";
+    const assessments=new Map(ps.map(p=>[p,pageAssessment(p,ctx.candidates)]));
+    const filtered=ps.filter(p=>{
+      const a=assessments.get(p);
+      return (filter==="all"||(filter==="candidate"&&a.possible)||(filter==="eliminated"&&!a.possible)||(filter==="action"&&a.needsAction)||(filter==="noaction"&&!a.needsAction))&&(!query||String(p).includes(query));
+    });
+    const counts={all:ps.length,candidate:ps.filter(p=>assessments.get(p).possible).length,eliminated:ps.filter(p=>!assessments.get(p).possible).length,action:ps.filter(p=>assessments.get(p).needsAction).length,noaction:ps.filter(p=>!assessments.get(p).needsAction).length};
+    const pageCard=p=>{
+      const a=assessments.get(p),f=ctx.findings.filter(x=>+x.page===+p),chapter=chapterForPage(p),chapterImpossible=chapter!=null&&chapterIsImpossible(chapter);
+      return '<div class="page-card '+(a.possible?"candidate":"eliminated")+(chapterImpossible?" chapter-impossible":"")+'" onclick="openPageStatus('+p+')">'+(chapterImpossible?'<span class="chapter-impossible-marker" title="This page is in an impossible chapter"></span>':"")+'<div class="page-number">'+p+'</div><div class="page-state-row"><span class="page-state possibility-state">'+(a.possible?"POSSIBLE":"IMPOSSIBLE")+'</span><span class="page-state work-state '+(a.needsAction?"need-check":"no-need-check")+'">'+(a.needsAction?"NEED TO CHECK":"NO NEED TO CHECK")+'</span></div><div class="page-findings">'+(f.length?(f.length+" finding"+(f.length===1?"":"s")):"No findings yet")+'</div></div>';
+    };
+    const chapterNumbers=[...new Set(ps.map(chapterForPage).filter(ch=>ch!=null))].sort((a,b)=>a-b);
+    const chapterCards=chapterNumbers.map(ch=>{
+      const chapterPagesList=ps.filter(p=>chapterForPage(p)===ch).filter(p=>filtered.includes(p));
+      if(!chapterPagesList.length)return "";
+      const allChapterPages=ps.filter(p=>chapterForPage(p)===ch),ca=allChapterPages.map(p=>assessments.get(p));
+      const possibleCount=ca.filter(a=>a.possible).length,actionCount=ca.filter(a=>a.needsAction).length;
+      const impossible=chapterIsImpossible(ch);
+      const title=db.setup.chapters[ch]?.title||"";
+      return '<section class="card chapter-status-card '+(impossible?"chapter-impossible":"")+'"><div class="screen-heading" style="margin-bottom:10px"><div><h2 style="margin:0">Chapter '+ch+(title?' · '+esc(title):"")+'</h2><p class="sub">'+allChapterPages.length+' pages · '+possibleCount+' possible · '+actionCount+' need to check</p></div></div><div class="page-cards">'+chapterPagesList.map(pageCard).join("")+'</div></section>';
+    }).join("");
+    const pageCards=filtered.map(pageCard).join("");
+    const body=view==="chapters"?(chapterCards||'<div class="empty">No chapters match this filter.</div>'):(pageCards||'<div class="empty">No pages match this filter.</div>');
+    return '<div class="pages-screen"><div class="screen-heading"><div class="clue-toolbar"><div><h1>PAGES & STATUS</h1><p class="sub">Each page tracks killer possibility and whether work is still needed. <span class="page-marker-legend"><span class="chapter-impossible-marker legend-marker"></span> Impossible chapters are marked with a red page marker.</span></p></div></div></div><div class="card"><div class="page-controls"><button class="btn page-filter-btn all-filter '+(filter==="all"?"active":"")+'" onclick="window.pageFilter=\'all\';render(\'pages\')">ALL · '+counts.all+'</button><button class="btn page-filter-btn candidate-filter '+(filter==="candidate"?"active":"")+'" onclick="window.pageFilter=\'candidate\';render(\'pages\')">POSSIBLE · '+counts.candidate+'</button><button class="btn page-filter-btn eliminated-filter '+(filter==="eliminated"?"active":"")+'" onclick="window.pageFilter=\'eliminated\';render(\'pages\')">IMPOSSIBLE · '+counts.eliminated+'</button><button class="btn page-filter-btn check-filter '+(filter==="action"?"active":"")+'" onclick="window.pageFilter=\'action\';render(\'pages\')">NEED TO CHECK · '+counts.action+'</button><button class="btn page-filter-btn no-check-filter '+(filter==="noaction"?"active":"")+'" onclick="window.pageFilter=\'noaction\';render(\'pages\')">NO NEED TO CHECK · '+counts.noaction+'</button><input class="btn" style="flex:1;min-width:150px;text-align:left" value="'+esc(query)+'" placeholder="Find page number" oninput="window.pageQuery=this.value;render(\'pages\')"><button class="btn" onclick="window.pageFilter=\'all\';window.pageQuery=\'\';render(\'pages\')">Clear</button></div><div class="actions" style="margin-top:10px"><button class="btn small '+(view==="pages"?"active":"")+'" onclick="window.pagesViewMode=\'pages\';render(\'pages\')">BY PAGES</button><button class="btn small '+(view==="chapters"?"active":"")+'" onclick="window.pagesViewMode=\'chapters\';render(\'pages\')">BY CHAPTERS</button></div></div><div class="pages-view">'+body+'</div></div>';
+  });
 }
 
 function pageEvidenceCoverage(p){
@@ -618,6 +634,7 @@ function pageEvidenceCoverage(p){
   };
 }
 function openPageStatus(p){
+  return withPageAnalysis(()=>{
   const assessment=pageAssessment(p),possible=assessment.possible,needsAction=assessment.needsAction,findings=activeFindings().filter(x=>x.page===p),coverage=pageEvidenceCoverage(p);
   const eliminationReasons=pageEliminationReasons(p),workReasons=pageWorkReasons(p);
   const rows=findings.length?findings.map(x=>{const isManual=x.type==="page-elim";return '<div class="saved-row"><span>'+esc(isManual?(x.reason||"Page eliminated"):"Clue "+x.clue+" · "+(x.type||"finding")+(x.name?" · "+x.name:""))+'</span>'+(isManual?'<button class="btn small" onclick="openNote(\'findings\',\''+x.id+'\',\'Finding Note\')">Note</button>':'<button class="btn small" onclick="closeModal();openClue('+x.clue+')">Open Clue</button><button class="btn small" onclick="openNote(\'findings\',\''+x.id+'\',\'Finding Note\')">Note</button>')+'</div>'}).join(""):'<div class="empty">No recorded findings for this page.</div>';
@@ -1285,7 +1302,7 @@ function suspect(){
     <section class="suspect-card">
       <h2>VERIFY SUSPECT</h2>
       <div class="field"><label>Suspect name</label><input id="sn" value="${esc(name)}" style="font-size:23px" placeholder="Suspect name" oninput="window.suspectName=this.value"></div>
-      <button type="button" class="btn primary" style="width:100%;margin-top:10px" onclick="submitSuspectName()">OK — SHOW RELEVANT CHAPTERS</button>
+      <button type="button" class="btn primary" style="width:100%;margin-top:10px" onclick="submitSuspectName()">SHOW RELEVANT CHAPTERS</button>
       ${name?`<div class="line"></div><h2>RELEVANT CHAPTERS</h2><p class="sub">Only chapters containing pages that are still possible are shown. Choose a page to run the suspect checks.</p>${chapterHtml||standaloneHtml?'<div class="saved-inputs">'+chapterHtml+standaloneHtml+'</div>':'<div class="empty">No possible pages remain for this suspect check.</div>'}`:""}
       ${selected?`<div class="line"></div><div class="selection-feedback">Selected page: ${selected} · ${rel.length} relevant clues</div><h2 style="margin-top:18px">RELEVANT CLUES</h2>${rel.length?checks:'<div class="empty">No relevant clues remain.</div>'}${name?`<div class="line"></div><button class="btn accent" style="width:100%" onclick="markPotentialKiller('${encodeURIComponent(name)}',${selected})">All relevant checks passed — Add Potential Killer</button>`:""}`:""}
     </section>
