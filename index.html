@@ -645,6 +645,7 @@ function openPageStatus(p){
   const manualElim=findings.some(x=>x.type==="page-elim");
   const action=manualElim?'<button class="btn danger" onclick="restorePageStatus('+p+')">Restore Page to Candidate</button>':possible?'<button class="btn danger" onclick="closeModal();confirmPageElimination('+p+')">Eliminate This Page</button>':"";
   openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">PAGE '+p+'</span><h2 class="modal-title">'+(possible?"CANDIDATE PAGE":"PAGE ELIMINATED")+'</h2>'+possibilityLine+eliminationLine+workLine+coverageLine+rows+'<div class="actions" style="margin-top:10px"><button class="btn small" onclick="openNote(\'pages\',p,\'Page \'+p+\' Note\')">Page Note</button></div><div class="actions" style="margin-top:14px">'+action+'<button class="btn" onclick="closeModal()">Close</button></div>');
+  });
 }
 function confirmPageElimination(p){
   openModal('<button class="close" onclick="closeModal()">×</button><span class="badge">PAGE '+p+'</span><h2 class="modal-title">Why is this page out?</h2><p class="sub">This decision does not need to be tied to a specific clue.</p><div class="actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn danger" onclick="closeModal();completePage('+p+',\'All names on page are irrelevant\');render(\'pages\')">All names on this page are irrelevant</button></div>');
