@@ -519,14 +519,6 @@ function pages(){
   return Array.from({length:b-a+1},(_,i)=>a+i);
 }
 function chapterForPage(p){const hit=Object.entries(db.setup.chapters||{}).find(([,v])=>p>=+v.start&&p<=+v.end);return hit?+hit[0]:null}
-function killerPossibleOnPage(p){
-  if(activeFindings().some(x=>x.page===p&&x.type==="elim"))return false;
-  const ch=chapterForPage(p);
-  for(const clueNo of [15,17]){
-    if(db.clues[clueNo]&&db.clues[clueNo].done&&ch!=null&&activeFindings().some(x=>x.type==="chapter"&&x.clue===clueNo&&+x.chapter===ch))return false;
-  }
-  return true;
-}
 function status(p){return killerPossibleOnPage(p)?"work":"elim"}
 function pageEliminationReasons(p){
   const reasons=[],seen=new Set(),add=r=>{if(r&&!seen.has(r)){seen.add(r);reasons.push(r)}};
